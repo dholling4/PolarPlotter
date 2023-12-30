@@ -25,7 +25,7 @@ persons = [
     {"image_url": "https://drive.google.com/uc?export=download&id=1BEtoN8oiNeT4njIzOZoQWo3R-GoDXmkR", "name": "David Hollinger", "description": "PhD candidate, Mechanical Engineering, Nike Sports Research Lab Intern"},
     {"image_url": "https://drive.google.com/uc?export=download&id=15pgQpAwmdZ29BEjLgBhnyWpIOgQYpLQJ", "name": "Avinash Baskaran", "description": "PhD student, Mechanical Engineering, Neuromuscular Rehabilitation"},
     {"image_url": "https://drive.google.com/uc?export=download&id=1LsQvOUdf4Ub9zjdKfF1jpoUauSVDBrRd", "name": "Qi Li", "description": "PhD student, Computer Science & Software Engineering"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1B4iRHTOigrURv-_rgQ0dUgLeW_f367z-", "name": "Muhammad Gulfam", "description": "PhD student, Computer Sci & Software Engineering"},
+    {"image_url": "https://drive.google.com/uc?export=download&id=1B4iRHTOigrURv-_rgQ0dUgLeW_f367z-", "name": "Muhammad Gulfam", "description": "PhD student, Computer Science & Software Engineering"},
 ]  
     
 # Create six columns for each person
@@ -70,5 +70,5 @@ with expander_hollinger:
     png_url = "https://drive.google.com/uc?export=download&id=16x0SQo3nRlND4bRPfnvFysczY4IriXog"
     col1, col2 = st.columns(2)
     col1.image(jpg_url, caption="George Mason Cross Country Invitational", use_column_width=True)
-    col2.image(png_url, caption="Bayshore Marathon (Traverse City, MI)", use_column_width=True)
+    col2.image(png_url, caption="Bayshore Marathon (Traverse City, MI)", width=300)
     st.write("I was a walk-on cross country and track runner at George Mason University (Fairfax, VA). Many of my teammates were spectacular, but numerous teammates experienced overuse injuries. Over-use injuries, such as stress fractures, were difficult to predict ahead of time, especially at the elite level. I feared developing an over-use injury. As a result, I under-trained and struggled to find breakthrough. Out of frutstration, I left NCAA competition and joined the Potomac River Running Elite Racing team in DC-VA where I began to run personal bests in the 5k (16:09), 10k (33:25), 10-mile (55:33) and half-marathon (1:15:40). I was able to learn how to properly push myself to new limits. I also ran a 2:50 marathon (Traverse City, MI) in 2018 to qualify for the Boston Marathon. I am now a PhD candidate studying the intersection of biomechanics, wearables, and AI to deliver personalized-insights into training to push athletes to achieve their potential.")
