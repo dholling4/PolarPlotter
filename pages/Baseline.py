@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 VERSION = "0.3.1"
+st.sidebar.markdown("# Baseline 📊")
 
 st.set_page_config(
     page_title="Polar Plotter",
