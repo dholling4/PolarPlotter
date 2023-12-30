@@ -1,24 +1,147 @@
 import contextlib
-
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
 
 VERSION = "0.3.1"
 st.sidebar.markdown("# Baseline 📊")
 
-st.set_page_config(
-    page_title="Polar Plotter",
-    page_icon="🕸️",
-    menu_items={
-        "About": f"Polar Plotter v{VERSION}  "
-        f"\nApp contact: [Siddhant Sadangi](mailto:siddhant.sadangi@gmail.com)",
-        "Report a Bug": "https://github.com/SiddhantSadangi/PolarPlotter/issues/new",
-        "Get help": None,
-    },
-    layout="centered",
-)
 
+# THE DIGITAL ATHLETE ========================================
+st.markdown("""# Baseline 🧘‍♀️🤸‍♂️""")
+
+# url = "https://www.acsm.org/docs/default-source/regional-chapter-individual-folders/northland/nacsm--wes-e--fms9a9b0c1f5032400f990d8b57689b0158.pdf?sfvrsn=3668bbe0_0"
+
+# st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
+    
+st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️")
+squat_url2 = "https://drive.google.com/uc?export=download&id=1OSnkMoCvt9wfBlMyQ1XU-yTPx_TJZ52C"
+squat_url = "https://drive.google.com/uc?export=download&id=1u8ikCH-r2rQZxwOlmuiietAOckrhIoA-"
+gif_url = "https://drive.google.com/uc?export=download&id=16tmT7B0cVawZ2IjMkFDY7WN9Db2J1xFj"
+# gif_url = "https://drive.google.com/uc?export=download&id=15rAodbylN0pB0DmY2-ao1ndYZZxib5Ki"
+instructions = st.expander("Instructions")
+with instructions:
+  st.write("1. Record or upload your activity")
+  st.write("2. Wait for the video to process")
+  st.write("3. View your score and personalized results")
+
+baseline_assessments = st.expander("Baseline Assessments")
+cols1, cols2 = st.columns(2)
+with baseline_assessments:
+  with cols1:
+    st.write("#### Depth Squat")
+    st.image(squat_url, caption="Depth Squat", use_column_width=True)
+  with cols2:
+    st.write("#### Single Leg Balance")
+    st.image(gif_url, caption="Single Leg Balance", width=240)
+
+  st.write("### Baseline assessments include:")
+  st.write("* Single Leg Balance")
+  st.write("* Depth Squat")
+  st.write("* Gait Analysis :runner: :closed_lock_with_key:")
+
+  st.write("### Coming Soon:")
+  st.write("* Ankle Mobility")
+  st.write("* Hip Mobility")
+  st.write("* Core Stability")
+  st.write("* Shoulder Mobility")
+
+# Custom color scheme
+color_A = 'rgb(12, 44, 132)'  # Dark blue
+color_B = 'rgb(144, 148, 194)'  # Light blue
+color_C = 'rgb(171, 99, 250)'  # Purple
+color_D = 'rgb(230, 99, 250)'  # Pink
+color_E = 'rgb(99, 110, 250)'  # Blue
+color_F = 'rgb(25, 211, 243)'  # Turquoise
+st.write("# Unlock Your Full Potential: AI-Powered Biomechanics for Personalized Performance!")
+st.write("## Get Personalized Results")
+
+col1, col2 = st.columns(2)
+with col1:
+  chart_data = pd.DataFrame(
+    {
+        " ": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
+        "Stability Score": [2.2, 2.6, 3.5, 3.4],
+    }
+  )
+  
+  st.bar_chart(chart_data, x=" ", y="Stability Score", use_container_width=True, width=315)
+  
+with col2:
+  categories = ['Right Knee', 'Right Hip', 'Left Hip',
+                  'Left Ankle', 'Right Ankle']
+  fig = go.Figure()
+
+  fig.add_trace(go.Scatterpolar(
+      r=[1.9, 2.3, 3.5, 4.2, 2],
+      theta=categories,
+      fill='toself',
+      line=dict(color=color_A),
+      marker=dict(color=color_A, size=10),
+      name='Control/Stability'
+  ))
+
+  fig.add_trace(go.Scatterpolar(
+      r=[3.9, 2.2, 2.4, 1.9, 2],
+      theta=categories,
+      fill='toself',
+      line=dict(color=color_F),
+      marker=dict(color=color_F, size=10),
+      name='Range of Motion'
+  ))
+
+  fig.update_layout(
+    polar=dict(
+      radialaxis=dict(
+        visible=True,
+        range=[0, 5]
+      )
+    ),
+    # showlegend=True,
+    legend=dict(x=0.65, y=0.1),
+    font=dict(
+      color='white',
+      size = 20   # Set font color to white
+    ),
+  )
+
+  st.plotly_chart(fig, use_container_width=False, width=100)
+
+run_front = "https://drive.google.com/uc?export=download&id=1m_ZXv8t2Fpsww7DF5Z1jt0pHsPDgRl4f"
+run_side = "https://drive.google.com/uc?export=download&id=14qby7dOKonrQk68L5mATNoiEIO8zZWm8"
+
+st.write("# Take your run to the next level!")
+
+run1, visual  = st.columns(2)
+with run1:
+  st.write("### Gait Analysis")
+  st.image(run_front, caption="Front View", width=300)
+  st.image(run_side, caption="Side View", width=300)
+
+with visual:
+  chart_data = pd.DataFrame(
+    {"Step Count": list(range(16)), "Left": np.random.randn(16), "Right": np.random.randn(16)}
+  )
+  st.write('### Foot Strike Score')
+  st.bar_chart(
+    chart_data, x="Step Count", y=["Left", "Right"], 
+    # color=[color_C, "#0000FF"]  # Optional
+  )
+
+  left_knee = [4.9,11,11.1,18,20,24.14251189,23.2,19,17,16.9,19,22,24,27,28.5,38.9,50.47197318,60.06673423,63.34481952,62.82092461,59.14867077,52.89186871,46.05129804,37.88352694,30.37935605,20.94425821,15.31114056,10.97528651,9.777812427,18.1950573]
+  right_knee = [3.5,12.3,12.5,19,22,25,25,20.1,17,16.8,18.8,21.1,23.8,27,27.5,38.9,51.5,61.1,66.9,67,62,53,48,37,33,23,14,9,8,12]
+
+  st.write('##### Joint Angles')
+  chart_data2 = pd.DataFrame(
+    {"Left Knee": left_knee, "Right Knee": right_knee})
+  st.line_chart(chart_data2, y=["Left Knee", "Right Knee"],
+                #  color=[color_C, "#0000FF"] 
+                 ) 
+
+# ========== DIGITAL ATHLETE ==========
 
 # ---------- FUNCTIONS ----------
 def _reset() -> None:
