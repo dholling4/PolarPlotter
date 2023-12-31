@@ -200,9 +200,8 @@ with dial2:
   with st.expander("Foot Strike Score"):
       # st.plotly_chart(fig, use_container_width=True)
       st.write('Foot strike is the first point of contact between your foot and the ground. Foot strike should be on the midfoot, not the heel or the toes. If your foot strike is on your heel, it can lead to overstriding, which can lead to knee pain and shin splints. If your foot strike is on your toes, it can lead to calf pain and achilles tendonitis. A midfoot strike is ideal because it allows your foot to absorb the impact of the ground and propel you forward.')
-      url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3445088/"
-      url ="https://journals.lww.com/nsca-jscr/abstract/2007/08000/foot_strike_patterns_of_runners_at_the_15_km_point.4"
-      st.link_button(":book: Read more about the importance of foot strike", url)
+      url2 ="https://journals.lww.com/nsca-jscr/abstract/2007/08000/foot_strike_patterns_of_runners_at_the_15_km_point.4"
+      st.link_button(":book: Read more about the importance of foot strike", url2)
 with dial3:
   value3 = 80  
   fig = go.Figure(go.Indicator(
