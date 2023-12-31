@@ -1,2 +1,3 @@
 [global]
 disableWidgetStateDuplicationWarning = true
+OPENAI_API_KEY = "AIzaSyCJh_ZhaEz0MjQi2Ylf-ekC-xMP4u--Nd0"

@@ -61,6 +61,7 @@ pexpect==4.9.0
 Pillow==10.1.0
 platformdirs==4.1.0
 kaleido
+openai
 openpyxl
 plotly
 prompt-toolkit==3.0.41

@@ -644,11 +644,33 @@ def run_inference(movenet, image, crop_region, crop_size):
 
 # ---------- RUN VIDEO FILE --------------
 from io import BytesIO
-st.write("#### Upoad your video below :point_down:")
-st.write('###### This may take about 2-3 minutes to load depending how long the video is')
-# st.title("MoveNet Lightning Video Pose Estimation")
+url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
 
-uploaded_file = st.file_uploader("Choose an image...", type="gif")
+# display url_squat
+# st.video(url_squat)
+
+st.write("#### Upoad your video below :point_down:")
+st.write("""###### Instructions for recording depth squat:
+STEP 1: Position Setup""")
+st.image(url_squat, caption="Depth Squat Instructions", width=500)
+st.write("""
+⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
+* Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
+STEP 2: Recording
+         
+⦿ Start the recording
+* The participant should be standing with their feet shoulder width apart
+* The participant should then squat down as far as they can go, just below parallel or 90 degrees
+* The participant should then stand back up to the starting position
+* The participant should repeat this 5 times
+         
+⦿ Stop the recording
+STEP 3: Upload the video 
+* Upload the video to the app
+* Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
+""")
+
+uploaded_file = st.file_uploader("Choose an image...", type="gif") # change type=None to upload any file type (iphones use .MOV) 
 
 if uploaded_file is not None:
   image_content = uploaded_file.read()
@@ -1334,3 +1356,59 @@ if uploaded_file is not None:
 #             mime="text/html",
 #             use_container_width=True,
 #         )
+
+
+# POSSIBLY INCLUDE HR_NET ====================================
+# pip install streamlit torch torchvision pillow
+
+# import streamlit as st
+# import torch
+# from PIL import Image
+# from torchvision import transforms
+# from torchvision.models.detection import keypointrcnn_resnet50_fpn
+
+# # Load HRNet model
+# model = keypointrcnn_resnet50_fpn(pretrained=True)
+# model.eval()
+
+# # Define image transformation
+# transform = transforms.Compose([transforms.ToTensor()])
+
+# # Function to run HRNet on an image
+# def run_hrnet(image):
+#     # Preprocess the image
+#     img = transform(image).unsqueeze(0)
+
+#     # Run inference
+#     with torch.no_grad():
+#         prediction = model(img)
+
+#     return prediction
+
+# # Streamlit app
+# def main():
+#     st.title("HRNet Streamlit App")
+
+#     # Upload image through Streamlit
+#     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+#     if uploaded_file is not None:
+#         # Read image
+#         image = Image.open(uploaded_file)
+
+#         # Display the uploaded image
+#         st.image(image, caption="Uploaded Image", use_column_width=True)
+
+#         # Run HRNet on the image
+#         prediction = run_hrnet(image)
+
+#         # Display results (modify as needed based on HRNet output)
+#         st.write("HRNet results:", prediction)
+
+# # Run the Streamlit app
+# if __name__ == "__main__":
+#     main()
+
+
+
+# ---------- HR NET ----------
