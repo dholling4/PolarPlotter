@@ -670,12 +670,20 @@ STEP 3: Upload the video
 * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
 """)
 
-uploaded_file = st.file_uploader("Choose an image...", type="gif") # change type=None to upload any file type (iphones use .MOV) 
+uploaded_file = st.file_uploader("Choose an image...", type="MOV") # change type=None to upload any file type (iphones use .MOV) 
 
 if uploaded_file is not None:
-  image_content = uploaded_file.read()
-  image = tf.image.decode_gif(image_content)
-  num_frames, image_height, image_width, _ = image.shape
+  # update for .MOV
+  image = imageio.get_reader(uploaded_file)
+  num_frames = len(image)
+  image_height, image_width = image.get_meta_data()['size']
+
+  # update for .MOV  == END
+
+
+  # image_content = uploaded_file.read()
+  # image = tf.image.decode_gif(image_content)
+  # num_frames, image_height, image_width, _ = image.shape
   crop_region = init_crop_region(image_height, image_width)
 
   nose_list_x, left_shoulder_list_x, right_shoulder_list_x,left_elbow_list_x, right_elbow_list_x, left_wrist_list_x, right_wrist_list_x = [],[],[],[],[],[],[]
