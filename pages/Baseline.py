@@ -110,13 +110,13 @@ run_side = "https://drive.google.com/uc?export=download&id=14qby7dOKonrQk68L5mAT
 
 st.write("# Take your run to the next level!")
 
-run1, visual  = st.columns(2)
+run1, runner_plots  = st.columns(2)
 with run1:
   st.write("### Gait Analysis")
   st.image(run_front, caption="Front View", width=300)
   st.image(run_side, caption="Side View", width=300)
 
-with visual:
+with runner_plots:
   chart_data = pd.DataFrame(
     {"Step Count": list(range(16)), "Left": np.random.randn(16), "Right": np.random.randn(16)}
   )
@@ -135,6 +135,93 @@ with visual:
   st.line_chart(chart_data2, y=["Left Knee", "Right Knee"],
                 #  color=[color_C, "#0000FF"] 
                  ) 
+  
+dial1, dial2, dial3 = st.columns(3)
+title_font_size = 24
+with dial1:
+  value = 75  # Value to be displayed on the dial (e.g., gas mileage)
+  fig = go.Figure(go.Indicator(
+      mode="gauge+number",
+      value=value,
+      domain={'x': [0, 1], 'y': [0, 1]},
+      gauge=dict(
+          axis=dict(range=[0, 100]),
+          bar=dict(color="white"),
+          borderwidth=2,
+          bordercolor="gray",
+          steps=[
+              dict(range=[0, 25], color="red"),
+              dict(range=[25, 50], color="orange"),
+              dict(range=[50, 75], color="yellow"),
+              dict(range=[75, 100], color="green")
+          ],
+          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+      )
+  ))
+  fig.update_layout(
+      title={'text': "Hip Drive", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+      title_font_size = title_font_size,      
+      font=dict(size=24)
+  )
+  st.plotly_chart(fig, use_container_width=True)
+  # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
+  # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
+
+with dial2:
+  value = 57 
+  fig = go.Figure(go.Indicator(
+      mode="gauge+number",
+      value=value,
+      domain={'x': [0, 1], 'y': [0, 1]},
+      gauge=dict(
+          axis=dict(range=[0, 100]),
+          bar=dict(color="white"),
+          borderwidth=2,
+          bordercolor="gray",
+          steps=[
+              dict(range=[0, 25], color="red"),
+              dict(range=[25, 50], color="orange"),
+              dict(range=[50, 75], color="yellow"),
+              dict(range=[75, 100], color="green")
+          ],
+          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+      )
+  ))
+  fig.update_layout(
+      title={'text': "Foot Strike Score", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+      title_font_size = title_font_size,
+      font=dict(size=24)
+  )
+  st.plotly_chart(fig, use_container_width=True)
+  # if foot strike is low, recommend drills to increase cadence and reduce overstriding (e.g. high knees, butt kicks, Karaoke, and wind-sprints)
+
+with dial3:
+  value3 = 80  
+  fig = go.Figure(go.Indicator(
+      mode="gauge+number",
+      value=value3,
+      domain={'x': [0, 1], 'y': [0, 1]},
+      gauge=dict(
+          axis=dict(range=[0, 100]),
+          bar=dict(color="white"),
+          borderwidth=2,
+          bordercolor="gray",
+          steps=[
+              dict(range=[0, 25], color="red"),
+              dict(range=[25, 50], color="orange"),
+              dict(range=[50, 75], color="yellow"),
+              dict(range=[75, 100], color="green")
+          ],
+          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value3)
+      )
+  ))
+  fig.update_layout(
+      title={'text': "Arm Swing", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+      title_font_size = title_font_size,
+      font=dict(size=24)
+  )
+  st.plotly_chart(fig, use_container_width=True)
+  # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
 
 # ========== DIGITAL ATHLETE ==========
 
