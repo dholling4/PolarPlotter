@@ -1,0 +1,1 @@
+# use st.session_state to store the user's name, age, and height
