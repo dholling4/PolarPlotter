@@ -674,7 +674,6 @@ STEP 3: Upload the video
 """)
 from io import BytesIO
 from moviepy.editor import VideoFileClip
-
 uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
 if uploaded_file is not None:
   
@@ -688,7 +687,7 @@ if uploaded_file is not None:
       f.write(uploaded_file.read())
   st.success(f"File saved to: {file_path}")
 
-  path2mov = r"/workspaces/PolarPlotter/LongJump.mov"
+  path2mov = r"/workspaces/PolarPlotter/" + str(file_name) 
   gif_file = path2mov[:-4] + '.gif'
 
   videoClip = VideoFileClip(path2mov)
