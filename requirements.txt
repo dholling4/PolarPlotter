@@ -48,6 +48,7 @@ matplotlib-inline==0.1.6
 mdurl==0.1.2
 mesa
 ml-dtypes==0.2.0
+moviepy==1.0.3
 nbformat==5.9.2
 numpy==1.26.2
 oauthlib==3.2.2
