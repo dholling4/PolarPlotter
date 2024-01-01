@@ -656,6 +656,7 @@ st.image(url_squat, caption="Depth Squat Instructions", width=500)
 st.write("""
 ⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
 * Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
+
 STEP 2: Recording
          
 ⦿ Start the recording
@@ -665,21 +666,40 @@ STEP 2: Recording
 * The participant should repeat this 5 times
          
 ⦿ Stop the recording
+         
 STEP 3: Upload the video 
 * Upload the video to the app
 * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
 """)
+from io import BytesIO
+from moviepy.editor import VideoFileClip
 
-uploaded_file = st.file_uploader("Choose an image...", type="MOV") # change type=None to upload any file type (iphones use .MOV) 
-
+uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
 if uploaded_file is not None:
-  # update for .MOV
-  image = imageio.get_reader(uploaded_file)
-  num_frames = len(image)
-  image_height, image_width = image.get_meta_data()['size']
+  
+  # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
+  file_name = uploaded_file.name
+  st.write(uploaded_file.name)
 
+  save_directory = "./"
+  file_path = save_directory + file_name
+  with open(file_path, "wb") as f:
+      f.write(uploaded_file.read())
+  st.success(f"File saved to: {file_path}")
+
+  path2mov = r"/workspaces/PolarPlotter/LongJump.mov"
+  gif_file = path2mov[:-4] + '.gif'
+
+  videoClip = VideoFileClip(path2mov)
+  videoClip.write_gif(gif_file)
+  image_content = tf.io.read_file(gif_file)
+
+  image = tf.io.read_file(gif_file)
+  image = tf.image.decode_gif(image)
+  num_frames, image_height, image_width, _ = image.shape
+  st.write(num_frames, image_height, image_width)
+  # num_frames=115
   # update for .MOV  == END
-
 
   # image_content = uploaded_file.read()
   # image = tf.image.decode_gif(image_content)
