@@ -1,45 +1,60 @@
 # use st.session_state to store the user's name, age, and height
 
-# import streamlit as st
-# from openai import OpenAI
+import streamlit as st
+from streamlit_chat import message
+from streamlit_extras.colored_header import colored_header
+from streamlit_extras.add_vertical_space import add_vertical_space
+from hugchat import hugchat
 
-# st.title("ChatGPT-like clone")
+with st.sidebar:
+    st.title('🤗💬 HugChat App')
+    st.markdown('''
+    ## About
+    This app is an LLM-powered chatbot built using:
+    - [Streamlit](<https://streamlit.io/>)
+    - [HugChat](<https://github.com/Soulter/hugging-chat-api>)
+    - [OpenAssistant/oasst-sft-6-llama-30b-xor](<https://huggingface.co/OpenAssistant/oasst-sft-6-llama-30b-xor>) LLM model
+    
+    ''')
+    add_vertical_space(5)
 
-# # Set OpenAI API key from Streamlit secrets
-# client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# # # Set a default model
-# if "openai_model" not in st.session_state:
-#     st.session_state["openai_model"] = "gpt-3.5-turbo"
+if 'generated' not in st.session_state:
+    st.session_state['generated'] = ["I'm HugChat, How may I help you?"]
+if 'past' not in st.session_state:
+    st.session_state['past'] = ['Hi!']
 
-# # Initialize chat history
-# if "messages" not in st.session_state:
-#     st.session_state.messages = []
 
-# # Display chat messages from history on app rerun
-# for message in st.session_state.messages:
-#     with st.chat_message(message["role"]):
-#         st.markdown(message["content"])
+input_container = st.container()
+colored_header(label='', description='', color_name='blue-30')
+response_container = st.container()
 
-# # Accept user input
-# if prompt := st.chat_input("What is up?"):
-#     # Add user message to chat history
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     # Display user message in chat message container
-#     with st.chat_message("user"):
-#         st.markdown(prompt)
-#     # Display assistant response in chat message container
-#     with st.chat_message("assistant"):
-#         message_placeholder = st.empty()
-#         full_response = ""
+# User input
+## Function for taking user provided prompt as input
+def get_text():
+    input_text = st.text_input("You: ", "", key="input")
+    return input_text
+## Applying the user input box
+with input_container:
+    user_input = get_text()
 
-# # st.session_state["openai_model"] 
-# for response in client.chat.completions.create(
-#         model=st.session_state["openai_model"],
-#         messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages],
-#         stream=True,
-#     ):
-#         full_response += (response.choices[0].delta.content or "")
-# #         message_placeholder.markdown(full_response + "▌")
-# #         message_placeholder.markdown(full_response)
-# # st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+# Response output
+## Function for taking user prompt as input followed by producing AI generated responses
+def generate_response(prompt):
+    chatbot = hugchat.ChatBot()
+    response = chatbot.chat(prompt)
+    return response
+
+
+## Conditional display of AI generated responses as a function of user provided prompts
+with response_container:
+    if user_input:
+        response = generate_response(user_input)
+        st.session_state.past.append(user_input)
+        st.session_state.generated.append(response)
+        
+    if st.session_state['generated']:
+        for i in range(len(st.session_state['generated'])):
+            message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+            message(st.session_state['generated'][i], key=str(i))
