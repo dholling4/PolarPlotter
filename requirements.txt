@@ -61,7 +61,7 @@ parso==0.8.3
 pexpect==4.9.0
 Pillow==10.1.0
 platformdirs==4.1.0
-python>=3.7
+python
 kaleido
 openai
 openpyxl
