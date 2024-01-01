@@ -644,7 +644,8 @@ def run_inference(movenet, image, crop_region, crop_size):
 
 # ---------- RUN VIDEO FILE --------------
 from io import BytesIO
-url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
+# url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
+url_squat = 'https://drive.google.com/uc?export=download&id=1Wonr2Xhj67gWwvE_7LLCXTWf_yn-yg7Q'
 
 # display url_squat
 # st.video(url_squat)
