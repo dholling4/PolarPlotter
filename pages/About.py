@@ -13,10 +13,10 @@ st.sidebar.markdown("# About")
 "##### We offer a diverse blend of talented athletes, biomechanical engineers, and computer scientists with the goal of leveraging big data to serve the athlete."
 
 # Function to display image with name and description
-def display_person(image_url, name, description):
-    st.image(person["image_url"], caption_name = name)
-    st.write(f"**Name:** {name}")
-    st.write(f"**Description:** {description}")
+# def display_person(image_url, name, description):
+#     st.image(person["image_url"], caption_name = name)
+#     st.write(f"**Name:** {name}")
+#     st.write(f"**Description:** {description}")
     
 # List of person data (replace with your data)
 persons = [
