@@ -1,5 +1,4 @@
 streamlit-webrtc==0.32.0
-opencv-python==4.8.1.78
 git+https://github.com/tensorflow/docs
 absl-py==2.0.0
 altair==5.2.0
@@ -52,7 +51,7 @@ moviepy==1.0.3
 nbformat==5.9.2
 numpy==1.26.2
 oauthlib==3.2.2
-opencv-python==4.8.1.78
+# opencv-python==4.8.1.78
 opencv-python-headless==4.8.1.78
 opt-einsum==3.3.0
 packaging==23.2
@@ -62,7 +61,7 @@ pexpect==4.9.0
 Pillow==10.1.0
 platformdirs==4.1.0
 kaleido
-openai
+# openai
 openpyxl
 plotly
 prompt-toolkit==3.0.41
@@ -73,7 +72,7 @@ pyarrow==14.0.1
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pydeck==0.8.1b0
-hugchat
+# hugchat
 streamlit-chat
 streamlit-extras
 Pygments==2.17.2
@@ -109,8 +108,8 @@ tzdata==2023.3
 tzlocal==5.2
 urllib3==2.1.0
 validators==0.22.0
-watchdog==3.0.0
-wcwidth==0.2.12
-Werkzeug==3.0.1
-wrapt==1.14.1
-zipp==3.17.0
+# watchdog==3.0.0
+# wcwidth==0.2.12
+# Werkzeug==3.0.1
+# wrapt==1.14.1
+# zipp==3.17.0
