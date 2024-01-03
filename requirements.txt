@@ -27,7 +27,7 @@ cycler==0.12.1
 # google-pasta==0.2.0
 # grpcio==1.59.3
 # h5py==3.10.0
-hugchat==0.0.8
+hugchat==0.1.0
 # idna==3.6
 # imageio==2.33.0
 # importlib-metadata==6.11.0
