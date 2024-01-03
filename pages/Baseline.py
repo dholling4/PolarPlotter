@@ -1,4 +1,4 @@
-import contextlib
+# import contextlib
 import pandas as pd
 import streamlit as st
 # import matplotlib.pyplot as plt
@@ -109,6 +109,7 @@ run_front = "https://drive.google.com/uc?export=download&id=1m_ZXv8t2Fpsww7DF5Z1
 run_side = "https://drive.google.com/uc?export=download&id=14qby7dOKonrQk68L5mATNoiEIO8zZWm8"
 
 st.write("# Take your run to the next level!")
+# Load data
 
 run1, runner_plots  = st.columns(2)
 with run1:
@@ -125,16 +126,33 @@ with runner_plots:
     chart_data, x="Step Count", y=["Left", "Right"], 
     # color=[color_C, "#0000FF"]  # Optional
   )
+  # df = load_data(r'C:\Users\dzh0063\OneDrive - Auburn University\Documents\Tiger Cage\Baseline\running_knee_angles_normalized.csv')
+
 
   left_knee = [4.9,11,11.1,18,20,24.14251189,23.2,19,17,16.9,19,22,24,27,28.5,38.9,50.47197318,60.06673423,63.34481952,62.82092461,59.14867077,52.89186871,46.05129804,37.88352694,30.37935605,20.94425821,15.31114056,10.97528651,9.777812427,18.1950573]
-  right_knee = [3.5,12.3,12.5,19,22,25,25,20.1,17,16.8,18.8,21.1,23.8,27,27.5,38.9,51.5,61.1,66.9,67,62,53,48,37,33,23,14,9,8,12]
+  right_knee = [3.5,12.3,12.5,19,22,25,25,20.1,17,16.8,18.8,21.1,23.8,27,27.5,38.9,51.5,61.1,66.9,67,62,53,48,37,33,23,14,9,8,12]  
+  
+  ## Display the chart
+  st.plotly_chart(fig, use_container_width=True)
 
-  st.write('##### Joint Angles')
-  chart_data2 = pd.DataFrame(
-    {"Left Knee": left_knee, "Right Knee": right_knee})
+  chart_data = pd.DataFrame(
+    {"Step Count": list(range(len(left_knee))), "Left Knee": left_knee, "Right Knee": right_knee}
+  )
+  
+st.write('##### Joint Angles')
+chart_data2 = pd.DataFrame(
+  {"Left Knee": left_knee, "Right Knee": right_knee})
+
+chart_type = st.selectbox('Choose a chart type', ['Line', 'Bar']) 
+## Create the chart
+if chart_type == 'Line':
+
   st.line_chart(chart_data2, y=["Left Knee", "Right Knee"],
-                #  color=[color_C, "#0000FF"] 
-                 ) 
+                ) 
+elif chart_type == 'Bar':
+  st.bar_chart(chart_data2, y=["Left Knee", "Right Knee"])
+
+
   
 dial1, dial2, dial3 = st.columns(3)
 title_font_size = 24
@@ -236,6 +254,40 @@ with dial3:
       st.link_button(":book: Read more about the importance of arm swing", url)
 
 
+  # ----- UPLOAD AND RUN VIDEO FILE -----
+
+# ---------- RUN VIDEO FILE --------------
+from io import BytesIO
+# url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
+url_squat = 'https://drive.google.com/uc?export=download&id=1Wonr2Xhj67gWwvE_7LLCXTWf_yn-yg7Q'
+
+# display url_squat
+# st.video(url_squat)
+
+st.write("#### Upoad your video below :point_down:")
+st.write("""###### Instructions for recording depth squat:
+STEP 1: Position Setup""")
+st.image(url_squat, caption="Depth Squat Instructions", width=500)
+st.write("""
+⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
+* Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
+
+STEP 2: Recording
+         
+⦿ Start the recording
+* The participant should be standing with their feet shoulder width apart
+* The participant should then squat down as far as they can go, just below parallel or 90 degrees
+* The participant should then stand back up to the starting position
+* The participant should repeat this 5 times
+         
+⦿ Stop the recording
+         
+STEP 3: Upload the video 
+* Upload the video to the app
+* Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
+""")
+
+uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
 
 # ======== MoveNet ========
 
@@ -640,235 +692,199 @@ with dial3:
 #   return keypoints_with_scores
 
 
-#   # ----- UPLOAD AND RUN VIDEO FILE -----
-
-# # ---------- RUN VIDEO FILE --------------
-# from io import BytesIO
-# # url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
-# url_squat = 'https://drive.google.com/uc?export=download&id=1Wonr2Xhj67gWwvE_7LLCXTWf_yn-yg7Q'
-
-# # display url_squat
-# # st.video(url_squat)
-
-# st.write("#### Upoad your video below :point_down:")
-# st.write("""###### Instructions for recording depth squat:
-# STEP 1: Position Setup""")
-# st.image(url_squat, caption="Depth Squat Instructions", width=500)
-# st.write("""
-# ⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
-# * Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
-
-# STEP 2: Recording
-         
-# ⦿ Start the recording
-# * The participant should be standing with their feet shoulder width apart
-# * The participant should then squat down as far as they can go, just below parallel or 90 degrees
-# * The participant should then stand back up to the starting position
-# * The participant should repeat this 5 times
-         
-# ⦿ Stop the recording
-         
-# STEP 3: Upload the video 
-# * Upload the video to the app
-# * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
-# """)
-# from io import BytesIO
-# from moviepy.editor import VideoFileClip
-# uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
 # if uploaded_file is not None:
-  
-#   # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
-#   file_name = uploaded_file.name
-#   st.write(uploaded_file.name)
+  # update for .MOV  ========= START =========
+  # import moviepy
+  # from moviepy.editor import VideoFileClip
+  # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
+  # file_name = uploaded_file.name
+  # st.write(uploaded_file.name)
+  # save_directory = "./"
+  # file_path = save_directory + file_name
+  # with open(file_path, "wb") as f:
+  #     f.write(uploaded_file.read())
+  # st.success(f"File saved to: {file_path}")
+  # path2mov = r"/workspaces/PolarPlotter/" + str(file_name) 
+  # gif_file = path2mov[:-4] + '.gif'
+  # videoClip = moviepy.editor.VideoFileClip(path2mov)
+  # videoClip.write_gif(gif_file)
+  # image_content = tf.io.read_file(gif_file)
 
-#   save_directory = "./"
-#   file_path = save_directory + file_name
-#   with open(file_path, "wb") as f:
-#       f.write(uploaded_file.read())
-#   st.success(f"File saved to: {file_path}")
+  # image = tf.io.read_file(gif_file)
+  # image = tf.image.decode_gif(image)
+  # num_frames, image_height, image_width, _ = image.shape
+  # st.write(num_frames, image_height, image_width)
+  # num_frames=115
+  # update for .MOV  ========= END=======
 
-#   path2mov = r"/workspaces/PolarPlotter/" + str(file_name) 
-#   gif_file = path2mov[:-4] + '.gif'
+  # image_content = uploaded_file.read()
+  # image = tf.image.decode_gif(image_content)
+  # num_frames, image_height, image_width, _ = image.shape
+  # crop_region = init_crop_region(image_height, image_width)
 
-#   videoClip = VideoFileClip(path2mov)
-#   videoClip.write_gif(gif_file)
-#   image_content = tf.io.read_file(gif_file)
+  # nose_list_x, left_shoulder_list_x, right_shoulder_list_x,left_elbow_list_x, right_elbow_list_x, left_wrist_list_x, right_wrist_list_x = [],[],[],[],[],[],[]
+  # left_ankle_list_x, right_ankle_list_x, left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x = [], [], [], [], [] ,[]
 
-#   image = tf.io.read_file(gif_file)
-#   image = tf.image.decode_gif(image)
-#   num_frames, image_height, image_width, _ = image.shape
-#   st.write(num_frames, image_height, image_width)
-#   # num_frames=115
-#   # update for .MOV  == END
+  # nose_list_y, left_shoulder_list_y, right_shoulder_list_y,left_elbow_list_y, right_elbow_list_y, left_wrist_list_y, right_wrist_list_y = [],[],[],[],[],[],[]
+  # left_ankle_list_y, right_ankle_list_y, left_hip_list_y, right_hip_list_y, left_knee_list_y, right_knee_list_y = [], [], [], [], [] ,[]
 
-#   # image_content = uploaded_file.read()
-#   # image = tf.image.decode_gif(image_content)
-#   # num_frames, image_height, image_width, _ = image.shape
-#   crop_region = init_crop_region(image_height, image_width)
+  # nose_list_conf, left_shoulder_list_conf, right_shoulder_list_conf,left_elbow_list_conf, right_elbow_list_conf, left_wrist_list_conf, right_wrist_list_conf = [],[],[],[],[],[],[]
+  # left_ankle_list_conf, right_ankle_list_conf, left_hip_list_conf, right_hip_list_conf, left_knee_list_conf, right_knee_list_conf = [], [], [], [], [] ,[]
 
-#   nose_list_x, left_shoulder_list_x, right_shoulder_list_x,left_elbow_list_x, right_elbow_list_x, left_wrist_list_x, right_wrist_list_x = [],[],[],[],[],[],[]
-#   left_ankle_list_x, right_ankle_list_x, left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x = [], [], [], [], [] ,[]
+  # left_knee_angle_list_x, right_knee_angle_list_x = [], []
+  # left_knee_deg_list, right_knee_deg_list = [], []
+  # output_images = []
+  # bar = display(progress(0, image.shape[0]-1), display_id=True)
+  # for frame_idx in range(num_frames):
+  #   keypoints_with_scores = run_inference(
+  #       movenet, image[frame_idx, :, :, :], crop_region,
+  #       crop_size=[input_size, input_size])
+  #   output_images.append(draw_prediction_on_image(
+  #       image[frame_idx, :, :, :].numpy().astype(np.int32),
+  #       keypoints_with_scores, crop_region=None,
+  #       close_figure=True, output_image_height=300))
+  #   crop_region = determine_crop_region(
+  #       keypoints_with_scores, image_height, image_width)
+  #   # bar.update(progress(frame_idx, num_frames-1))
 
-#   nose_list_y, left_shoulder_list_y, right_shoulder_list_y,left_elbow_list_y, right_elbow_list_y, left_wrist_list_y, right_wrist_list_y = [],[],[],[],[],[],[]
-#   left_ankle_list_y, right_ankle_list_y, left_hip_list_y, right_hip_list_y, left_knee_list_y, right_knee_list_y = [], [], [], [], [] ,[]
+  #   nose_x = keypoints_with_scores[0,0,0,0]
+  #   left_shoulder_x = keypoints_with_scores[0,0,5,0]
+  #   right_shoulder_x = keypoints_with_scores[0,0,6,0]
+  #   left_elbow_x = keypoints_with_scores[0,0,7,0]
+  #   right_elbow_x = keypoints_with_scores[0,0,8,0]
+  #   left_wrist_x = keypoints_with_scores[0,0,9,0]
+  #   right_wrist_x = keypoints_with_scores[0,0,10,0]
+  #   # HIPS
+  #   left_hip_x = keypoints_with_scores[0,0,11,0]
+  #   right_hip_x = keypoints_with_scores[0,0,12,0]
+  #   # ANKLES
+  #   left_ankle_x = keypoints_with_scores[0,0,15,0]
+  #   right_ankle_x = keypoints_with_scores[0,0,16,0]
+  #   # KNEES
+  #   left_knee_x = keypoints_with_scores[0,0,13,0]
+  #   right_knee_x = keypoints_with_scores[0,0,14,0]
 
-#   nose_list_conf, left_shoulder_list_conf, right_shoulder_list_conf,left_elbow_list_conf, right_elbow_list_conf, left_wrist_list_conf, right_wrist_list_conf = [],[],[],[],[],[],[]
-#   left_ankle_list_conf, right_ankle_list_conf, left_hip_list_conf, right_hip_list_conf, left_knee_list_conf, right_knee_list_conf = [], [], [], [], [] ,[]
-
-#   left_knee_angle_list_x, right_knee_angle_list_x = [], []
-#   left_knee_deg_list, right_knee_deg_list = [], []
-#   output_images = []
-#   bar = display(progress(0, image.shape[0]-1), display_id=True)
-#   for frame_idx in range(num_frames):
-#     keypoints_with_scores = run_inference(
-#         movenet, image[frame_idx, :, :, :], crop_region,
-#         crop_size=[input_size, input_size])
-#     output_images.append(draw_prediction_on_image(
-#         image[frame_idx, :, :, :].numpy().astype(np.int32),
-#         keypoints_with_scores, crop_region=None,
-#         close_figure=True, output_image_height=300))
-#     crop_region = determine_crop_region(
-#         keypoints_with_scores, image_height, image_width)
-#     # bar.update(progress(frame_idx, num_frames-1))
-
-#     nose_x = keypoints_with_scores[0,0,0,0]
-#     left_shoulder_x = keypoints_with_scores[0,0,5,0]
-#     right_shoulder_x = keypoints_with_scores[0,0,6,0]
-#     left_elbow_x = keypoints_with_scores[0,0,7,0]
-#     right_elbow_x = keypoints_with_scores[0,0,8,0]
-#     left_wrist_x = keypoints_with_scores[0,0,9,0]
-#     right_wrist_x = keypoints_with_scores[0,0,10,0]
-#     # HIPS
-#     left_hip_x = keypoints_with_scores[0,0,11,0]
-#     right_hip_x = keypoints_with_scores[0,0,12,0]
-#     # ANKLES
-#     left_ankle_x = keypoints_with_scores[0,0,15,0]
-#     right_ankle_x = keypoints_with_scores[0,0,16,0]
-#     # KNEES
-#     left_knee_x = keypoints_with_scores[0,0,13,0]
-#     right_knee_x = keypoints_with_scores[0,0,14,0]
-
-#     # Append keypoints to list
-#     nose_list_x.append(nose_x)
-#     left_shoulder_list_x.append(left_shoulder_x)
-#     right_shoulder_list_x.append(right_shoulder_x)
-#     left_elbow_list_x.append(left_elbow_x)
-#     right_elbow_list_x.append(right_elbow_x)
-#     left_wrist_list_x.append(left_wrist_x)
-#     right_wrist_list_x.append(right_wrist_x)
-#     left_ankle_list_x.append(left_ankle_x)
-#     right_ankle_list_x.append(right_ankle_x)
-#     left_knee_list_x.append(left_knee_x)
-#     right_knee_list_x.append(right_knee_x)
-#     left_hip_list_x.append(left_hip_x)
-#     right_hip_list_x.append(right_hip_x)
+  #   # Append keypoints to list
+  #   nose_list_x.append(nose_x)
+  #   left_shoulder_list_x.append(left_shoulder_x)
+  #   right_shoulder_list_x.append(right_shoulder_x)
+  #   left_elbow_list_x.append(left_elbow_x)
+  #   right_elbow_list_x.append(right_elbow_x)
+  #   left_wrist_list_x.append(left_wrist_x)
+  #   right_wrist_list_x.append(right_wrist_x)
+  #   left_ankle_list_x.append(left_ankle_x)
+  #   right_ankle_list_x.append(right_ankle_x)
+  #   left_knee_list_x.append(left_knee_x)
+  #   right_knee_list_x.append(right_knee_x)
+  #   left_hip_list_x.append(left_hip_x)
+  #   right_hip_list_x.append(right_hip_x)
 
 
-#     nose_y = keypoints_with_scores[0,0,0,1]
-#     left_shoulder_y = keypoints_with_scores[0,0,5,1]
-#     right_shoulder_y = keypoints_with_scores[0,0,6,1]
-#     left_elbow_y = keypoints_with_scores[0,0,7,1]
-#     right_elbow_y = keypoints_with_scores[0,0,8,1]
-#     left_wrist_y = keypoints_with_scores[0,0,9,1]
-#     right_wrist_y = keypoints_with_scores[0,0,10,1]
-#     # HIPS
-#     left_hip_y = keypoints_with_scores[0,0,11,1]
-#     right_hip_y = keypoints_with_scores[0,0,12,1]
-#     # ANKLES
-#     left_ankle_y = keypoints_with_scores[0,0,15,1]
-#     right_ankle_y = keypoints_with_scores[0,0,16,1]
-#     # KNEES
-#     left_knee_y = keypoints_with_scores[0,0,13,1]
-#     right_knee_y = keypoints_with_scores[0,0,14,1]
+  #   nose_y = keypoints_with_scores[0,0,0,1]
+  #   left_shoulder_y = keypoints_with_scores[0,0,5,1]
+  #   right_shoulder_y = keypoints_with_scores[0,0,6,1]
+  #   left_elbow_y = keypoints_with_scores[0,0,7,1]
+  #   right_elbow_y = keypoints_with_scores[0,0,8,1]
+  #   left_wrist_y = keypoints_with_scores[0,0,9,1]
+  #   right_wrist_y = keypoints_with_scores[0,0,10,1]
+  #   # HIPS
+  #   left_hip_y = keypoints_with_scores[0,0,11,1]
+  #   right_hip_y = keypoints_with_scores[0,0,12,1]
+  #   # ANKLES
+  #   left_ankle_y = keypoints_with_scores[0,0,15,1]
+  #   right_ankle_y = keypoints_with_scores[0,0,16,1]
+  #   # KNEES
+  #   left_knee_y = keypoints_with_scores[0,0,13,1]
+  #   right_knee_y = keypoints_with_scores[0,0,14,1]
 
-#     # Append keypoints to list
-#     nose_list_y.append(nose_y)
-#     left_shoulder_list_y.append(left_shoulder_y)
-#     right_shoulder_list_y.append(right_shoulder_y)
-#     left_elbow_list_y.append(left_elbow_y)
-#     right_elbow_list_y.append(right_elbow_y)
-#     left_wrist_list_y.append(left_wrist_y)
-#     right_wrist_list_y.append(right_wrist_y)
-#     left_ankle_list_y.append(left_ankle_y)
-#     right_ankle_list_y.append(right_ankle_y)
-#     left_knee_list_y.append(left_knee_y)
-#     right_knee_list_y.append(right_knee_y)
-#     left_hip_list_y.append(left_hip_y)
-#     right_hip_list_y.append(right_hip_y)
+  #   # Append keypoints to list
+  #   nose_list_y.append(nose_y)
+  #   left_shoulder_list_y.append(left_shoulder_y)
+  #   right_shoulder_list_y.append(right_shoulder_y)
+  #   left_elbow_list_y.append(left_elbow_y)
+  #   right_elbow_list_y.append(right_elbow_y)
+  #   left_wrist_list_y.append(left_wrist_y)
+  #   right_wrist_list_y.append(right_wrist_y)
+  #   left_ankle_list_y.append(left_ankle_y)
+  #   right_ankle_list_y.append(right_ankle_y)
+  #   left_knee_list_y.append(left_knee_y)
+  #   right_knee_list_y.append(right_knee_y)
+  #   left_hip_list_y.append(left_hip_y)
+  #   right_hip_list_y.append(right_hip_y)
 
-#     nose_c = keypoints_with_scores[0,0,0,2]
-#     left_shoulder_c = keypoints_with_scores[0,0,5,2]
-#     right_shoulder_c = keypoints_with_scores[0,0,6,2]
-#     left_elbow_c = keypoints_with_scores[0,0,7,2]
-#     right_elbow_c = keypoints_with_scores[0,0,8,2]
-#     left_wrist_c = keypoints_with_scores[0,0,9,2]
-#     right_wrist_c = keypoints_with_scores[0,0,10,2]
-#     # HIPS
-#     left_hip_c = keypoints_with_scores[0,0,11,2]
-#     right_hip_c = keypoints_with_scores[0,0,12,2]
-#     # ANKLES
-#     left_ankle_c = keypoints_with_scores[0,0,15,2]
-#     right_ankle_c = keypoints_with_scores[0,0,16,2]
-#     # KNEES
-#     left_knee_c = keypoints_with_scores[0,0,13,2]
-#     right_knee_c = keypoints_with_scores[0,0,14,2]
+  #   nose_c = keypoints_with_scores[0,0,0,2]
+  #   left_shoulder_c = keypoints_with_scores[0,0,5,2]
+  #   right_shoulder_c = keypoints_with_scores[0,0,6,2]
+  #   left_elbow_c = keypoints_with_scores[0,0,7,2]
+  #   right_elbow_c = keypoints_with_scores[0,0,8,2]
+  #   left_wrist_c = keypoints_with_scores[0,0,9,2]
+  #   right_wrist_c = keypoints_with_scores[0,0,10,2]
+  #   # HIPS
+  #   left_hip_c = keypoints_with_scores[0,0,11,2]
+  #   right_hip_c = keypoints_with_scores[0,0,12,2]
+  #   # ANKLES
+  #   left_ankle_c = keypoints_with_scores[0,0,15,2]
+  #   right_ankle_c = keypoints_with_scores[0,0,16,2]
+  #   # KNEES
+  #   left_knee_c = keypoints_with_scores[0,0,13,2]
+  #   right_knee_c = keypoints_with_scores[0,0,14,2]
 
-#     # Append keypoints to list
-#     nose_list_conf.append(nose_c)
-#     left_shoulder_list_conf.append(left_shoulder_c)
-#     right_shoulder_list_conf.append(right_shoulder_c)
-#     left_elbow_list_conf.append(left_elbow_c)
-#     right_elbow_list_conf.append(right_elbow_c)
-#     left_wrist_list_conf.append(left_wrist_c)
-#     right_wrist_list_conf.append(right_wrist_c)
-#     left_ankle_list_conf.append(left_ankle_c)
-#     right_ankle_list_conf.append(right_ankle_c)
-#     left_knee_list_conf.append(left_knee_c)
-#     right_knee_list_conf.append(right_knee_c)
-#     left_hip_list_conf.append(left_hip_c)
-#     right_hip_list_conf.append(right_hip_c)
+  #   # Append keypoints to list
+  #   nose_list_conf.append(nose_c)
+  #   left_shoulder_list_conf.append(left_shoulder_c)
+  #   right_shoulder_list_conf.append(right_shoulder_c)
+  #   left_elbow_list_conf.append(left_elbow_c)
+  #   right_elbow_list_conf.append(right_elbow_c)
+  #   left_wrist_list_conf.append(left_wrist_c)
+  #   right_wrist_list_conf.append(right_wrist_c)
+  #   left_ankle_list_conf.append(left_ankle_c)
+  #   right_ankle_list_conf.append(right_ankle_c)
+  #   left_knee_list_conf.append(left_knee_c)
+  #   right_knee_list_conf.append(right_knee_c)
+  #   left_hip_list_conf.append(left_hip_c)
+  #   right_hip_list_conf.append(right_hip_c)
     
-#   output = np.stack(output_images, axis=0)
-#   image_capture = to_gif(output, duration=100)
+  # output = np.stack(output_images, axis=0)
+  # image_capture = to_gif(output, duration=100)
 
-#   def euclidean_distance(array):
-#     euclidean_distance = np.linalg.norm(array)
-#     return euclidean_distance
+  # def euclidean_distance(array):
+  #   euclidean_distance = np.linalg.norm(array)
+  #   return euclidean_distance
 
-#   # get the euclidean distance of the medio-lateral directions
-#   left_knee_norm = euclidean_distance(left_knee_list_y)
-#   right_knee_norm = euclidean_distance(right_knee_list_y)
-#   left_hip_norm = euclidean_distance(left_hip_list_y)
-#   right_hip_norm = euclidean_distance(right_hip_list_y)
-#   left_shoulder_norm = euclidean_distance(left_shoulder_list_y)
-#   right_shoulder_norm = euclidean_distance(right_shoulder_list_y) 
-#   st.write(image_capture)
+  # # get the euclidean distance of the medio-lateral directions
+  # left_knee_norm = euclidean_distance(left_knee_list_y)
+  # right_knee_norm = euclidean_distance(right_knee_list_y)
+  # left_hip_norm = euclidean_distance(left_hip_list_y)
+  # right_hip_norm = euclidean_distance(right_hip_list_y)
+  # left_shoulder_norm = euclidean_distance(left_shoulder_list_y)
+  # right_shoulder_norm = euclidean_distance(right_shoulder_list_y) 
+  # st.write(image_capture)
 
-#   """
-#   ### Video Results
-#   """
-#   chart_data = pd.DataFrame(
-#     {
-#         "Joint": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
-#         "Stability Score": [left_knee_norm,right_knee_norm,left_hip_norm,right_hip_norm],
-#     }
-#   )
+  # """
+  # ### Video Results
+  # """
+  # chart_data = pd.DataFrame(
+  #   {
+  #       "Joint": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
+  #       "Stability Score": [left_knee_norm,right_knee_norm,left_hip_norm,right_hip_norm],
+  #   }
+  # )
 
-#   st.bar_chart(chart_data, x="Joint", y="Stability Score")
+  # st.bar_chart(chart_data, x="Joint", y="Stability Score")
 
-#   motion_hip = pd.DataFrame( 
-#       { "Left Hip": left_hip_list_x,
-#         "Right HIp" : right_hip_list_x
-#       }
-#   )
+  # motion_hip = pd.DataFrame( 
+  #     { "Left Hip": left_hip_list_x,
+  #       "Right HIp" : right_hip_list_x
+  #     }
+  # )
 
-#   motion_knee = pd.DataFrame( 
-#       { "Left Knee": left_knee_list_x,
-#         "Right Knee" : right_knee_list_x
-#       }
-#   )
-#   st.line_chart(motion_knee)
-#   st.line_chart(motion_hip)
+  # motion_knee = pd.DataFrame( 
+  #     { "Left Knee": left_knee_list_x,
+  #       "Right Knee" : right_knee_list_x
+  #     }
+  # )
+  # st.line_chart(motion_knee)
+  # st.line_chart(motion_hip)
 
 
 
@@ -1439,4 +1455,3 @@ with dial3:
 
 
 
-# ---------- HR NET ----------
