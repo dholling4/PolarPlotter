@@ -17,13 +17,12 @@ import base64
 
 st.sidebar.markdown("# The Digital Athlete ")
 download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
-david_e = "https://drive.google.com/uc?export=download&id=1mjFBnYG3RLhHbcRoI2i09Pe6ppFr2IJL"
+david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
 persons = [
-    {"image_url": david_e, "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1sYJEy0Kxpw4mfr9vrIWzWb8_skxvDzrX", "name": "Motion Analysis", "description": " "},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1dycoVsLtv60bbyXXvNnO0SAic1l2D18J", "name": "CoachConnect", "description": " "},
-    {"image_url": "https://drive.google.com/uc?export=download&id=14McMQMRp52YwKjU540BPFVWbJ8kZTY9q", "name": "TheraTrack", "description": " "},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1sYJEy0Kxpw4mfr9vrIWzWb8_skxvDzrX", "name": "Motion Analysis", "description": " "},
+    {"image_url":"/workspaces/PolarPlotter/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
+    {"image_url": "/workspaces/PolarPlotter/favour_ashe.png", "name": "Motion Analysis", "description": " "},
+    {"image_url": "/workspaces/PolarPlotter/coach.jpg", "name": "CoachConnect", "description": " "},
+    {"image_url": "/workspaces/PolarPlotter/thera_track.jpg", "name": "TheraTrack", "description": " "},
 
 ]  
 

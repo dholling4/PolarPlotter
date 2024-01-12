@@ -19,13 +19,14 @@ st.sidebar.markdown("# About")
 #     st.write(f"**Description:** {description}")
     
 # List of person data (replace with your data)
+path = "/workspaces/PolarPlotter/headshots/"
 persons = [
-    {"image_url": "https://drive.google.com/uc?export=download&id=1XLH7AJwo1D8iKMJeiIJMGvO_Z8UdNkGJ", "name": "Allison Tanner", "description": "MBA student, Team Captain of Auburn Track & Field"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1kQ-cQDZcKKUVgFHJxbNTzLJ8VMzzRNKz", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Decathlete"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1BEtoN8oiNeT4njIzOZoQWo3R-GoDXmkR", "name": "David Hollinger", "description": "PhD candidate, Mechanical Engineering, Nike Sports Research Lab Intern"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=15pgQpAwmdZ29BEjLgBhnyWpIOgQYpLQJ", "name": "Avinash Baskaran", "description": "PhD student, Mechanical Engineering, Neuromuscular Rehabilitation"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1LsQvOUdf4Ub9zjdKfF1jpoUauSVDBrRd", "name": "Qi Li", "description": "PhD student, Computer Science & Software Engineering"},
-    {"image_url": "https://drive.google.com/uc?export=download&id=1B4iRHTOigrURv-_rgQ0dUgLeW_f367z-", "name": "Muhammad Gulfam", "description": "PhD student, Computer Science & Software Engineering"},
+    {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Team Captain of Auburn Track & Field"},
+    {"image_url": path + "david_e.png", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Decathlete"},
+    {"image_url": path + "david_h.png", "name": "David Hollinger", "description": "PhD candidate, Mechanical Engineering, Nike Sports Research Lab Intern"},
+    {"image_url": path + "avinash.png", "name": "Avinash Baskaran", "description": "PhD student, Mechanical Engineering, Neuromuscular Rehabilitation"},
+    {"image_url": path + "qi_li.png", "name": "Qi Li", "description": "PhD student, Computer Science & Software Engineering"},
+    {"image_url": path + "gulfam.png", "name": "Muhammad Gulfam", "description": "PhD student, Computer Science & Software Engineering"},
 ]  
     
 # Create six columns for each person
@@ -46,12 +47,12 @@ expander_allison = st.expander("Allison's story")
 with expander_allison:
     st.write("Description of my story")
     download_link = f"https://drive.google.com/uc?export=download&id=13rZ4MEJwGjI76QpGgB7TXDPRZ_in9gWJ"
-    video_url = "https://drive.google.com/uc?export=download&id=1_Y2vhMjy5a9-wBc7tfYSDLV7nPux1S8N"
+    video_url = "/workspaces/PolarPlotter/Allison High Jump.MP4"
     response = requests.get(download_link)
     st.video(video_url)
     st.write('More information about training, injury, and the eventual surgery')
     persons = [
-    {"image_url": "https://drive.google.com/uc?export=download&id=1W0tBIm3NUqEv2BUfo2CuxqGDoqXI57AD", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
+    {"image_url": "/workspaces/PolarPlotter/xray.png", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
     ]  
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=275)
     st.write('More information about the injury, trying to rehab it, and the eventual retirement')
@@ -59,15 +60,15 @@ with expander_allison:
 expander_edmonson = st.expander("David Edmonson's story")
 with expander_edmonson:
     st.write("Description of my story")
-    png_url = "https://drive.google.com/uc?export=download&id=1Sk3PZmEoKxVjX_lHdJpg906nkvUWbsp5"
+    png_url = "/workspaces/PolarPlotter/Edmonson_1.png"
     st.image(png_url, caption="Hurdle event during indoor heptathlon", width=250)
     st.write('More information about the injury, trying to rehab it, and the eventual surgery')
 
 expander_hollinger = st.expander("David Hollinger's story")
 with expander_hollinger:
     st.write("Description of my story")
-    jpg_url = "https://drive.google.com/uc?export=download&id=1Egq2B4IPuyq1BVbVyhVCMG9PuNXHuLFj"
-    png_url = "https://drive.google.com/uc?export=download&id=16x0SQo3nRlND4bRPfnvFysczY4IriXog"
+    jpg_url = "/workspaces/PolarPlotter/gmu2.jpg"
+    png_url = "/workspaces/PolarPlotter/Marathon.png"
     col1, col2 = st.columns(2)
     col1.image(jpg_url, caption="George Mason Cross Country Invitational", use_column_width=True)
     col2.image(png_url, caption="Bayshore Marathon (Traverse City, MI)", width=250)

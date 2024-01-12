@@ -14,8 +14,12 @@ st.markdown("""# Baseline 🧘‍♀️🤸‍♂️📊""")
 # st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
 st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️📊")
 squat_url2 = "https://drive.google.com/uc?export=download&id=1OSnkMoCvt9wfBlMyQ1XU-yTPx_TJZ52C"
-squat_url = "https://drive.google.com/uc?export=download&id=1u8ikCH-r2rQZxwOlmuiietAOckrhIoA-"
-gif_url = "https://drive.google.com/uc?export=download&id=16tmT7B0cVawZ2IjMkFDY7WN9Db2J1xFj"
+squat_url = "/workspaces/PolarPlotter/baseline_pics/depth_squat_enhanced.png"
+gif_url = "/workspaces/PolarPlotter/baseline_pics/balance.gif"
+
+run_front = "/workspaces/PolarPlotter/baseline_pics/skeleton_run_frontview2.gif"
+run_side = "/workspaces/PolarPlotter/baseline_pics/skeleton_run_side_view_enhanced.gif"
+
 # gif_url = "https://drive.google.com/uc?export=download&id=15rAodbylN0pB0DmY2-ao1ndYZZxib5Ki"
 instructions = st.expander("Instructions")
 with instructions:
@@ -104,9 +108,6 @@ with col2:
   )
 
   st.plotly_chart(fig, use_container_width=False, width=100)
-
-run_front = "https://drive.google.com/uc?export=download&id=1m_ZXv8t2Fpsww7DF5Z1jt0pHsPDgRl4f"
-run_side = "https://drive.google.com/uc?export=download&id=14qby7dOKonrQk68L5mATNoiEIO8zZWm8"
 
 st.write("# Take your run to the next level!")
 # Load data
@@ -260,7 +261,7 @@ with dial3:
 # ---------- RUN VIDEO FILE --------------
 from io import BytesIO
 # url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
-url_squat = 'https://drive.google.com/uc?export=download&id=1Wonr2Xhj67gWwvE_7LLCXTWf_yn-yg7Q'
+url_squat = "/workspaces/PolarPlotter/baseline_pics/depth_squat_instructions_transparent.png"
 
 # display url_squat
 # st.video(url_squat)
