@@ -3,7 +3,7 @@ import streamlit as st
 
 
 # GitHub image URL
-image_url = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
+image_url = "https://github.com/dholling4/PolarPlotter/blob/main/headshots/allison.png"
 
 # image_url = 'https://raw.githubusercontent.com/your_username/your_repository/main/path/to/your/image.png'
 
