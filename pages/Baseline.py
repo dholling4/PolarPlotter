@@ -13,8 +13,7 @@ st.markdown("""# Baseline 🧘‍♀️🤸‍♂️📊""")
 # url = "https://www.acsm.org/docs/default-source/regional-chapter-individual-folders/northland/nacsm--wes-e--fms9a9b0c1f5032400f990d8b57689b0158.pdf?sfvrsn=3668bbe0_0"
 # st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
 st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️📊")
-squat_url2 = "https://drive.google.com/uc?export=download&id=1OSnkMoCvt9wfBlMyQ1XU-yTPx_TJZ52C"
-squat_url = path + "depth_squat_enhanced.png"
+squat_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/baseline_pics/depth_squat_enhanced.png"
 gif_url = path + "balance.gif"
 
 run_front = path + "skeleton_run_frontview2.gif"
