@@ -19,8 +19,8 @@ st.sidebar.markdown("# About")
 #     st.write(f"**Description:** {description}")
     
 # List of person data (replace with your data)
-path = "/workspaces/PolarPlotter/headshots/"
-path = "https://github.com/dholling4/PolarPlotter/blob/main/headshots/"
+path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/"
+
 persons = [
     {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Team Captain of Auburn Track & Field"},
     {"image_url": path + "david_e.png", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Decathlete"},
