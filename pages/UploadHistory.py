@@ -1,17 +1,24 @@
 import streamlit as st
 
 
+def display_github_image(image_url):
+    # Modify the GitHub URL to get the raw content
+    raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
 
-# GitHub image URL
-image_url = "https://github.com/dholling4/PolarPlotter/blob/main/headshots/allison.png"
+    # Display the image using Streamlit
+    st.image(raw_url, caption='Image from GitHub', use_column_width=True)
 
-# image_url = 'https://raw.githubusercontent.com/your_username/your_repository/main/path/to/your/image.png'
+def main():
+    st.title('Display Image from GitHub in Streamlit')
 
-# Display the image
-st.image(image_url, caption='Image from GitHub', use_column_width=True)
+    # GitHub image URL
+    image_url = 'https://github.com/dholling4/PolarPlotter/blob/main/headshots/allison.png'
 
+    # Display the image
+    display_github_image(image_url)
 
-
+if __name__ == "__main__":
+    main()
 
 
 
