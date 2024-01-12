@@ -7,18 +7,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 VERSION = "0.3.1"
-
+path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/baseline_pics/"
 # THE DIGITAL ATHLETE ========================================
 st.markdown("""# Baseline 🧘‍♀️🤸‍♂️📊""")
 # url = "https://www.acsm.org/docs/default-source/regional-chapter-individual-folders/northland/nacsm--wes-e--fms9a9b0c1f5032400f990d8b57689b0158.pdf?sfvrsn=3668bbe0_0"
 # st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
 st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️📊")
 squat_url2 = "https://drive.google.com/uc?export=download&id=1OSnkMoCvt9wfBlMyQ1XU-yTPx_TJZ52C"
-squat_url = "/workspaces/PolarPlotter/baseline_pics/depth_squat_enhanced.png"
-gif_url = "/workspaces/PolarPlotter/baseline_pics/balance.gif"
+squat_url = path + "depth_squat_enhanced.png"
+gif_url = path + "balance.gif"
 
-run_front = "/workspaces/PolarPlotter/baseline_pics/skeleton_run_frontview2.gif"
-run_side = "/workspaces/PolarPlotter/baseline_pics/skeleton_run_side_view_enhanced.gif"
+run_front = path + "skeleton_run_frontview2.gif"
+run_side = path + "skeleton_run_side_view_enhanced.gif"
 
 # gif_url = "https://drive.google.com/uc?export=download&id=15rAodbylN0pB0DmY2-ao1ndYZZxib5Ki"
 instructions = st.expander("Instructions")
@@ -261,7 +261,7 @@ with dial3:
 # ---------- RUN VIDEO FILE --------------
 from io import BytesIO
 # url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
-url_squat = "/workspaces/PolarPlotter/baseline_pics/depth_squat_instructions_transparent.png"
+url_squat = path + "depth_squat_instructions_transparent.png"
 
 # display url_squat
 # st.video(url_squat)
