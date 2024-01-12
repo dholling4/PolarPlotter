@@ -15,14 +15,20 @@ from io import BytesIO
 from PIL import Image
 import base64
 
+def display_github_image(image_url):
+    raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+    st.image(raw_url, caption='Image from GitHub', use_column_width=True)
+
+github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+
 st.sidebar.markdown("# The Digital Athlete ")
 download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
 david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
 persons = [
-    {"image_url":"/workspaces/PolarPlotter/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
-    {"image_url": "/workspaces/PolarPlotter/favour_ashe.png", "name": "Motion Analysis", "description": " "},
-    {"image_url": "/workspaces/PolarPlotter/coach.jpg", "name": "CoachConnect", "description": " "},
-    {"image_url": "/workspaces/PolarPlotter/thera_track.jpg", "name": "TheraTrack", "description": " "},
+    {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
+    {"image_url": github_url + "favour_ashe.png", "name": "Motion Analysis", "description": " "},
+    {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "},
+    {"image_url": github_url + "thera_track.jpg", "name": "TheraTrack", "description": " "},
 
 ]  
 
