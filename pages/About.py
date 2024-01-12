@@ -20,6 +20,7 @@ st.sidebar.markdown("# About")
     
 # List of person data (replace with your data)
 path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/"
+path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
 persons = [
     {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Team Captain of Auburn Track & Field"},
@@ -42,18 +43,18 @@ for i in range(len(persons)):
     cols[i].write(f"{persons[i]['description']}")
 
 # Google Drive PNG link
-xray = "https://drive.google.com/uc?export=1XLH7AJwo1D8iKMJeiIJMGvO_Z8UdNkGJ"
+xray = path2 + "xray.png"
 
 expander_allison = st.expander("Allison's story")
 with expander_allison:
     st.write("Description of my story")
     download_link = f"https://drive.google.com/uc?export=download&id=13rZ4MEJwGjI76QpGgB7TXDPRZ_in9gWJ"
-    video_url = "/workspaces/PolarPlotter/Allison High Jump.MP4"
+    video_url = path2 + "Allison%20High%20Jump.MP4"
     response = requests.get(download_link)
     st.video(video_url)
     st.write('More information about training, injury, and the eventual surgery')
     persons = [
-    {"image_url": "/workspaces/PolarPlotter/xray.png", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
+    {"image_url": path2 + "xray.png", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
     ]  
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=275)
     st.write('More information about the injury, trying to rehab it, and the eventual retirement')
@@ -61,15 +62,15 @@ with expander_allison:
 expander_edmonson = st.expander("David Edmonson's story")
 with expander_edmonson:
     st.write("Description of my story")
-    png_url = "/workspaces/PolarPlotter/Edmonson_1.png"
+    png_url = path2 + "Edmonson_1.png"
     st.image(png_url, caption="Hurdle event during indoor heptathlon", width=250)
     st.write('More information about the injury, trying to rehab it, and the eventual surgery')
 
 expander_hollinger = st.expander("David Hollinger's story")
 with expander_hollinger:
     st.write("Description of my story")
-    jpg_url = "/workspaces/PolarPlotter/gmu2.jpg"
-    png_url = "/workspaces/PolarPlotter/Marathon.png"
+    jpg_url = path2 + "gmu2.jpg"
+    png_url = path2 + "Marathon.png"
     col1, col2 = st.columns(2)
     col1.image(jpg_url, caption="George Mason Cross Country Invitational", use_column_width=True)
     col2.image(png_url, caption="Bayshore Marathon (Traverse City, MI)", width=250)
