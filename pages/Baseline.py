@@ -291,7 +291,7 @@ STEP 3: Upload the video
 
 
 uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
-with st.expander("Select a video"):
+with st.expander("Select a pre-recorded video"):
   run_front_view = st.checkbox("Running- Front View")
   run_side_view = st.checkbox("Running- Side View")
   squat = st.checkbox("Squat")
@@ -718,11 +718,9 @@ if uploaded_file is not None:
   # update for .MOV  ========= START =========
   # import moviepy
   # from moviepy.editor import VideoFileClip
-  # # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
   # file_name = uploaded_file.name
   # file_path = "/workspaces/PolarPlotter/baseline_pics/" + str(file_name)
   # st.write(file_path)
-  # save_directory = "./" 
 
   # with open(file_path, "wb") as f:
   #     f.write(uploaded_file.read())
