@@ -693,62 +693,27 @@ def run_inference(movenet, image, crop_region, crop_size):
         keypoints_with_scores[0, 0, idx, 1]) / image_width
   return keypoints_with_scores
 
-
 if uploaded_file is not None:
   # update for .MOV  ========= START =========
   import moviepy
   from moviepy.editor import VideoFileClip
   # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
   file_name = uploaded_file.name
-  st.write(path + file_name)
-  save_directory = "./"
-  file_path = path + file_name
+  file_path = "/workspaces/PolarPlotter/baseline_pics/" + str(file_name)
+  st.write(file_path)
+  save_directory = "./" 
 
-# ADD TO GITHUB!! =========
-  
-  github_repo = "dholling4/PolarPlotter"
-  github_branch = "main"
-  github_folder = "baseline_pics"
-  github_upload_url = f"https://github.com/{github_repo}/upload/{github_branch}/{github_folder}"
+  with open(file_path, "wb") as f:
+      f.write(uploaded_file.read())
+  st.success(f"File saved to: {file_path}")
+  path2mov = r"/workspaces/PolarPlotter/baseline_pics/" + str(file_name) 
+  gif_file = path2mov[:-4] + '.gif'
+  videoClip = moviepy.editor.VideoFileClip(path2mov)
+  videoClip.write_gif(gif_file)
+  image_content = tf.io.read_file(gif_file)
 
-  import requests
-  if st.button("Upload to GitHub"):
-    try:
-      # Read file content
-      file_content = uploaded_file.read()
-
-      # Create a BytesIO object
-      file_bytes = BytesIO(file_content)
-
-      # Upload file to GitHub
-      response = requests.post(
-        github_upload_url,
-        files={"file": (uploaded_file.name, file_bytes)},
-        auth=("dholling4", "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")
-      )
-
-      if response.status_code == 200:
-        st.success("File uploaded to GitHub successfully!")
-      else:
-        st.error(f"Failed to upload file. Status code: {response.status_code}")
-
-    except Exception as e:
-      st.error(f"Error during file upload: {str(e)}")
-
-  # END GITHUB =============
-
-  # gif_file = path + file_name[:-4] + '.gif'
-  # with open(file_path, "wb") as f:
-  #     f.write(uploaded_file.read())
-  # st.success(f"File saved to: {file_path}")
-  # path2mov = r"/workspaces/PolarPlotter/" + str(file_name) 
-  # gif_file = path2mov[:-4] + '.gif'
-  # videoClip = moviepy.editor.VideoFileClip(path2mov)
-  # videoClip.write_gif(gif_file)
-  # image_content = tf.io.read_file(gif_file)
-
-  # image = tf.io.read_file(gif_file)
-  # image = tf.image.decode_gif(image)
+  image = tf.io.read_file(gif_file)
+  image = tf.image.decode_gif(image)
   num_frames, image_height, image_width, _ = image.shape
   st.write(num_frames, image_height, image_width)
   # num_frames=115
