@@ -289,8 +289,8 @@ STEP 3: Upload the video
 * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
 """)
 
-
-uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
+st.write("Convert your MOV file to GIF using this software: https://cloudconvert.com/mov-to-gif")
+uploaded_file = st.file_uploader("Choose an image...",  type=".gif") # change type=None to upload any file type (iphones use .MOV) 
 # with st.expander("Select a pre-recorded video"):
 #   run_front_view = st.checkbox("Running- Front View")
 #   run_side_view = st.checkbox("Running- Side View")
