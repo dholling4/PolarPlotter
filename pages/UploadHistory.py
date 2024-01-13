@@ -33,114 +33,39 @@ from hugchat.login import Login
 
 # # Ready to embark on your journey to peak performance? Download the Digital Athlete app and let Whalley be your guide to success! 🚀💪""")
 
-# # Hugging Face Credentials
-# with st.sidebar:
-#     st.title('AI Coach 🦾 🤖')
-#     # if ('EMAIL' in st.secrets) and ('PASS' in st.secrets):
-#     #     st.success('HuggingFace Login credentials already provided!', icon='✅')
-#     #     hf_email = st.secrets['EMAIL']
-#     #     hf_pass = st.secrets['PASS']
-#     # else:
-#     #     hf_email = st.text_input('Enter E-mail:', type='password')
-#     #     hf_pass = st.text_input('Enter password:', type='password')
-#     #     if not (hf_email and hf_pass):
-#     #         st.warning('Please enter your credentials!', icon='⚠️')
-#     #     else:
-#     #         st.success('Proceed to entering your prompt message!', icon='👉')
-#     # st.markdown('📖 Learn how to build this app in this [blog](https://blog.streamlit.io/how-to-build-an-llm-powered-chatbot-with-streamlit/)!')
-# hf_e = "dholling4@gmail.com"
-# hf_p = "John316316!!"
-
-# # hf_pass = st.secrets['PASS']
-# # hf_email = st.secrets['EMAIL']
-# # Store LLM generated responses
-# if "messages" not in st.session_state.keys():
-#     st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
-
-
-# # Display chat messages
-# for message in st.session_state.messages:
-#     with st.chat_message(message["role"]):
-#         st.write(message["content"])
-
-# # Function for generating LLM response
-# def generate_response(prompt_input, email, passwd):
-#     # Hugging Face Login
-#     sign = Login(email, passwd)
-#     cookies = sign.login()
-#     # Create ChatBot                        
-#     chatbot = hugchat.ChatBot(cookies=cookies.get_dict())
-#     return chatbot.chat(prompt_input)
-
-# # User-provided prompt
-# if prompt := st.chat_input(disabled=not (hf_e and hf_p)):
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     with st.chat_message("user"):
-#         st.write(prompt)
-
-# # Generate a new response if last message is not from assistant
-# if st.session_state.messages[-1]["role"] != "assistant":
-#     with st.chat_message("assistant"):
-#         with st.spinner("Thinking..."):
-#             response = generate_response(prompt, hf_e, hf_p) 
-#             st.write(response) 
-#     message = {"role": "assistant", "content": response}
-#     st.session_state.messages.append(message)
-
-
-
-import streamlit as st
-from hugchat import hugchat
-from hugchat.login import Login
-
-# App title
-st.set_page_config(page_title="🤗💬 HugChat")
-
 # Hugging Face Credentials
 with st.sidebar:
-    st.title('🤗💬 HugChat?')
-    if ('EMAIL' in st.secrets) and ('PASS' in st.secrets):
-        st.success('HuggingFace Login credentials already provided!', icon='✅')
-        hf_email = st.secrets['EMAIL']
-        hf_pass = st.secrets['PASS']
-    else:
-        hf_email = st.text_input('Enter E-mail:', type='password')
-        hf_pass = st.text_input('Enter password:', type='password')
-        if not (hf_email and hf_pass):
-            st.warning('Please enter your credentials!', icon='⚠️')
-        else:
-            st.success('Proceed to entering your prompt message!', icon='👉')
-    st.markdown('📖 Learn how to build this app in this [blog](https://blog.streamlit.io/how-to-build-an-llm-powered-chatbot-with-streamlit/)!')
+    st.title('AI Coach 🦾 🤖')
+    # if ('EMAIL' in st.secrets) and ('PASS' in st.secrets):
+    #     st.success('HuggingFace Login credentials already provided!', icon='✅')
+    #     hf_email = st.secrets['EMAIL']
+    #     hf_pass = st.secrets['PASS']
+    # else:
+    #     hf_email = st.text_input('Enter E-mail:', type='password')
+    #     hf_pass = st.text_input('Enter password:', type='password')
+    #     if not (hf_email and hf_pass):
+    #         st.warning('Please enter your credentials!', icon='⚠️')
+    #     else:
+    #         st.success('Proceed to entering your prompt message!', icon='👉')
+    # st.markdown('📖 Learn how to build this app in this [blog](https://blog.streamlit.io/how-to-build-an-llm-powered-chatbot-with-streamlit/)!')
+
+# ## OPEN AI
     
-# Store LLM generated responses
-if "messages" not in st.session_state.keys():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
+# import streamlit as st
+# from langchain.llms import OpenAI
 
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# st.title('🦜🔗 Quickstart App')
 
-# Function for generating LLM response
-def generate_response(prompt_input, email, passwd):
-    # Hugging Face Login
-    sign = Login(email, passwd)
-    cookies = sign.login()
-    # Create ChatBot                        
-    chatbot = hugchat.ChatBot(cookies=cookies.get_dict())
-    return chatbot.chat(prompt_input)
+# openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
 
-# User-provided prompt
-if prompt := st.chat_input(disabled=not (hf_email and hf_pass)):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.write(prompt)
+# def generate_response(input_text):
+#     llm = OpenAI(temperature=0.7, openai_api_key=openai_api_key)
+#     st.info(llm(input_text))
 
-# Generate a new response if last message is not from assistant
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response = generate_response(prompt, hf_email, hf_pass) 
-            st.write(response) 
-    message = {"role": "assistant", "content": response}
-    st.session_state.messages.append(message)
+# with st.form('my_form'):
+#     text = st.text_area('Enter text:', 'What are the three key pieces of advice for learning how to code?')
+#     submitted = st.form_submit_button('Submit')
+#     if not openai_api_key.startswith('sk-'):
+#         st.warning('Please enter your OpenAI API key!', icon='⚠')
+#     if submitted and openai_api_key.startswith('sk-'):
+#         generate_response(text)
