@@ -13,6 +13,7 @@ st.markdown("""# Baseline 🧘‍♀️🤸‍♂️📊""")
 # url = "https://www.acsm.org/docs/default-source/regional-chapter-individual-folders/northland/nacsm--wes-e--fms9a9b0c1f5032400f990d8b57689b0158.pdf?sfvrsn=3668bbe0_0"
 # st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
 st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️📊")
+
 squat_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/baseline_pics/depth_squat_enhanced.png"
 gif_url = path + "balance.gif"
 
@@ -288,7 +289,27 @@ STEP 3: Upload the video
 * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
 """)
 
+
 uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
+with st.expander("Select a video"):
+  run_front_view = st.checkbox("Running- Front View")
+  run_side_view = st.checkbox("Running- Side View")
+  squat = st.checkbox("Squat")
+  single_leg_jump = st.checkbox("Single Leg Jump")
+  if run_front_view:
+      st.write(":runner:")
+      st.image(run_front, caption="Front View", width=300)
+  if run_side_view:
+      st.write(":bicyclist:")
+      st.image(run_side, caption="Front View", width=300)
+
+  if squat:
+      st.write(":weight_lifter:")
+      st.image(path + "depth_squat.gif", caption="Depth Squat", width=300)
+      uploaded_file = path + "depth_squat.gif"
+  if single_leg_jump:
+      st.image(path + "single_leg_jump.gif", caption = "Single Leg Jump", width=300)
+      uploaded_file = path + "single_leg_jump.gif"
 
 # ======== MoveNet ========
 
