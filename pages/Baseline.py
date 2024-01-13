@@ -695,33 +695,33 @@ def run_inference(movenet, image, crop_region, crop_size):
 
 if uploaded_file is not None:
   # update for .MOV  ========= START =========
-  import moviepy
-  from moviepy.editor import VideoFileClip
-  # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
-  file_name = uploaded_file.name
-  file_path = "/workspaces/PolarPlotter/baseline_pics/" + str(file_name)
-  st.write(file_path)
-  save_directory = "./" 
+  # import moviepy
+  # from moviepy.editor import VideoFileClip
+  # # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
+  # file_name = uploaded_file.name
+  # file_path = "/workspaces/PolarPlotter/baseline_pics/" + str(file_name)
+  # st.write(file_path)
+  # save_directory = "./" 
 
-  with open(file_path, "wb") as f:
-      f.write(uploaded_file.read())
-  st.success(f"File saved to: {file_path}")
-  path2mov = r"/workspaces/PolarPlotter/baseline_pics/" + str(file_name) 
-  gif_file = path2mov[:-4] + '.gif'
-  videoClip = moviepy.editor.VideoFileClip(path2mov)
-  videoClip.write_gif(gif_file)
-  image_content = tf.io.read_file(gif_file)
+  # with open(file_path, "wb") as f:
+  #     f.write(uploaded_file.read())
+  # st.success(f"File saved to: {file_path}")
+  # path2mov = r"/workspaces/PolarPlotter/baseline_pics/" + str(file_name) 
+  # gif_file = path2mov[:-4] + '.gif'
+  # videoClip = moviepy.editor.VideoFileClip(path2mov)
+  # videoClip.write_gif(gif_file)
+  # image_content = tf.io.read_file(gif_file)
 
-  image = tf.io.read_file(gif_file)
-  image = tf.image.decode_gif(image)
-  num_frames, image_height, image_width, _ = image.shape
-  st.write(num_frames, image_height, image_width)
+  # image = tf.io.read_file(gif_file)
+  # image = tf.image.decode_gif(image)
+  # num_frames, image_height, image_width, _ = image.shape
+  # st.write(num_frames, image_height, image_width)
   # num_frames=115
   # update for .MOV  ========= END=======
 
-  # image_content = uploaded_file.read()
-  # image = tf.image.decode_gif(image_content)
-  # num_frames, image_height, image_width, _ = image.shape
+  image_content = uploaded_file.read()
+  image = tf.image.decode_gif(image_content)
+  num_frames, image_height, image_width, _ = image.shape
   crop_region = init_crop_region(image_height, image_width)
 
   nose_list_x, left_shoulder_list_x, right_shoulder_list_x,left_elbow_list_x, right_elbow_list_x, left_wrist_list_x, right_wrist_list_x = [],[],[],[],[],[],[]
