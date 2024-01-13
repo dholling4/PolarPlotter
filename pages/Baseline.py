@@ -290,7 +290,7 @@ STEP 3: Upload the video
 """)
 
 
-uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
+# uploaded_file = st.file_uploader("Choose an image...",  type=None) # change type=None to upload any file type (iphones use .MOV) 
 with st.expander("Select a pre-recorded video"):
   run_front_view = st.checkbox("Running- Front View")
   run_side_view = st.checkbox("Running- Side View")
