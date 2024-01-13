@@ -1,5 +1,5 @@
 streamlit-webrtc==0.32.0
-git+https://github.com/tensorflow/docs
+# git+https://github.com/tensorflow/docs
 absl-py==2.0.0
 altair==5.2.0
 astor==0.8.1
@@ -93,12 +93,13 @@ streamlit-chat
 # six==1.16.0
 # smmap==5.0.1
 # stack-data==0.6.3
-streamlit
+# streamlit
+streamlit==0.89.0
 # tenacity==8.2.3
 # tensorboard==2.15.1
 # tensorboard-data-server==0.7.2
 # tensorflow==2.15.0
-tensorflow
+tensorflow==2.6.0
 tensorflow-io
 tensorflow-estimator==2.15.0
 tensorflow-hub==0.15.0
