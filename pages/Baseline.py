@@ -700,9 +700,9 @@ if uploaded_file is not None:
   from moviepy.editor import VideoFileClip
   # path = "https://drive.google.com/uc?export=download&id=1UOtno-A__uflgVLECYsEOUWFabeUZX45"
   file_name = uploaded_file.name
-  st.write(uploaded_file.name)
+  st.write(path + file_name)
   save_directory = "./"
-  file_path = save_directory + file_name
+  file_path = path + file_name
   with open(file_path, "wb") as f:
       f.write(uploaded_file.read())
   st.success(f"File saved to: {file_path}")
