@@ -1,5 +1,5 @@
 streamlit-webrtc==0.32.0
-# git+https://github.com/tensorflow/docs
+git+https://github.com/tensorflow/docs
 absl-py==2.0.0
 altair==5.2.0
 astor==0.8.1
@@ -27,9 +27,9 @@ cycler==0.12.1
 # google-pasta==0.2.0
 # grpcio==1.59.3
 # h5py==3.10.0
-hugchat
-openai
-langchain
+# hugchat
+# openai
+# langchain
 # idna==3.6
 imageio==2.33.0
 # importlib-metadata==6.11.0
@@ -65,8 +65,6 @@ pexpect==4.9.0
 Pillow==10.1.0
 platformdirs==4.1.0
 kaleido
-openai
-openpyxl
 plotly
 # prompt-toolkit==3.0.41
 # protobuf==4.23.4
@@ -76,7 +74,7 @@ plotly
 # pyasn1==0.5.1
 # pyasn1-modules==0.3.0
 # pydeck==0.8.1b0
-streamlit-chat
+# streamlit-chat
 # streamlit-extras
 # Pygments==2.17.2
 # pylance==0.8.18
@@ -94,12 +92,12 @@ streamlit-chat
 # smmap==5.0.1
 # stack-data==0.6.3
 # streamlit
-streamlit==0.89.0
+streamlit
 # tenacity==8.2.3
 # tensorboard==2.15.1
 # tensorboard-data-server==0.7.2
-# tensorflow==2.15.0
-tensorflow==2.6.0
+tensorflow==2.15.0
+# tensorflow==2.6.0
 tensorflow-io
 tensorflow-estimator==2.15.0
 tensorflow-hub==0.15.0
