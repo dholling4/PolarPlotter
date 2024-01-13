@@ -97,7 +97,9 @@ streamlit
 # tenacity==8.2.3
 # tensorboard==2.15.1
 # tensorboard-data-server==0.7.2
-tensorflow==2.15.0
+# tensorflow==2.15.0
+tensorflow
+tensorflow-io
 tensorflow-estimator==2.15.0
 tensorflow-hub==0.15.0
 tensorflow-io-gcs-filesystem==0.34.0
