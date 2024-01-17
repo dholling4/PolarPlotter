@@ -1,12 +1,26 @@
-# 🕸️ Polar Plotter Streamlit App
+# The Digital Athlete
+Created by David Hollinger, dzh0063@auburn.edu
+This streamlit app is for The Digital Athlete 
 
-Easily create rich polar/radar/spider plots with Plotly and Streamlit.
+# Project Description
+This is a streamlit app using codespaces that allows athletes to understand their training to help them achieve their goals. This app is intended for athletes, coaches, therepists, and patients.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://polarplotter.streamlit.app)
+# Install system dependencies
+./install.sh
 
-**Feedback?**
-Reach out to me at [siddhant.sadangi@gmail.com](mailto:siddhant.sadangi@gmail.com) and/or connect with me on [LinkedIn](https://linkedin.com/in/siddhantsadangi).
+# Install Python dependencies
+pip install -r requirements.txt
 
-<a href="https://www.buymeacoffee.com/siddhantsadangi" target="_blank">
-    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
-</a>
+# Table of Contents
+
+# Requirements
+* Python3
+* see the requirements.txt file
+
+# Project Roadmap
+
+# Project Status
+* Currently in development by [@dholling4](https://github.com/dholling4)
+# Contribution Guidelines
+
+# Acknowledgments
