@@ -123,31 +123,19 @@ add_selectbox = st.sidebar.selectbox(
 model = 'movenet'
 url_live = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection/index.html?model=' + model
 url = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection-upload-video/index.html?model=' + model
-live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
-hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
+# live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
+# hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
 
-left, middle, right = st.columns(3)
-with left:
-    if st.button('Record video data'):
-        webbrowser.open_new_tab(url_live)
-
-with middle:
-    if st.button('Record hand video'):
-        webbrowser.open_new_tab(live_hand_url)
-
+left, right = st.columns(2)
+with left:  
+    st.link_button('Record video data', url_live)
 with right:
     st.button('Record wearable data')
-
 """
 ### Upload Activity:
 """
-left_column, middle_column, right_column = st.columns(3)
-
+left_column, right_column = st.columns(2)
 with left_column:
-    if st.button('Upload video data'):
-        webbrowser.open_new_tab(url)
-with middle_column:
-    if st.button('Upload hand video'):
-        webbrowser.open_new_tab(hand_url)
+    st.link_button('Upload video data', url)
 with right_column:
     st.button('Upload wearable data')
