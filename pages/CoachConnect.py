@@ -67,12 +67,23 @@ with left:
         title="CMJ",
         xaxis_title="Date",
         yaxis_title="kg",
-        font=dict(
+        title_font=dict(
             family="Courier New, monospace",
-            size=18,
-            color="RebeccaPurple"
+            size=42,
+            color="white"
+            ),
+            xaxis=dict(
+            tickfont=dict(
+                size=26 
+            ) 
+            ),
+            yaxis=dict(
+            tickfont=dict(
+            size=26 
         )
     )
+    )
+            
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -88,14 +99,30 @@ with left:
         y=[flex[0], ext[0], ratio_flex_ext[0]],
         text=[np.round(flex[0],1), np.round(ext[0],1), np.round(ratio_flex_ext[0],2)],  # Display the values above each bar
         textposition='auto',  # Automatically position the text above the bars
-        marker=dict(color=['lightblue','lightgreen',ratio_color]),
-        name='Data'
-    ))
+        marker=dict(color=['lightblue','lightgreen', ratio_color]),
+        name='Data',
+
+        title_font=dict(
+            family="Courier New, monospace",
+            size=42,
+            color="white"
+            ),
+            xaxis=dict(
+            tickfont=dict(size=26)),
+            yaxis=dict(
+            tickfont=dict(size=26)) 
+    ))    
+
     fig.update_layout(
         title="FLEX - EXT",
         xaxis_title="2024",
         yaxis_title="N",
-        font=dict(family="Courier New, monospace", size=14, color="RebeccaPurple"),
+        font=dict(family="Courier New, monospace", size=26, color="RebeccaPurple"),
+         xaxis=dict(
+        title_font=dict(
+            size=28  # Adjust the font size for x-axis label
+        )
+    ),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -109,12 +136,23 @@ with right:
         title="Squat Iso Push",
         xaxis_title="Date",
         yaxis_title="N/kg",
-        font=dict(
+        title_font=dict(
             family="Courier New, monospace",
-            size=18,
-            color="RebeccaPurple"
+            size=36,
+            color="white" ),
+
+        xaxis=dict(
+        tickfont=dict(
+            size=26 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+            size=26 
         )
     )
+)
+    
     st.plotly_chart(fig, use_container_width=True)
 
     # ABD AND ADD
@@ -136,7 +174,7 @@ with right:
         title="ABD - ADD",
         xaxis_title="2024",
         yaxis_title="N",
-        font=dict(family="Courier New, monospace", size=14, color="RebeccaPurple"),
+        font=dict(family="Courier New, monospace", size=26, color="RebeccaPurple"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
