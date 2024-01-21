@@ -39,44 +39,15 @@ with col1:
 with col2:
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
 
-"""
-### What is The Digital Athlete?
-"""
-expander_whatis = st.expander("Learn More")
-with expander_whatis:
-    st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
-    st.write("* Track your performance :chart_with_upwards_trend:")
-    st.write("* Connect with your coach :runner: :iphone:")
-    st.write("* Communicate with your healthcare providers :male-doctor:")
-
-
-"""
-###
-### Key Features
-"""
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.write("#### Gait Analysis :runner:")
-    expander_gait = st.expander("Learn More")
-    with expander_gait:
-        st.write("Get metrics on your performance using our AI-powered video analysis tools.") 
-        st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", use_column_width=True)
-
-with col2:
-    st.write("#### CoachConnect :male-teacher:")
-    expander_coach = st.expander("Learn More..")
-    with expander_coach:
-        st.write("Connect with your coach to track your performance and get personalized feedback.") 
-        st.image(persons[2]["image_url"], caption=f"{persons[2]['name']}", use_column_width=True)
-
-with col3:
-    st.write("#### TheraTrack :male-doctor:")
-    expander_therapist = st.expander("Learn More..")
-    with expander_therapist:
-        st.write("Connect with your healthcare provider to track your recovery and get personalized feedback.")
-        st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", use_column_width=True)
-
+# """
+# ### What is The Digital Athlete?
+# """
+# expander_whatis = st.expander("Learn More")
+# with expander_whatis:
+#     st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
+#     st.write("* Track your performance :chart_with_upwards_trend:")
+#     st.write("* Connect with your coach :runner: :iphone:")
+#     st.write("* Communicate with your healthcare providers :male-doctor:")
 
 st.header("\nFill out your profile")
 st.text_input("Name", key="name")
@@ -139,3 +110,31 @@ with left_column:
     st.link_button('Upload video data', url)
 with right_column:
     st.button('Upload wearable data')
+
+"""
+###
+### Key Features
+"""
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.write("#### Gait Analysis :runner:")
+    expander_gait = st.expander("Learn More")
+    with expander_gait:
+        st.write("Get metrics on your performance using our AI-powered video analysis tools.") 
+        st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", use_column_width=True)
+
+with col2:
+    st.write("#### CoachConnect :male-teacher:")
+    expander_coach = st.expander("Learn More..")
+    with expander_coach:
+        st.write("Connect with your coach to track your performance and get personalized feedback.") 
+        st.image(persons[2]["image_url"], caption=f"{persons[2]['name']}", use_column_width=True)
+
+with col3:
+    st.write("#### TheraTrack :male-doctor:")
+    expander_therapist = st.expander("Learn More..")
+    with expander_therapist:
+        st.write("Connect with your healthcare provider to track your recovery and get personalized feedback.")
+        st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", use_column_width=True)
+
