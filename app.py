@@ -1,5 +1,5 @@
 import contextlib
-
+import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -241,6 +241,42 @@ with ex1:
     st.image(single_leg_hop_url, caption="Single Leg Hop", use_column_width=True)
 with ex2:
     st.image(pistol_squat_url, caption="Depth Squat", use_column_width=True)
+
+# Simulated data for progressive risk trend
+sessions = np.arange(1, 20)  # Running sessions
+biomechanical_risk = np.random.randint(0, 10, size=19)  # Simulated risk scores 
+
+# Creating a DataFrame for Plotly Express
+data = {'Sessions': sessions, 'Biomechanical Risk': biomechanical_risk}
+# Creating the trend chart
+df = pd.DataFrame(data)
+# Creating the trend chart
+fig = px.line(df, x='Sessions', y='Biomechanical Risk', markers=True,
+                title='Biomechanical Risk Trend Over Sessions',
+                labels={'Biomechanical Risk': 'Risk Socre', 'Sessions': 'Running Sessions'},
+                line_shape='linear')
+
+# Adding a threshold line for alert
+threshold = 8  # Adjust this threshold based on your criteria
+fig.add_shape(type='line', x0=sessions[0], y0=threshold, x1=sessions[-1], y1=threshold,
+                line=dict(color='red', dash='dash'), name='Alert Threshold')
+
+# Adding annotations for alerts
+for session, risk in zip(sessions, biomechanical_risk):
+    if risk > threshold:
+        fig.add_annotation(x=session, y=risk, text='Alert', showarrow=True, arrowhead=2, arrowcolor='red')
+
+# Display the chart in Streamlit
+# st.write('## Biomechanical Risk Analysis')
+font_size = 28  # Adjust the font size as needed
+fig.update_layout(
+    title_font=dict(size=28),
+    xaxis=dict(title_font=dict(size=font_size), tickfont=dict(size=font_size)),
+    yaxis=dict(title_font=dict(size=font_size), tickfont=dict(size=font_size)),
+    legend=dict(font=dict(size=font_size)),
+    annotations=[dict(font=dict(size=font_size))]
+)
+st.plotly_chart(fig)
 
 # """
 # ###
