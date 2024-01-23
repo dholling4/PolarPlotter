@@ -216,6 +216,6 @@ with right:
 
 
 st.write("### Team Dashboard :chart_with_upwards_trend:")
-team_csv = "CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 team_df = pd.read_excel(team_csv)
 st.dataframe(team_df)
