@@ -64,7 +64,7 @@ with col1:
 with col2:
     st.dataframe(competition_df)
 
-st.write("#### Team Dashboard :chart_with_upwards_trend:")
+st.write("### Individual Dashboard :chart_with_upwards_trend:")
 
 left, right = st.columns(2)    
    
@@ -76,7 +76,10 @@ with left:
     fig.update_layout(
         title="CMJ",
         xaxis_title="Date",
-        yaxis_title="kg",
+        yaxis_title="(N/kg)",
+        yaxis_title_font_size = 24, 
+        xaxis_title_font_size = 24, 
+        hoverlabel_font_size=24,
         title_font=dict(
             family="Courier New, monospace",
             size=42,
@@ -116,6 +119,9 @@ with left:
         title="FLEX - EXT",
         xaxis_title="2024",
         yaxis_title="N",
+        yaxis_title_font_size = 24, 
+        xaxis_title_font_size = 24, 
+        hoverlabel_font_size=24,
         font=dict(family="Courier New, monospace", size=26, color="red"),
         title_font=dict(
             family="Courier New, monospace",
@@ -144,7 +150,10 @@ with right:
     fig.update_layout(
         title="Squat Iso Push",
         xaxis_title="Date",
-        yaxis_title="kg",
+        yaxis_title="N/kg",
+        yaxis_title_font_size = 24, 
+        xaxis_title_font_size = 24, 
+        hoverlabel_font_size=24,
         title_font=dict(
             family="Courier New, monospace",
             size=36,
@@ -183,6 +192,9 @@ with right:
         title="ABD - ADD",
         xaxis_title="2024",
         yaxis_title="N",
+        yaxis_title_font_size = 24, 
+        xaxis_title_font_size = 24, 
+        hoverlabel_font_size=24,
         font=dict(family="Courier New, monospace", size=26, color="red"),
         title_font=dict(
             family="Courier New, monospace",
@@ -203,3 +215,7 @@ with right:
     st.plotly_chart(fig, use_container_width=True)
 
 
+st.write("### Team Dashboard :chart_with_upwards_trend:")
+team_csv = "CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+team_df = pd.read_excel(team_csv)
+st.dataframe(team_df)

@@ -110,6 +110,7 @@ tensorflow-io
 tensorflow-estimator==2.15.0
 tensorflow-hub==0.15.0
 tensorflow-io-gcs-filesystem==0.34.0
+xlrd
 # tensorflow_docs
 # termcolor==2.4.0
 # toml==0.10.2
