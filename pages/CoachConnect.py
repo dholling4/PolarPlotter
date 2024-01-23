@@ -31,8 +31,8 @@ with r:
         abd = df["ABD"].tolist()
         add = df["ADD"].tolist()
         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
-
-csv_file = r"/workspaces/PolarPlotter/CoachConnect_files/coach_dashboard_corre.csv"
+csv_file = r'CoachConnect_files/coach_dashboard_corre.csv'
+# csv_file = r"/workspaces/PolarPlotter/CoachConnect_files/coach_dashboard_corre.csv"
 if csv_file is not None:
         df = pd.read_csv(csv_file)
         # st.dataframe(df)
