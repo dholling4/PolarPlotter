@@ -69,6 +69,7 @@ with col1:
   
   fig = px.bar(chart_data, x=['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'], y=chart_data["Stability Score"].to_list())
   fig.update_layout(
+    xaxis_title = "",
     yaxis_title="Stability Score",
     legend_font_size = 28,
     xaxis_title_font_size = 24, 
