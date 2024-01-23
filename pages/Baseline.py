@@ -67,8 +67,25 @@ with col1:
     }
   )
   
-  st.bar_chart(chart_data, x=" ", y="Stability Score", use_container_width=True, width=315)
-  
+  fig = px.bar(chart_data, x=['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'], y=chart_data["Stability Score"].to_list())
+  fig.update_layout(
+    yaxis_title="Stability Score",
+    legend_font_size = 28,
+    xaxis_title_font_size = 24, 
+    yaxis_title_font_size = 24, 
+    hoverlabel_font_size=24,
+    legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
+
+        xaxis=dict(
+        tickfont=dict(size=36 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=36 )
+    ))
+  st.plotly_chart(fig, use_container_width=True)
+
 with col2:
   categories = ['Right Knee', 'Right Hip', 'Left Hip',
                   'Left Ankle', 'Right Ankle']

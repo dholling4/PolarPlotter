@@ -32,6 +32,19 @@ with r:
         add = df["ADD"].tolist()
         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
 
+csv_file = r"/workspaces/PolarPlotter/CoachConnect_files/coach_dashboard_corre.csv"
+if csv_file is not None:
+        df = pd.read_csv(csv_file)
+        # st.dataframe(df)
+        date = df["Date"].tolist()
+        CMJ = df["CMJ (cm)"].tolist()
+        squat_iso_push = df["squat iso push (N/kg)"].tolist()
+        flex = df["FLEX"].tolist()
+        ext = df["EXT"].tolist()
+        ratio_flex_ext = df["RATIO (FLEX/EXT)"].tolist()
+        abd = df["ABD"].tolist()
+        add = df["ADD"].tolist()
+        ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
 
 # selected_columns = st.multiselect('Select columns', df.columns)
 # usecols=selected_columns
@@ -134,7 +147,7 @@ with right:
         yaxis_title="kg",
         title_font=dict(
             family="Courier New, monospace",
-            size=42,
+            size=36,
             color="white"
             ),
             xaxis=dict(
