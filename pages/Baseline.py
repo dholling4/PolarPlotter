@@ -140,7 +140,8 @@ with runner_plots:
   chart_data = pd.DataFrame(
     {"Step Count": list(range(len(left_knee))), "Left Knee": left_knee, "Right Knee": right_knee}
   )
-  
+
+# KINEMATICS
 st.write('##### Joint Angles')
 chart_data2 = pd.DataFrame(
   {"Left Knee": left_knee, "Right Knee": right_knee})
@@ -148,16 +149,46 @@ chart_data2 = pd.DataFrame(
 chart_type = st.selectbox('Choose a chart type', ['Line', 'Bar']) 
 ## Create the chart
 if chart_type == 'Line':
+  fig = go.Figure()
+  fig.add_trace(go.Line(y=chart_data2["Left Knee"].to_list(), x=np.arange(0, 100, 100/len(left_knee)),
+                        mode='lines+markers',
+                        name='Left Knee'))
+  fig.add_trace(go.Line(y=chart_data2["Right Knee"].to_list(), x=np.arange(0, 100, 100/len(right_knee)),
+                        mode='lines+markers',
+                        name='Right Knee'))
+  fig.update_layout(
+        title="KNEE FLEXION ANGLES",
+        xaxis_title="GAIT CYCLE (%)",
+        yaxis_title="DEGREES",
+        legend_font_size = 28,
+        xaxis_title_font_size = 24, 
+        yaxis_title_font_size = 24, 
+        hoverlabel_font_size=24,
+        legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
+        title_font=dict(
+            # family="Courier New, monospace",
+            size=42,
+            color="white"
+            ),
+            xaxis=dict(
+            tickfont=dict(size=36 
+            ) 
+            ),
+            yaxis=dict(
+            tickfont=dict(
+            size=36 
+        )
+    )
+    )
+            
+  st.plotly_chart(fig, use_container_width=True)
 
-  st.line_chart(chart_data2, y=["Left Knee", "Right Knee"],
-                ) 
 elif chart_type == 'Bar':
   st.bar_chart(chart_data2, y=["Left Knee", "Right Knee"])
 
-
-  
+# DIAL PLOTS  
 dial1, dial2, dial3 = st.columns(3)
-title_font_size = 24
+title_font_size = 26
 with dial1:
   value = 75  # Value to be displayed on the dial (e.g., gas mileage)
   fig = go.Figure(go.Indicator(

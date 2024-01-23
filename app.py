@@ -56,6 +56,12 @@ st.text_input("Age", key="age")
 age = st.session_state.age
 st.text_input("Height", key="height")
 st.text_input("weight (lbs)", key="weight")
+chosen_sex = st.radio('Sex:',
+             ('Male', 'Female', 'Other'))
+if chosen_sex == 'Other':
+        custom_input = st.text_input("Enter your preferred sex")
+
+
 
 """
 ##### Select your activity
