@@ -218,7 +218,7 @@ with right:
 st.write("### Team Dashboard :chart_with_upwards_trend:")
 # team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
-team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+# team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 if team_csv is not None:
     xls = pd.ExcelFile(team_csv)
     sheet_names = xls.sheet_names
