@@ -294,11 +294,15 @@ if team_csv is not None:
             name='EXT',
             marker_color='lightgreen'
         ))
+        if merged_df['EXT/FLEX RATIO'][0] > 1.2:
+            ratio_color = 'red'
+        else:
+            ratio_color = 'green'
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
             y=merged_df['EXT/FLEX RATIO'],
             name='RATIO',
-            marker_color='red'
+            marker_color=ratio_color
         ))
 
         fig.update_layout(
@@ -325,14 +329,6 @@ if team_csv is not None:
         )
         )
         
-        fig.add_shape(type="line",
-            x0=0, y0=1.2, x1=len(merged_df), y1=1.2,
-            line=dict(
-                color="red",
-                width=2,
-                dash="dashdot",
-            )
-        )
         st.plotly_chart(fig, use_container_width=True)
         
 
