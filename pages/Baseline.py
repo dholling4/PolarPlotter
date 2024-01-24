@@ -1035,7 +1035,7 @@ if uploaded_file is not None:
 #         _df = pd.DataFrame(columns=["Label", "Value"]).reset_index(drop=True)
 
 #     else:
-#         _df = pd.DataFrame(
+#         df = pd.DataFrame(
 #             {
 #                 "Skill": [
 #                     "Computer Vision",
@@ -1470,58 +1470,4 @@ if uploaded_file is not None:
 #             mime="text/html",
 #             use_container_width=True,
 #         )
-
-
-# POSSIBLY INCLUDE HR_NET ====================================
-# pip install streamlit torch torchvision pillow
-
-# import streamlit as st
-# import torch
-# from PIL import Image
-# from torchvision import transforms
-# from torchvision.models.detection import keypointrcnn_resnet50_fpn
-
-# # Load HRNet model
-# model = keypointrcnn_resnet50_fpn(pretrained=True)
-# model.eval()
-
-# # Define image transformation
-# transform = transforms.Compose([transforms.ToTensor()])
-
-# # Function to run HRNet on an image
-# def run_hrnet(image):
-#     # Preprocess the image
-#     img = transform(image).unsqueeze(0)
-
-#     # Run inference
-#     with torch.no_grad():
-#         prediction = model(img)
-
-#     return prediction
-
-# # Streamlit app
-# def main():
-#     st.title("HRNet Streamlit App")
-
-#     # Upload image through Streamlit
-#     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-#     if uploaded_file is not None:
-#         # Read image
-#         image = Image.open(uploaded_file)
-
-#         # Display the uploaded image
-#         st.image(image, caption="Uploaded Image", use_column_width=True)
-
-#         # Run HRNet on the image
-#         prediction = run_hrnet(image)
-
-#         # Display results (modify as needed based on HRNet output)
-#         st.write("HRNet results:", prediction)
-
-# # Run the Streamlit app
-# if __name__ == "__main__":
-#     main()
-
-
 
