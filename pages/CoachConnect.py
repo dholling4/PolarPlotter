@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
+import xlrd
 st.markdown("# Welcome to CoachConnect 👨‍🏫")
 st.markdown("### Empowering Athletes Together\U0001F4AA")
 st.sidebar.markdown("# CoachConnect 👨‍🏫")
@@ -216,9 +217,8 @@ with right:
 
 
 st.write("### Team Dashboard :chart_with_upwards_trend:")
-# team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
-# team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 if team_csv is not None:
     xls = pd.ExcelFile(team_csv)
     sheet_names = xls.sheet_names
