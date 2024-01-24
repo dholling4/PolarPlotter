@@ -233,36 +233,36 @@ if team_csv is not None:
         df = pd.read_excel(xls, sheet_name=selected_sheet)
         st.dataframe(df)
 
-if selected_sheet == "Neck Extension":
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["Name"], y=df["N Max Force (N)"],
-                        mode='lines+markers',
-                        name='Neck Extension'))
-    fig.update_layout(
-        title="Neck Extension",
-        xaxis_title="Ahtlete",
-        yaxis_title="Max Force (N)",
-        yaxis_title_font_size = 24, 
-        xaxis_title_font_size = 24, 
-        hoverlabel_font_size=24,
-        title_font=dict(
-            family="Courier New, monospace",
-            size=42,
-            color="white"
-            ),
-            xaxis=dict(
-            tickfont=dict(
+    if selected_sheet == "Neck Extension":
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df["Name"], y=df["N Max Force (N)"],
+                            mode='lines+markers',
+                            name='Neck Extension'))
+        fig.update_layout(
+            title="Neck Extension",
+            xaxis_title="Ahtlete",
+            yaxis_title="Max Force (N)",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
                 size=18 
-            ) 
-            ),
-            yaxis=dict(
-            tickfont=dict(
-            size=18 
+            )
         )
-    )
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
 
 if selected_sheet == "Neck flexion":
     fig = go.Figure()
