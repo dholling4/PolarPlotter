@@ -249,7 +249,14 @@ input_df = pd.read_excel(team_csv)
 
 if team_csv is not None:
     xls = pd.ExcelFile(team_csv)
-    sheet_names = xls.sheet_names
+    sheet_names_list = xls.sheet_names
+    sheet_names = ['FLEX/EXT RATIO', 'ABD/ADD RATIO']
+    for sheet in sheet_names_list:
+        sheet_names.append(sheet)
+
+    
+    # st.write(sheet_names)
+
     # sheet_names = ["FLEX/EXT RATIO", "ABD/ADD RATIO"]
     # for sheet in sheet_names_list:
     #     sheet_names.append(sheet)
@@ -260,8 +267,78 @@ if team_csv is not None:
         df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
         st.dataframe(df)
     elif selected_sheet == "SJ" or selected_sheet == "SQUAT ISO HOLD":
-        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5, 6], sheet_name=selected_sheet)
+        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
         st.dataframe(df)
+    elif selected_sheet == "FLEX/EXT RATIO":
+        df = pd.read_excel(xls, sheet_name= "Neck flexion", usecols=["Name", "FORCE/KG"])
+        df2 = pd.read_excel(xls, sheet_name= "Neck Extension", usecols=["Name", "FORCE/KG"])
+        df = df.sort_values('Name')
+        df2 = df2.sort_values('Name')
+        df_ratio = df2["FORCE/KG"] / df["FORCE/KG"]
+        merged_df = df.merge(df2, on='Name')
+        merged_df['EXT/FLEX RATIO'] = merged_df['FORCE/KG_y'] / merged_df['FORCE/KG_x']
+        # rename columns
+        merged_df = merged_df.rename(columns={"FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)"})
+        st.write(merged_df)
+        # PLOT BAR CHART
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['FLEX (FORCE/KG)'],
+            name='FLEX',
+            marker_color='lightblue'
+        ))
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['EXT (FORCE/KG)'],
+            name='EXT',
+            marker_color='lightgreen'
+        ))
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['EXT/FLEX RATIO'],
+            name='RATIO',
+            marker_color='red'
+        ))
+
+        fig.update_layout(
+            title="FLEX - EXT",
+            xaxis_title="Athlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        
+        fig = go.Figure()
+        fig.add_shape(type="line",
+            x0=0, y0=3.2, x1=10, y1=3.2,
+            line=dict(
+                color="red",
+                width=4,
+                dash="dashdot",
+            )
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        
+
+
     else:
         df = pd.read_excel(xls, sheet_name=selected_sheet)
         st.dataframe(df)
