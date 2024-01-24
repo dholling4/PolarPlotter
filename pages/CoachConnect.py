@@ -10,7 +10,7 @@ st.sidebar.markdown("# CoachConnect 👨‍🏫")
 st.button("My athletes\U0001F510")
 
 # st.write("#### Coming Soon...")
-st.write("#### Individual Athlete Dashboard :chart_with_upwards_trend:")
+st.write("## Individual Athlete Dashboard :chart_with_upwards_trend:")
 path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/"
 png_url = path + "david_e.png"
@@ -64,8 +64,6 @@ with col1:
 
 with col2:
     st.dataframe(competition_df)
-
-st.write("### Individual Dashboard :chart_with_upwards_trend:")
 
 left, right = st.columns(2)    
    
@@ -216,12 +214,47 @@ with right:
     st.plotly_chart(fig, use_container_width=True)
 
 
-st.write("### Team Dashboard :chart_with_upwards_trend:")
+st.write("## Team Dashboard :chart_with_upwards_trend:")
+
+# ---------- DATA ENTRY ----------
+option = st.radio(
+    label="Enter data",
+    options=(
+        "Upload an excel file ⬆️",
+        "Add data manually ✍️",
+    ),
+    help="Uploaded files are deleted from the server when you\n* upload another file\n* clear the file uploader\n* close the browser tab",
+)
+
+if option == "Upload an excel file ⬆️":
+    if uploaded_file := st.file_uploader(
+        label="Upload a file. File should have the format: Label|Value",
+        type=["xlsx", "csv", "xls"],
+    ):
+        input_df = pd.read_excel(uploaded_file)
+        st.dataframe(input_df, hide_index=True)
+
+else:
+    if option == "Add data manually ✍️":
+        df = pd.DataFrame(columns=["Label", "Value"]).reset_index(drop=True)
+
+    input_df = st.data_editor(
+        df,
+        num_rows="dynamic",
+        hide_index=True,
+    )
 # team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
 team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+input_df = pd.read_excel(team_csv)
+
 if team_csv is not None:
     xls = pd.ExcelFile(team_csv)
     sheet_names = xls.sheet_names
+    # sheet_names = ["FLEX/EXT RATIO", "ABD/ADD RATIO"]
+    # for sheet in sheet_names_list:
+    #     sheet_names.append(sheet)
+    # st.write(sheet_names)
+   
     selected_sheet = st.selectbox("Select a sheet", sheet_names)
     if selected_sheet == "CMJ":
         df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
@@ -372,40 +405,6 @@ def _reset() -> None:
     st.session_state["line_shape"] = "linear"
     st.session_state["line_width"] = 2
     st.session_state["fill_opacity"] = 0.5
-    # ---------- HEADER ----------
-st.title("🕸️ Welcome to Polar Plotter!")
-st.subheader("Easily create rich polar/radar/spider plots.")
-
-
-# ---------- DATA ENTRY ----------
-option = st.radio(
-    label="Enter data",
-    options=(
-        "Upload an excel file ⬆️",
-        "Add data manually ✍️",
-    ),
-    help="Uploaded files are deleted from the server when you\n* upload another file\n* clear the file uploader\n* close the browser tab",
-)
-
-if option == "Upload an excel file ⬆️":
-    if uploaded_file := st.file_uploader(
-        label="Upload a file. File should have the format: Label|Value",
-        type=["xlsx", "csv", "xls"],
-    ):
-        input_df = pd.read_excel(uploaded_file)
-        st.dataframe(input_df, hide_index=True)
-
-else:
-    if option == "Add data manually ✍️":
-        df = pd.DataFrame(columns=["Label", "Value"]).reset_index(drop=True)
-
-    input_df = st.data_editor(
-        df,
-        num_rows="dynamic",
-        hide_index=True,
-    )
-input_df = pd.read_excel(team_csv)
-
 
 # ---------- SIDEBAR ----------
 VERSION = "0.3.1"
