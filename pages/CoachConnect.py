@@ -217,7 +217,7 @@ with right:
 
 
 st.write("### Team Dashboard :chart_with_upwards_trend:")
-team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
+# team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
 team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 if team_csv is not None:
     xls = pd.ExcelFile(team_csv)
@@ -235,13 +235,13 @@ if team_csv is not None:
 
     if selected_sheet == "Neck Extension":
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=df["Name"], y=df["N Max Force (N)"],
+        fig.add_trace(go.Scatter(x=df["Name"], y=df["FORCE/KG"],
                             mode='lines+markers',
                             name='Neck Extension'))
         fig.update_layout(
             title="Neck Extension",
             xaxis_title="Ahtlete",
-            yaxis_title="Max Force (N)",
+            yaxis_title="FORCE/KG",
             yaxis_title_font_size = 24, 
             xaxis_title_font_size = 24, 
             hoverlabel_font_size=24,
@@ -266,13 +266,13 @@ if team_csv is not None:
 
 if selected_sheet == "Neck flexion":
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["Name"], y=df["N Max Force (N)"],
+    fig.add_trace(go.Scatter(x=df["Name"], y=df["FORCE/KG"],
                         mode='lines+markers',
                         name=selected_sheet))
     fig.update_layout(
         title=selected_sheet,
         xaxis_title="Ahtlete",
-        yaxis_title="Max Force (N)",
+        yaxis_title="FORCE/KG",
         yaxis_title_font_size = 24, 
         xaxis_title_font_size = 24, 
         hoverlabel_font_size=24,
