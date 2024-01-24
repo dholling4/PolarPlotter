@@ -324,14 +324,12 @@ if team_csv is not None:
             )
         )
         )
-        st.plotly_chart(fig, use_container_width=True)
         
-        fig = go.Figure()
         fig.add_shape(type="line",
-            x0=0, y0=3.2, x1=10, y1=3.2,
+            x0=0, y0=1.2, x1=len(merged_df), y1=1.2,
             line=dict(
                 color="red",
-                width=4,
+                width=2,
                 dash="dashdot",
             )
         )
