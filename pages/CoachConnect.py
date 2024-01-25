@@ -273,7 +273,6 @@ if team_csv is not None:
         df2 = df2.sort_values('Name')
         merged_df = df.merge(df2, on='Name')
         merged_df = merged_df.rename(columns={"FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)", "FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)"})
-        st.write(merged_df.columns)
         merged_df['EXT/FLEX RATIO'] = merged_df['EXT (FORCE/KG)'] / merged_df['FLEX (FORCE/KG)']
         merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
 
