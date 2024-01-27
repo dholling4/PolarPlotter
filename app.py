@@ -327,3 +327,29 @@ with col3:
         st.write("Connect with your healthcare provider to track your recovery and get personalized feedback.")
         st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", use_column_width=True)
 
+
+# TERMS AND CONDITIONS AND PRIVACY POLICY
+
+expander_terms = st.expander("Terms and Conditions")
+with expander_terms:
+
+    st.markdown( """
+    ## Terms and Conditions
+    1. You agree to use this app responsibly.
+    2. Any data collected will be used in accordance with our privacy policy.
+
+    """)
+
+    
+    st.markdown("""
+    ## Privacy Policy
+    1. We collect data from you.
+    2. We use this data to improve your experience.
+    3. Read our full privacy policy [here](https://docs.google.com/document/d/1KQSpmWSaQywkFc8DWdO5kcemPEptHHmSr6XJvWQloSc/edit?usp=sharing).
+
+    """)
+    accepted_terms = st.checkbox("I accept the Terms and Conditions")
+    if accepted_terms:
+        st.success("Thank you for accepting the Terms and Conditions. You can now proceed.")
+    else:
+        st.warning("Please accept the Terms and Conditions to use the app.")
