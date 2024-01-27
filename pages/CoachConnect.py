@@ -292,13 +292,13 @@ if team_csv is not None:
             x=merged_df['Name'],
             y=merged_df['FLEX (FORCE/KG)'],
             name='FLEX',
-            marker_color='lightblue'
+            marker_color='rgb(26, 254, 255)',
         ))
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
             y=merged_df['EXT (FORCE/KG)'],
             name='EXT',
-            marker_color='lightgreen'
+            marker_color='rgb(26, 30, 255)'
         ))
         for color in range(len(merged_df)):
             if merged_df['EXT/FLEX RATIO'][color] >= 1.2:
@@ -329,7 +329,7 @@ if team_csv is not None:
         ))
         fig.update_layout(
             title="FLEX - EXT",
-            xaxis_title="Athlete",
+            # xaxis_title="Athlete",
             yaxis_title="FORCE/KG",
             yaxis_title_font_size = 24, 
             xaxis_title_font_size = 24, 
@@ -387,13 +387,13 @@ if team_csv is not None:
             x=merged_df['Name'],
             y=merged_df['ADD LEFT (FORCE/KG)'],
             name='ADD LEFT',
-            marker_color='lightblue'
+            marker_color='rgb(26, 254, 255)'
         ))
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
             y=merged_df['ABD LEFT (FORCE/KG)'],
             name='ABD LEFT',
-            marker_color='lightgreen'
+            marker_color='rgb(26, 30, 255)'
         ))
         for color in range(len(merged_df)):
             if merged_df['ADD/ABD LEFT RATIO'][color] >= 1.2:
@@ -425,7 +425,7 @@ if team_csv is not None:
 
         fig.update_layout(
             title="ABD - ADD",
-            xaxis_title="Athlete",
+            # xaxis_title="Athlete",
             yaxis_title="FORCE/KG",
             yaxis_title_font_size = 24, 
             xaxis_title_font_size = 24, 
