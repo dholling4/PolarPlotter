@@ -14,34 +14,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 import base64
-
-bc="#1141c"
-text="#E1E1E1"
-accent="#23A6D5"
-button="#2E3B4E"
-st.markdown(
-    f"""
-    <style>
-        body{{
-            color: {text};
-            bc: {bc};
-        }}
-        .st-bw {{
-            background-color: {button};
-            color: {text};
-        }}
-        .st-bb {{
-            border-color: {button};
-            color: {text};
-        }}
-        .css-1v3fvcr {{
-            color: {accent};
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-
-)
+import os
 
 def display_github_image(image_url):
     raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
