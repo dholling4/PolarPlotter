@@ -5,6 +5,7 @@ import streamlit as st
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import time
 
 VERSION = "0.3.1"
 path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/baseline_pics/"
@@ -21,325 +22,339 @@ run_front = path + "skeleton_run_frontview2.gif"
 run_side = path + "skeleton_run_side_view_enhanced.gif"
 
 # gif_url = "https://drive.google.com/uc?export=download&id=15rAodbylN0pB0DmY2-ao1ndYZZxib5Ki"
-instructions = st.expander("Instructions")
-with instructions:
-  st.write("1. Record or upload your activity")
-  st.write("2. Wait for the video to process")
-  st.write("3. View your score and personalized results")
+# instructions = st.expander("Instructions")
+# with instructions:
+#   st.write("1. Record or upload your activity")
+#   st.write("2. Wait for the video to process")
+#   st.write("3. View your score and personalized results")
 
-baseline_assessments = st.expander("Baseline Assessments")
-cols1, cols2 = st.columns(2)
-with baseline_assessments:
-  with cols1:
-    st.write("#### Depth Squat")
-    st.image(squat_url, caption="Depth Squat", use_column_width=True)
-  with cols2:
-    st.write("#### Single Leg Balance")
-    st.image(gif_url, caption="Single Leg Balance", width=240)
+# baseline_assessments = st.expander("Baseline Assessments")
+# cols1, cols2 = st.columns(2)
+# with baseline_assessments:
+#   with cols1:
+#     st.write("#### Depth Squat")
+#     st.image(squat_url, caption="Depth Squat", use_column_width=True)
+#   with cols2:
+#     st.write("#### Single Leg Balance")
+#     st.image(gif_url, caption="Single Leg Balance", width=240)
 
-  st.write("### Baseline assessments include:")
-  st.write("* Single Leg Balance")
-  st.write("* Depth Squat")
-  st.write("* Gait Analysis :runner: :closed_lock_with_key:")
+#   st.write("### Baseline assessments include:")
+#   st.write("* Single Leg Balance")
+#   st.write("* Depth Squat")
+#   st.write("* Gait Analysis :runner: :closed_lock_with_key:")
 
-  st.write("### Coming Soon:")
-  st.write("* Ankle Mobility")
-  st.write("* Hip Mobility")
-  st.write("* Core Stability")
-  st.write("* Shoulder Mobility")
+#   st.write("### Coming Soon:")
+#   st.write("* Ankle Mobility")
+#   st.write("* Hip Mobility")
+#   st.write("* Core Stability")
+#   st.write("* Shoulder Mobility")
 
-# Custom color scheme
-color_A = 'rgb(12, 44, 132)'  # Dark blue
-color_B = 'rgb(144, 148, 194)'  # Light blue
-color_C = 'rgb(171, 99, 250)'  # Purple
-color_D = 'rgb(230, 99, 250)'  # Pink
-color_E = 'rgb(99, 110, 250)'  # Blue
-color_F = 'rgb(25, 211, 243)'  # Turquoise
-st.write("# Unlock Your Full Potential: AI-Powered Biomechanics for Personalized Performance!")
-st.write("## Get Personalized Results")
+# # Custom color scheme
+# color_A = 'rgb(12, 44, 132)'  # Dark blue
+# color_B = 'rgb(144, 148, 194)'  # Light blue
+# color_C = 'rgb(171, 99, 250)'  # Purple
+# color_D = 'rgb(230, 99, 250)'  # Pink
+# color_E = 'rgb(99, 110, 250)'  # Blue
+# color_F = 'rgb(25, 211, 243)'  # Turquoise
+# st.write("# Unlock Your Full Potential: AI-Powered Biomechanics for Personalized Performance!")
+# st.write("## Get Personalized Results")
 
-col1, col2 = st.columns(2)
-with col1:
-  chart_data = pd.DataFrame(
-    {
-        " ": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
-        "Stability Score": [2.2, 2.6, 3.5, 3.4],
-    }
-  )
+# col1, col2 = st.columns(2)
+# with col1:
+#   chart_data = pd.DataFrame(
+#     {
+#         " ": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
+#         "Stability Score": [2.2, 2.6, 3.5, 3.4],
+#     }
+#   )
   
-  fig = px.bar(chart_data, x=['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'], y=chart_data["Stability Score"].to_list())
-  fig.update_layout(
-    xaxis_title = "",
-    yaxis_title="Stability Score",
-    legend_font_size = 28,
-    xaxis_title_font_size = 24, 
-    yaxis_title_font_size = 24, 
-    hoverlabel_font_size=24,
-    legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
+#   fig = px.bar(chart_data, x=['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'], y=chart_data["Stability Score"].to_list())
+#   fig.update_layout(
+#     xaxis_title = "",
+#     yaxis_title="Stability Score",
+#     legend_font_size = 28,
+#     xaxis_title_font_size = 24, 
+#     yaxis_title_font_size = 24, 
+#     hoverlabel_font_size=24,
+#     legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
 
-        xaxis=dict(
-        tickfont=dict(size=36 
-        ) 
-        ),
-        yaxis=dict(
-        tickfont=dict(
-        size=36 )
-    ))
-  st.plotly_chart(fig, use_container_width=True)
+#         xaxis=dict(
+#         tickfont=dict(size=36 
+#         ) 
+#         ),
+#         yaxis=dict(
+#         tickfont=dict(
+#         size=36 )
+#     ))
+#   st.plotly_chart(fig, use_container_width=True)
 
-with col2:
-  categories = ['Right Knee', 'Right Hip', 'Left Hip',
-                  'Left Ankle', 'Right Ankle']
-  fig = go.Figure()
+# with col2:
+#   categories = ['Right Knee', 'Right Hip', 'Left Hip',
+#                   'Left Ankle', 'Right Ankle']
+#   fig = go.Figure()
 
-  fig.add_trace(go.Scatterpolar(
-      r=[1.9, 2.3, 3.5, 4.2, 2],
-      theta=categories,
-      fill='toself',
-      line=dict(color=color_A),
-      marker=dict(color=color_A, size=10),
-      name='Control/Stability'
-  ))
+#   fig.add_trace(go.Scatterpolar(
+#       r=[1.9, 2.3, 3.5, 4.2, 2],
+#       theta=categories,
+#       fill='toself',
+#       line=dict(color=color_A),
+#       marker=dict(color=color_A, size=10),
+#       name='Control/Stability'
+#   ))
 
-  fig.add_trace(go.Scatterpolar(
-      r=[3.9, 2.2, 2.4, 1.9, 2],
-      theta=categories,
-      fill='toself',
-      line=dict(color=color_F),
-      marker=dict(color=color_F, size=10),
-      name='Range of Motion'
-  ))
+#   fig.add_trace(go.Scatterpolar(
+#       r=[3.9, 2.2, 2.4, 1.9, 2],
+#       theta=categories,
+#       fill='toself',
+#       line=dict(color=color_F),
+#       marker=dict(color=color_F, size=10),
+#       name='Range of Motion'
+#   ))
 
-  fig.update_layout(
-    polar=dict(
-      radialaxis=dict(
-        visible=True,
-        range=[0, 5]
-      )
-    ),
-    # showlegend=True,
-    legend=dict(x=0.65, y=0.1),
-    font=dict(
-      color='white',
-      size = 20   # Set font color to white
-    ),
-  )
+#   fig.update_layout(
+#     polar=dict(
+#       radialaxis=dict(
+#         visible=True,
+#         range=[0, 5]
+#       )
+#     ),
+#     # showlegend=True,
+#     legend=dict(x=0.65, y=0.1),
+#     font=dict(
+#       color='white',
+#       size = 20   # Set font color to white
+#     ),
+#   )
 
-  st.plotly_chart(fig, use_container_width=False, width=100)
+#   st.plotly_chart(fig, use_container_width=False, width=100)
 
-st.write("# Take your run to the next level!")
-# Load data
+# st.write("# Take your run to the next level!")
+# # Load data
 
-run1, runner_plots  = st.columns(2)
-with run1:
-  st.write("### Gait Analysis")
-  st.image(run_front, caption="Front View", width=300)
-  st.image(run_side, caption="Side View", width=300)
+# run1, runner_plots  = st.columns(2)
+# with run1:
+#   st.write("### Gait Analysis")
+#   st.image(run_front, caption="Front View", width=300)
+#   st.image(run_side, caption="Side View", width=300)
 
-with runner_plots:
-  chart_data = pd.DataFrame(
-    {"Step Count": list(range(16)), "Left": np.random.randn(16), "Right": np.random.randn(16)}
-  )
-  st.write('### Foot Strike Score')
-  st.bar_chart(
-    chart_data, x="Step Count", y=["Left", "Right"], 
-    # color=[color_C, "#0000FF"]  # Optional
-  )
-  # df = load_data(r'C:\Users\dzh0063\OneDrive - Auburn University\Documents\Tiger Cage\Baseline\running_knee_angles_normalized.csv')
+# with runner_plots:
+#   chart_data = pd.DataFrame(
+#     {"Step Count": list(range(16)), "Left": np.random.randn(16), "Right": np.random.randn(16)}
+#   )
+#   st.write('### Foot Strike Score')
+#   st.bar_chart(
+#     chart_data, x="Step Count", y=["Left", "Right"], 
+#     # color=[color_C, "#0000FF"]  # Optional
+#   )
+#   # df = load_data(r'C:\Users\dzh0063\OneDrive - Auburn University\Documents\Tiger Cage\Baseline\running_knee_angles_normalized.csv')
 
 
-  left_knee = [3.5, 6.052, 8.604, 11.156, 12.332, 12.39, 12.448, 12.695, 14.58, 16.465, 18.35, 19.57, 20.44, 21.31, 22.18, 23.05, 23.92, 24.79, 25, 25, 25, 24.559, 23.138, 21.717, 20.296, 19.325, 18.426, 17.527, 16.976, 16.918, 16.86, 16.802, 17.36, 17.94, 18.52, 19.145, 19.812, 20.479, 21.154, 21.937, 22.72, 23.503, 24.376, 25.304, 26.232, 27.025, 27.17, 27.315, 27.46, 29.894, 33.2, 36.506, 39.908, 43.562, 47.216, 50.87, 53.804, 56.588, 59.372, 61.738, 63.42, 65.102, 66.784, 66.927, 66.956, 66.985, 66.3, 64.85, 63.4, 61.91, 59.3, 56.69, 54.08, 52.15, 50.7, 49.25, 47.56, 44.37, 41.18, 37.99, 36.2, 35.04, 33.88, 32.3, 29.4, 26.5, 23.6, 20.93, 18.32, 15.71, 13.5, 12.05, 10.6, 9.15, 8.74, 8.45, 8.16, 8.52, 9.68, 10.84, 12.]
+#   left_knee = [3.5, 6.052, 8.604, 11.156, 12.332, 12.39, 12.448, 12.695, 14.58, 16.465, 18.35, 19.57, 20.44, 21.31, 22.18, 23.05, 23.92, 24.79, 25, 25, 25, 24.559, 23.138, 21.717, 20.296, 19.325, 18.426, 17.527, 16.976, 16.918, 16.86, 16.802, 17.36, 17.94, 18.52, 19.145, 19.812, 20.479, 21.154, 21.937, 22.72, 23.503, 24.376, 25.304, 26.232, 27.025, 27.17, 27.315, 27.46, 29.894, 33.2, 36.506, 39.908, 43.562, 47.216, 50.87, 53.804, 56.588, 59.372, 61.738, 63.42, 65.102, 66.784, 66.927, 66.956, 66.985, 66.3, 64.85, 63.4, 61.91, 59.3, 56.69, 54.08, 52.15, 50.7, 49.25, 47.56, 44.37, 41.18, 37.99, 36.2, 35.04, 33.88, 32.3, 29.4, 26.5, 23.6, 20.93, 18.32, 15.71, 13.5, 12.05, 10.6, 9.15, 8.74, 8.45, 8.16, 8.52, 9.68, 10.84, 12.]
   
-  right_knee = [4.9, 6.669, 8.438, 10.207, 11.016, 11.045, 11.074, 11.307, 13.308, 15.309, 17.31, 18.38, 18.96, 19.54, 20.24855071, 21.44987916, 22.65120761, 23.85253606, 23.93515927, 23.66183083, 23.38850238, 22.822, 21.604, 20.386, 19.168, 18.5, 17.92, 17.34, 16.988, 16.959, 16.93, 16.901, 17.488, 18.097, 18.706, 19.45, 20.32, 21.19, 22.04, 22.62, 23.2, 23.78, 24.54, 25.41, 26.28, 27.075, 27.51, 27.945, 28.38, 30.684, 33.7, 36.716, 39.82575785, 43.18163008, 46.5375023, 49.89337452, 52.77471583, 55.55719654, 58.33967724, 60.42732361, 61.37796835, 62.32861308, 63.27925781, 63.20336789, 63.05143837, 62.89950885, 62.30680907, 61.24185546, 60.17690185, 59.08610275, 57.27163015, 55.45715755, 53.64268496, 51.7289717, 49.7452062, 47.76144071, 45.7245872, 43.35593358, 40.98727996, 38.61862634, 36.38269276, 34.2064832, 32.03027365, 29.7188992, 26.98272083, 24.24654245, 21.51036408, 19.64864115, 18.01503703, 16.38143291, 14.87755516, 13.62015748, 12.36275981, 11.10536213, 10.66394325, 10.31667576, 9.96940828, 10.87205426, 13.31305527, 15.75405629, 18.1950573]  
+#   right_knee = [4.9, 6.669, 8.438, 10.207, 11.016, 11.045, 11.074, 11.307, 13.308, 15.309, 17.31, 18.38, 18.96, 19.54, 20.24855071, 21.44987916, 22.65120761, 23.85253606, 23.93515927, 23.66183083, 23.38850238, 22.822, 21.604, 20.386, 19.168, 18.5, 17.92, 17.34, 16.988, 16.959, 16.93, 16.901, 17.488, 18.097, 18.706, 19.45, 20.32, 21.19, 22.04, 22.62, 23.2, 23.78, 24.54, 25.41, 26.28, 27.075, 27.51, 27.945, 28.38, 30.684, 33.7, 36.716, 39.82575785, 43.18163008, 46.5375023, 49.89337452, 52.77471583, 55.55719654, 58.33967724, 60.42732361, 61.37796835, 62.32861308, 63.27925781, 63.20336789, 63.05143837, 62.89950885, 62.30680907, 61.24185546, 60.17690185, 59.08610275, 57.27163015, 55.45715755, 53.64268496, 51.7289717, 49.7452062, 47.76144071, 45.7245872, 43.35593358, 40.98727996, 38.61862634, 36.38269276, 34.2064832, 32.03027365, 29.7188992, 26.98272083, 24.24654245, 21.51036408, 19.64864115, 18.01503703, 16.38143291, 14.87755516, 13.62015748, 12.36275981, 11.10536213, 10.66394325, 10.31667576, 9.96940828, 10.87205426, 13.31305527, 15.75405629, 18.1950573]  
   
-  ## Display the chart
-  st.plotly_chart(fig, use_container_width=True)
+#   ## Display the chart
+#   st.plotly_chart(fig, use_container_width=True)
 
-  chart_data = pd.DataFrame(
-    {"Step Count": list(range(len(left_knee))), "Left Knee": left_knee, "Right Knee": right_knee}
-  )
+#   chart_data = pd.DataFrame(
+#     {"Step Count": list(range(len(left_knee))), "Left Knee": left_knee, "Right Knee": right_knee}
+#   )
 
-# KINEMATICS
-st.write('##### Joint Angles')
-chart_data2 = pd.DataFrame(
-  {"Left Knee": left_knee, "Right Knee": right_knee})
+# # KINEMATICS
+# st.write('##### Joint Angles')
+# chart_data2 = pd.DataFrame(
+#   {"Left Knee": left_knee, "Right Knee": right_knee})
 
-chart_type = st.selectbox('Choose a chart type', ['Line', 'Bar']) 
-## Create the chart
-if chart_type == 'Line':
-  fig = go.Figure()
-  fig.add_trace(go.Line(y=chart_data2["Left Knee"].to_list(), x=np.arange(0, 100, 100/len(left_knee)),
-                        mode='lines+markers',
-                        name='Left Knee'))
-  fig.add_trace(go.Line(y=chart_data2["Right Knee"].to_list(), x=np.arange(0, 100, 100/len(right_knee)),
-                        mode='lines+markers',
-                        name='Right Knee'))
-  fig.update_layout(
-        title="KNEE FLEXION ANGLES",
-        xaxis_title="GAIT CYCLE (%)",
-        yaxis_title="DEGREES",
-        legend_font_size = 28,
-        xaxis_title_font_size = 24, 
-        yaxis_title_font_size = 24, 
-        hoverlabel_font_size=24,
-        legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
-        title_font=dict(
-            # family="Courier New, monospace",
-            size=42,
-            color="white"
-            ),
-            xaxis=dict(
-            tickfont=dict(size=36 
-            ) 
-            ),
-            yaxis=dict(
-            tickfont=dict(
-            size=36 
-        )
-    )
-    )
+# chart_type = st.selectbox('Choose a chart type', ['Line', 'Bar']) 
+# ## Create the chart
+# if chart_type == 'Line':
+#   fig = go.Figure()
+#   fig.add_trace(go.Line(y=chart_data2["Left Knee"].to_list(), x=np.arange(0, 100, 100/len(left_knee)),
+#                         mode='lines+markers',
+#                         name='Left Knee'))
+#   fig.add_trace(go.Line(y=chart_data2["Right Knee"].to_list(), x=np.arange(0, 100, 100/len(right_knee)),
+#                         mode='lines+markers',
+#                         name='Right Knee'))
+#   fig.update_layout(
+#         title="KNEE FLEXION ANGLES",
+#         xaxis_title="GAIT CYCLE (%)",
+#         yaxis_title="DEGREES",
+#         legend_font_size = 28,
+#         xaxis_title_font_size = 24, 
+#         yaxis_title_font_size = 24, 
+#         hoverlabel_font_size=24,
+#         legend=dict(yanchor="top", y=0.98, xanchor="left", x=0.01),
+#         title_font=dict(
+#             # family="Courier New, monospace",
+#             size=42,
+#             color="white"
+#             ),
+#             xaxis=dict(
+#             tickfont=dict(size=36 
+#             ) 
+#             ),
+#             yaxis=dict(
+#             tickfont=dict(
+#             size=36 
+#         )
+#     )
+#     )
             
-  st.plotly_chart(fig, use_container_width=True)
+#   st.plotly_chart(fig, use_container_width=True)
 
-elif chart_type == 'Bar':
-  st.bar_chart(chart_data2, y=["Left Knee", "Right Knee"])
+# elif chart_type == 'Bar':
+#   st.bar_chart(chart_data2, y=["Left Knee", "Right Knee"])
 
-# DIAL PLOTS  
-dial1, dial2, dial3 = st.columns(3)
-title_font_size = 26
-with dial1:
-  value = 75  # Value to be displayed on the dial (e.g., gas mileage)
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=value,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "Hip Drive", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,      
-      font=dict(size=24)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
-  # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
-  with st.expander('Hip Drive'):
-      st.write('Hip Drive is the power generated by your hips and glutes to propel you forward during running. Hip drive is important because it helps you run faster and more efficiently. A weak hip drive can lead to overstriding, which can lead to knee pain and shin splints. A strong hip drive can help you run faster and more efficiently.')
-      url = "https://journals.biologists.com/jeb/article/215/11/1944/10883/Muscular-strategy-shift-in-human-running"
-      st.link_button(":book: Read more about the importance of hip drive", url)
-with dial2:
-  value = 57 
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=value,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "Foot Strike Score", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,
-      font=dict(size=24)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  # if foot strike is low, recommend drills to increase cadence and reduce overstriding (e.g. high knees, butt kicks, Karaoke, and wind-sprints)
-  with st.expander("Foot Strike Score"):
-      # st.plotly_chart(fig, use_container_width=True)
-      st.write('Foot strike is the first point of contact between your foot and the ground. Foot strike should be on the midfoot, not the heel or the toes. If your foot strike is on your heel, it can lead to overstriding, which can lead to knee pain and shin splints. If your foot strike is on your toes, it can lead to calf pain and achilles tendonitis. A midfoot strike is ideal because it allows your foot to absorb the impact of the ground and propel you forward.')
-      url2 ="https://journals.lww.com/nsca-jscr/abstract/2007/08000/foot_strike_patterns_of_runners_at_the_15_km_point.4"
-      st.link_button(":book: Read more about the importance of foot strike", url2)
-with dial3:
-  value3 = 80  
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=value3,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value3)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "Arm Swing", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,
-      font=dict(size=24)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
-  with st.expander("Arm Swing"):
-      # st.plotly_chart(fig, use_container_width=True)
-      st.write('Arm Swing is important during running because it helps counterbalance the motion of the legs. Arm swing should not cross the midline of the body, but have more of a forward and back rocking motion. Arm swing helps your opposite leg drive forward during toe-off. A strong the arm-swing helps power your hips and knees to drive forward during running. A weak arm swing can lead to a weak hip drive and overstriding.')
-      url = "https://journals.biologists.com/jeb/article/217/14/2456/12120/The-metabolic-cost-of-human-running-is-swinging"
-      st.link_button(":book: Read more about the importance of arm swing", url)
+# # DIAL PLOTS  
+# dial1, dial2, dial3 = st.columns(3)
+# title_font_size = 26
+# with dial1:
+#   value = 75  # Value to be displayed on the dial (e.g., gas mileage)
+#   fig = go.Figure(go.Indicator(
+#       mode="gauge+number",
+#       value=value,
+#       domain={'x': [0, 1], 'y': [0, 1]},
+#       gauge=dict(
+#           axis=dict(range=[0, 100]),
+#           bar=dict(color="white"),
+#           borderwidth=2,
+#           bordercolor="gray",
+#           steps=[
+#               dict(range=[0, 25], color="red"),
+#               dict(range=[25, 50], color="orange"),
+#               dict(range=[50, 75], color="yellow"),
+#               dict(range=[75, 100], color="green")
+#           ],
+#           threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+#       )
+#   ))
+#   fig.update_layout(
+#       title={'text': "Hip Drive", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#       title_font_size = title_font_size,      
+#       font=dict(size=24)
+#   )
+#   st.plotly_chart(fig, use_container_width=True)
+#   # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
+#   # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
+#   with st.expander('Hip Drive'):
+#       st.write('Hip Drive is the power generated by your hips and glutes to propel you forward during running. Hip drive is important because it helps you run faster and more efficiently. A weak hip drive can lead to overstriding, which can lead to knee pain and shin splints. A strong hip drive can help you run faster and more efficiently.')
+#       url = "https://journals.biologists.com/jeb/article/215/11/1944/10883/Muscular-strategy-shift-in-human-running"
+#       st.link_button(":book: Read more about the importance of hip drive", url)
+# with dial2:
+#   value = 57 
+#   fig = go.Figure(go.Indicator(
+#       mode="gauge+number",
+#       value=value,
+#       domain={'x': [0, 1], 'y': [0, 1]},
+#       gauge=dict(
+#           axis=dict(range=[0, 100]),
+#           bar=dict(color="white"),
+#           borderwidth=2,
+#           bordercolor="gray",
+#           steps=[
+#               dict(range=[0, 25], color="red"),
+#               dict(range=[25, 50], color="orange"),
+#               dict(range=[50, 75], color="yellow"),
+#               dict(range=[75, 100], color="green")
+#           ],
+#           threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+#       )
+#   ))
+#   fig.update_layout(
+#       title={'text': "Foot Strike Score", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#       title_font_size = title_font_size,
+#       font=dict(size=24)
+#   )
+#   st.plotly_chart(fig, use_container_width=True)
+#   # if foot strike is low, recommend drills to increase cadence and reduce overstriding (e.g. high knees, butt kicks, Karaoke, and wind-sprints)
+#   with st.expander("Foot Strike Score"):
+#       # st.plotly_chart(fig, use_container_width=True)
+#       st.write('Foot strike is the first point of contact between your foot and the ground. Foot strike should be on the midfoot, not the heel or the toes. If your foot strike is on your heel, it can lead to overstriding, which can lead to knee pain and shin splints. If your foot strike is on your toes, it can lead to calf pain and achilles tendonitis. A midfoot strike is ideal because it allows your foot to absorb the impact of the ground and propel you forward.')
+#       url2 ="https://journals.lww.com/nsca-jscr/abstract/2007/08000/foot_strike_patterns_of_runners_at_the_15_km_point.4"
+#       st.link_button(":book: Read more about the importance of foot strike", url2)
+# with dial3:
+#   value3 = 80  
+#   fig = go.Figure(go.Indicator(
+#       mode="gauge+number",
+#       value=value3,
+#       domain={'x': [0, 1], 'y': [0, 1]},
+#       gauge=dict(
+#           axis=dict(range=[0, 100]),
+#           bar=dict(color="white"),
+#           borderwidth=2,
+#           bordercolor="gray",
+#           steps=[
+#               dict(range=[0, 25], color="red"),
+#               dict(range=[25, 50], color="orange"),
+#               dict(range=[50, 75], color="yellow"),
+#               dict(range=[75, 100], color="green")
+#           ],
+#           threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value3)
+#       )
+#   ))
+#   fig.update_layout(
+#       title={'text': "Arm Swing", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#       title_font_size = title_font_size,
+#       font=dict(size=24)
+#   )
+#   st.plotly_chart(fig, use_container_width=True)
+#   # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
+#   with st.expander("Arm Swing"):
+#       # st.plotly_chart(fig, use_container_width=True)
+#       st.write('Arm Swing is important during running because it helps counterbalance the motion of the legs. Arm swing should not cross the midline of the body, but have more of a forward and back rocking motion. Arm swing helps your opposite leg drive forward during toe-off. A strong the arm-swing helps power your hips and knees to drive forward during running. A weak arm swing can lead to a weak hip drive and overstriding.')
+#       url = "https://journals.biologists.com/jeb/article/217/14/2456/12120/The-metabolic-cost-of-human-running-is-swinging"
+#       st.link_button(":book: Read more about the importance of arm swing", url)
 
 
-  # ----- UPLOAD AND RUN VIDEO FILE -----
+#   # ----- UPLOAD AND RUN VIDEO FILE -----
 
-# ---------- RUN VIDEO FILE --------------
-from io import BytesIO
-# url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
-url_squat = path + "depth_squat_instructions_transparent.png"
+# # ---------- RUN VIDEO FILE --------------
+# from io import BytesIO
+# # url_squat = 'https://drive.google.com/uc?export=download&id=1OfosAFuI3UCs4TUqnxvrId4YqWjkPPwd'
+# url_squat = path + "depth_squat_instructions_transparent.png"
 
-# display url_squat
-# st.video(url_squat)
+# # display url_squat
+# # st.video(url_squat)
 
-st.write("#### Upoad your video below :point_down:")
-st.write("""###### Instructions for recording depth squat:
-STEP 1: Position Setup""")
-st.image(url_squat, caption="Depth Squat Instructions", width=500)
-st.write("""
-⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
-* Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
+# st.write("#### Upoad your video below :point_down:")
+# st.write("""###### Instructions for recording depth squat:
+# STEP 1: Position Setup""")
+# st.image(url_squat, caption="Depth Squat Instructions", width=500)
+# st.write("""
+# ⦿ Record the participant from a 45-degree angle so you can see both the side and front of the participant
+# * Take 1-2 steps away and make sure the entire body is in the frame (including the feet)
 
-STEP 2: Recording
+# STEP 2: Recording
          
-⦿ Start the recording
-* The participant should be standing with their feet shoulder width apart
-* The participant should then squat down as far as they can go, just below parallel or 90 degrees
-* The participant should then stand back up to the starting position
-* The participant should repeat this 5 times
+# ⦿ Start the recording
+# * The participant should be standing with their feet shoulder width apart
+# * The participant should then squat down as far as they can go, just below parallel or 90 degrees
+# * The participant should then stand back up to the starting position
+# * The participant should repeat this 5 times
          
-⦿ Stop the recording
+# ⦿ Stop the recording
          
-STEP 3: Upload the video 
-* Upload the video to the app
-* Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
-""")
+# STEP 3: Upload the video 
+# * Upload the video to the app
+# * Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)        
+# """)
 
 st.write("### Convert your MOV file to GIF using this software: https://cloudconvert.com/mov-to-gif")
 uploaded_file = st.file_uploader("Choose an image...",  type=".gif") # change type=None to upload any file type (iphones use .MOV) 
+if uploaded_file is not None:
+    # Display a loading message
+    start_time = time.time()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+        
+    # Simulate video processing (replace with actual processing code)
+    for percent_complete in range(0, 101, 10):
+        time.sleep(0.1)  # Simulating processing time
+        progress_bar.progress(percent_complete)
+        status_text.text(f"Processing: {percent_complete}%")
+
+    # Display completion message
+    st.success("Video processing complete!")
 # with st.expander("Select a pre-recorded video"):
 #   run_front_view = st.checkbox("Running- Front View")
 #   run_side_view = st.checkbox("Running- Side View")
@@ -930,6 +945,14 @@ if uploaded_file is not None:
   right_shoulder_norm = euclidean_distance(right_shoulder_list_y) 
   st.write(image_capture)
 
+  # TOTAL TIME TO RUN
+    # Calculate the elapsed time
+  elapsed_time = time.time() - start_time
+
+  # Display the elapsed time
+  st.success(f"Video processing completed in {elapsed_time:.2f} seconds.")
+      
+
   """
   ### Video Results
   """
@@ -955,6 +978,7 @@ if uploaded_file is not None:
   )
   st.line_chart(motion_knee)
   st.line_chart(motion_hip)
+
 
 
 
