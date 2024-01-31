@@ -954,7 +954,7 @@ if uploaded_file is not None:
       
 
   """
-  ### Video Results
+  ## Video Results
   """
 
 # Function to plot the data
@@ -983,7 +983,7 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
       hoverlabel_font_size=38,
       title_font=dict(
           family="Courier New, monospace",
-          size=42,
+          size=48,
           color="white"
           ),
           xaxis=dict(
@@ -995,9 +995,13 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
           tickfont=dict(
           size=28 
       )
+      ),
+          legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  
+          font=dict(size=32) 
   )
   )
-  st.plotly_chart(fig_bar)
+  st.plotly_chart(fig_bar, use_container_width=True)
 
   # Motion Hip Line Chart
   motion_hip = pd.DataFrame(
@@ -1007,8 +1011,6 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
       }
   )
 
-  st.subheader("Motion of Hips")
-
   fig_hip = px.line(motion_hip, x=motion_hip.index, y=["Left Hip", "Right Hip"],
                     labels={"index": "Frame"},
                     title="Motion of Hips",
@@ -1017,13 +1019,13 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
   # fig_hip.update_layout(font=dict(size=24))
   fig_hip.update_layout(
       xaxis_title="Frame",
-      yaxis_title="Angle",
+      yaxis_title="Distance",
       yaxis_title_font_size = 38, 
       xaxis_title_font_size = 38, 
       hoverlabel_font_size=38,
       title_font=dict(
           family="Courier New, monospace",
-          size=42,
+          size=48,
           color="white"
           ),
           xaxis=dict(
@@ -1034,11 +1036,14 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
           yaxis=dict(
           tickfont=dict(
           size=28 
-      )
-  )
-  )
+          )
+      ),
 
-  st.plotly_chart(fig_hip)
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
+      ))
+  st.plotly_chart(fig_knee, use_container_width=True)
 
   # Motion Knee Line Chart
   motion_knee = pd.DataFrame(
@@ -1048,8 +1053,6 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
       }
   )
 
-  st.subheader("Motion of Knees")
-
   fig_knee = px.line(motion_knee, x=motion_knee.index, y=["Left Knee", "Right Knee"],
                       labels={"index": "Frame"},
                       title="Motion of Knees",
@@ -1057,13 +1060,13 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
 
   fig_knee.update_layout(
       xaxis_title="Frame",
-      yaxis_title="Angle",
+      yaxis_title="Distance",
       yaxis_title_font_size = 38, 
       xaxis_title_font_size = 38, 
       hoverlabel_font_size=38,
       title_font=dict(
           family="Courier New, monospace",
-          size=42,
+          size=48,
           color="white"
           ),
           xaxis=dict(
@@ -1074,21 +1077,26 @@ def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
           yaxis=dict(
           tickfont=dict(
           size=28 
-      )
+          )
+      ),
+
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
   )
   )
-  st.plotly_chart(fig_knee)
+  st.plotly_chart(fig_knee, use_container_width=True)
 
   # Example data
-  left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm = 0.8, 0.7, 0.9, 0.75
-  left_hip_list_x = [1, 2, 3, 4, 5]
-  right_hip_list_x = [1, 2, 3, 4, 5]
-  left_knee_list_x = [1, 2, 3, 4, 5]
-  right_knee_list_x = [1, 2, 3, 4, 5]
+#   left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm = 0.8, 0.7, 0.9, 0.75
+#   left_hip_list_x = [1, 2, 3, 4, 5]
+#   right_hip_list_x = [1, 2, 3, 4, 5]
+#   left_knee_list_x = [1, 2, 3, 4, 5]
+#   right_knee_list_x = [1, 2, 3, 4, 5]
 
-# Call the function to plot the results
-plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
-left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x)
+# # Call the function to plot the results
+# plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
+# left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x)
 # ======== END MOVENET ========
 
 #       st.write('##### Recommended Drills')
