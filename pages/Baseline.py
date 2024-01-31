@@ -958,134 +958,133 @@ if uploaded_file is not None:
   """
 
 # Function to plot the data
-def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
-                 left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
+# def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
+#                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
 
+# Stability Score Bar Chart
+chart_data = pd.DataFrame(
+    {
+        "Joint": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
+        "Stability Score": [left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm],
+    }
+)
 
-  # Stability Score Bar Chart
-  chart_data = pd.DataFrame(
-      {
-          "Joint": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
-          "Stability Score": [left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm],
-      }
-  )
+fig_bar = px.bar(chart_data, x="Joint", y="Stability Score", color="Joint",
+                labels={"Stability Score": "Stability Score"},
+                title="Stability Score by Joint",
+                width=600, height=400)
 
-  fig_bar = px.bar(chart_data, x="Joint", y="Stability Score", color="Joint",
-                  labels={"Stability Score": "Stability Score"},
-                  title="Stability Score by Joint",
-                  width=600, height=400)
+fig_bar.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    yaxis_title_font_size = 38, 
+    xaxis_title_font_size = 38, 
+    hoverlabel_font_size=38,
+    title_font=dict(
+        family="Courier New, monospace",
+        size=36,
+        color="white"
+        ),
+        xaxis=dict(
+        tickfont=dict(
+            size=28 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=28 
+    )
+    ),
+        legend=dict(
+        title=dict(text='Joint', font=dict(size=36)),  
+        font=dict(size=32) 
+)
+)
+st.plotly_chart(fig_bar, use_container_width=True)
 
-  fig_bar.update_layout(
-      xaxis_title="",
-      yaxis_title="",
-      yaxis_title_font_size = 38, 
-      xaxis_title_font_size = 38, 
-      hoverlabel_font_size=38,
-      title_font=dict(
-          family="Courier New, monospace",
-          size=48,
-          color="white"
-          ),
-          xaxis=dict(
-          tickfont=dict(
-              size=28 
-          ) 
-          ),
-          yaxis=dict(
-          tickfont=dict(
-          size=28 
-      )
-      ),
-          legend=dict(
-          title=dict(text='Joint', font=dict(size=36)),  
-          font=dict(size=32) 
-  )
-  )
-  st.plotly_chart(fig_bar, use_container_width=True)
+# Motion Hip Line Chart
+motion_hip = pd.DataFrame(
+    {
+        "Left Hip": left_hip_list_x,
+        "Right Hip": right_hip_list_x
+    }
+)
 
-  # Motion Hip Line Chart
-  motion_hip = pd.DataFrame(
-      {
-          "Left Hip": left_hip_list_x,
-          "Right Hip": right_hip_list_x
-      }
-  )
+fig_hip = px.line(motion_hip, x=motion_hip.index, y=["Left Hip", "Right Hip"],
+                  labels={"index": "Frame"},
+                  title="Motion of Hips",
+                  width=800, height=400)
 
-  fig_hip = px.line(motion_hip, x=motion_hip.index, y=["Left Hip", "Right Hip"],
+# fig_hip.update_layout(font=dict(size=24))
+fig_hip.update_layout(
+    xaxis_title="Frame",
+    yaxis_title="Distance",
+    yaxis_title_font_size = 38, 
+    xaxis_title_font_size = 38, 
+    hoverlabel_font_size=38,
+    title_font=dict(
+        family="Courier New, monospace",
+        size=40,
+        color="white"
+        ),
+        xaxis=dict(
+        tickfont=dict(
+            size=28 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=28 
+        )
+    ),
+
+    legend=dict(
+        title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+        font=dict(size=32)  # Set legend label fontsize
+    ))
+st.plotly_chart(fig_hip, use_container_width=True)
+
+# Motion Knee Line Chart
+motion_knee = pd.DataFrame(
+    {
+        "Left Knee": left_knee_list_x,
+        "Right Knee": right_knee_list_x
+    }
+)
+
+fig_knee = px.line(motion_knee, x=motion_knee.index, y=["Left Knee", "Right Knee"],
                     labels={"index": "Frame"},
-                    title="Motion of Hips",
+                    title="Motion of Knees",
                     width=800, height=400)
 
-  # fig_hip.update_layout(font=dict(size=24))
-  fig_hip.update_layout(
-      xaxis_title="Frame",
-      yaxis_title="Distance",
-      yaxis_title_font_size = 38, 
-      xaxis_title_font_size = 38, 
-      hoverlabel_font_size=38,
-      title_font=dict(
-          family="Courier New, monospace",
-          size=48,
-          color="white"
-          ),
-          xaxis=dict(
-          tickfont=dict(
-              size=28 
-          ) 
-          ),
-          yaxis=dict(
-          tickfont=dict(
-          size=28 
-          )
-      ),
+fig_knee.update_layout(
+    xaxis_title="Frame",
+    yaxis_title="Distance",
+    yaxis_title_font_size = 38, 
+    xaxis_title_font_size = 38, 
+    hoverlabel_font_size=38,
+    title_font=dict(
+        family="Courier New, monospace",
+        size=40,
+        color="white"
+        ),
+        xaxis=dict(
+        tickfont=dict(
+            size=28 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=28 
+        )
+    ),
 
-      legend=dict(
-          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-          font=dict(size=32)  # Set legend label fontsize
-      ))
-  st.plotly_chart(fig_knee, use_container_width=True)
-
-  # Motion Knee Line Chart
-  motion_knee = pd.DataFrame(
-      {
-          "Left Knee": left_knee_list_x,
-          "Right Knee": right_knee_list_x
-      }
-  )
-
-  fig_knee = px.line(motion_knee, x=motion_knee.index, y=["Left Knee", "Right Knee"],
-                      labels={"index": "Frame"},
-                      title="Motion of Knees",
-                      width=800, height=400)
-
-  fig_knee.update_layout(
-      xaxis_title="Frame",
-      yaxis_title="Distance",
-      yaxis_title_font_size = 38, 
-      xaxis_title_font_size = 38, 
-      hoverlabel_font_size=38,
-      title_font=dict(
-          family="Courier New, monospace",
-          size=48,
-          color="white"
-          ),
-          xaxis=dict(
-          tickfont=dict(
-              size=28 
-          ) 
-          ),
-          yaxis=dict(
-          tickfont=dict(
-          size=28 
-          )
-      ),
-
-      legend=dict(
-          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-          font=dict(size=32)  # Set legend label fontsize
-  )
-  )
-  st.plotly_chart(fig_knee, use_container_width=True)
+    legend=dict(
+        title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+        font=dict(size=32)  # Set legend label fontsize
+)
+)
+st.plotly_chart(fig_knee, use_container_width=True)
 
   # Example data
 #   left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm = 0.8, 0.7, 0.9, 0.75
