@@ -3,6 +3,21 @@ st.markdown("# Welcome to FootWear \U0001F45F")
 st.markdown("### FootWear: Smart Strides, Better Rides \U0001F45F")
 st.sidebar.markdown("# FootWear \U0001F45F")
 
+github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+
+st.sidebar.markdown("# The Digital Athlete ")
+download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
+david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
+persons = [
+    {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
+    {"image_url": github_url + "favour_ashe.png", "name": "Motion Analysis", "description": " "},
+    {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "},
+    {"image_url": github_url + "thera_track.jpg", "name": "TheraTrack", "description": " "},
+
+]  
+
+st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", use_column_width=True)
+
 expander_whatis = st.expander("What is FootWear?")
 with expander_whatis:
     
