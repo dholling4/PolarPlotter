@@ -329,10 +329,9 @@ with expander_terms:
 
 # PRE-ORDERS!!
 import os 
-filepath="pre_orders/existing_pre_orders.csv"
+csv_path="https://github.com/dholling4/PolarPlotter/blob/main/pre_orders/existing_pre_orders.csv"
 def save_user_data(user_data):
     # script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = "pre_orders/existing_pre_orders.csv"
     st.write(csv_path)
     df = pd.DataFrame([user_data])
     df.to_csv(csv_path, mode="a", index=False, header=not os.path.exists(csv_path))
