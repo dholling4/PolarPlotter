@@ -412,7 +412,7 @@ conn = sqlite3.connect("pre_order_data.db")
 st.header("Existing Pre-orders")
 existing_pre_orders = pd.read_sql_query("SELECT * FROM pre_orders", conn)
 st.table(existing_pre_orders)
-# existing_pre_orders.to_csv('workspaces/PolarPlotter/existing_pre_orders.csv', index=False)
+existing_pre_orders.to_csv('https://raw.githubusercontent.com/dholling4/PolarPlotter/main/existing_pre_orders.csv', index=False)
 existing_pre_orders.to_sql('pre_orders', conn, if_exists='replace', index=False)
 
 # Close the SQLite connection
