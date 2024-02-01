@@ -360,7 +360,7 @@ import sqlite3
 # Function to save user data to SQLite sdatabase
 def save_user_data_to_db(user_data):
     # Connect to SQLite database (create a new one if it doesn't exist)
-    conn = sqlite3.connect("https://raw.githubusercontent.com/dholling4/PolarPlotter/main/pre_order_data.db")
+    conn = sqlite3.connect("pre_order_data.db")
     cursor = conn.cursor()
 
     # Create a table if it doesn't exist
