@@ -9,7 +9,7 @@ path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/footwear_p
 path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
 persons = [
-    {"image_url": path + "back_footwear.jpg", "name": "", "description": ""},
+    {"image_url": path + "back_footwear.jpg", "name": "comming soon...", "description": ""},
     {"image_url": path + "run_footwear.jpg", "name": "", "description": ""},
 ]
 # Create six columns for each person

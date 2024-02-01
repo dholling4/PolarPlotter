@@ -40,6 +40,36 @@ with col1:
 with col2:
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
 
+# =============================================================================
+from io import BytesIO
+import requests
+from PIL import Image
+
+# Function to display MP4 file
+def display_video_from_github(repo_url, file_path):
+    video_url = f"{repo_url}/raw/main/{file_path}"
+    video_response = requests.get(video_url)
+    
+    if video_response.status_code == 200:
+        st.video(video_response.content)
+    else:
+        st.error(f"Failed to load video from {video_url}")
+
+# GitHub repository URL
+github_repo_url = "https://github.com/dholling4/PolarPlotter"
+
+# MP4 file path in the repository
+mp4_file_path = "baseline_pics/phone.mp4"
+
+# Display the MP4 file
+st.title("Streamlit - Display MP4 File from GitHub")
+display_video_from_github(github_repo_url, mp4_file_path)
+
+
+
+
+
+# =============================================================================
 """
 ### What is The Digital Athlete?
 """
