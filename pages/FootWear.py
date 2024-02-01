@@ -1,6 +1,6 @@
 import streamlit as st
-st.markdown("# Welcome to FootWear 👨‍🏫")
-st.markdown("### FootWear: Smart Strides, Better Rides.\U0001F45F")
+st.markdown("# Welcome to FootWear \U0001F45F")
+st.markdown("### FootWear: Smart Strides, Better Rides \U0001F45F")
 st.sidebar.markdown("# FootWear \U0001F45F")
 
 expander_whatis = st.expander("What is FootWear?")
@@ -21,3 +21,13 @@ But that's not all – FootWear goes beyond the surface. Dive into the details o
 
 Say goodbye to guesswork and hello to a personalized shoe experience. Step confidently, step smartly – with FootWear, every stride is a step towards peak performance and comfort.
 """)
+    
+# related research:
+expander_research = st.expander("Related Research")
+with expander_research:
+    st.markdown("""
+    Footwear is a critical component of athletic performance and injury prevention. The right pair of shoes can enhance your performance and reduce the risk of injury. However, with the wide variety of athletic shoes available, it can be challenging to find the right pair. FootWear leverages computer vision technology to analyze the wear and tear of your shoes, providing personalized recommendations based on your unique gait and activity level. This feature goes beyond the surface, classifying your pronation style and tailoring its suggestions to optimize your comfort, performance, and overall foot health. With FootWear, every stride is a step towards peak performance and comfort.
+    
+    Learn more about the research behind FootWear [here](http://cs231n.stanford.edu/reports/2017/pdfs/119.pdf).
+                
+    """)
