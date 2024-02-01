@@ -326,3 +326,32 @@ with expander_terms:
         st.success("Thank you for accepting the Terms and Conditions. You can now proceed.")
     else:
         st.warning("Please accept the Terms and Conditions to use the app.")
+
+
+
+
+import pandas as pd
+
+def save_user_data(user_data):
+    df = pd.DataFrame([user_data])
+    df.to_csv("/workspaces/PolarPlotter/Pre-orders/pre_order_data.csv", mode="a", index=False, header=not pd.read_csv("pre_order_data.csv").exists())
+
+st.title("Digital Athlete App - Pre-order Signup")
+
+# Create a form for pre-order signup
+with st.form("pre_order_form"):
+    user_name = st.text_input("Name:")
+    user_email = st.text_input("Email:")
+    user_address = st.text_area("Address:")
+    pre_order_button = st.form_submit_button(label="Pre-order Now")
+
+if pre_order_button:
+    user_data = {
+        "Name": user_name,
+        "Email": user_email,
+        "Address": user_address
+    }
+    save_user_data(user_data)
+
+    st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
+
