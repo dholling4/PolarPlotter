@@ -405,3 +405,10 @@ if pre_order_button:
 
     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
 
+# ------
+# Display existing pre-orders
+conn = sqlite3.connect("pre_order_data.db")
+
+st.header("Existing Pre-orders")
+existing_pre_orders = pd.read_sql_query("SELECT * FROM pre_orders", conn)
+st.table(existing_pre_orders)
