@@ -357,7 +357,7 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 
-# Function to save user data to SQLite database
+# Function to save user data to SQLite sdatabase
 def save_user_data_to_db(user_data):
     # Connect to SQLite database (create a new one if it doesn't exist)
     conn = sqlite3.connect("pre_order_data.db")
@@ -404,3 +404,4 @@ if pre_order_button:
     save_user_data_to_db(user_data)
 
     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
+
