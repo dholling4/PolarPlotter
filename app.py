@@ -333,7 +333,7 @@ import pandas as pd
 def save_user_data(user_data):
     df = pd.DataFrame([user_data])
     # df.to_csv("Pre-orders/pre_order_data.csv", mode="a", index=False, header=not pd.read_csv("Pre-orders/pre_order_data.csv").exists())
-    df.to_csv("Pre-orders/pre_order_data.csv", mode="a", index=False, header=True)
+    df.to_csv("https://raw.githubusercontent.com/dholling4/PolarPlotter/main/Pre-orders/pre_order_data.csv", mode="a", index=False, header=True)
 st.title("Digital Athlete App - Pre-order Signup")
 
 # Create a form for pre-order signup
@@ -353,3 +353,10 @@ if pre_order_button:
 
     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
 
+import os
+
+# Get the absolute path to the CSV file
+csv_file_path = os.path.join(os.path.dirname(__file__), "Pre-orders", "pre_order_data.csv")
+
+# Save data to CSV
+df.to_csv(csv_file_path, mode="a", index=False, header=True)
