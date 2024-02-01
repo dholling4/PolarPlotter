@@ -3,21 +3,25 @@ st.markdown("# Welcome to FootWear \U0001F45F")
 st.markdown("### FootWear: Smart Strides, Better Rides \U0001F45F")
 st.sidebar.markdown("# FootWear \U0001F45F")
 
-github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/footwear_pics"
 
-st.sidebar.markdown("# The Digital Athlete ")
-download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
-david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
+path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/footwear_pics/"
+path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+
 persons = [
-    {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
-    {"image_url": github_url + "favour_ashe.png", "name": "Motion Analysis", "description": " "},
-    {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "},
-    {"image_url": github_url + "thera_track.jpg", "name": "TheraTrack", "description": " "},
+    {"image_url": path + "back_footwear.jpg", "name": "", "description": ""},
+    {"image_url": path + "run_footwear.jpg", "name": "", "description": ""},
+]
+# Create six columns for each person
+cols = st.columns(2)
 
-]  
-
-st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", use_column_width=True)
-
+# Display the images as 6 columns
+for i in range(len(persons)):
+    cols[i].image(persons[i]["image_url"], caption=f"{persons[i]['name']}", use_column_width=True)
+    # display empty row except for the 4 and 6th column
+    if i == 0 or i == 1 or i == 2 or i == 4:
+        cols[i].write("")
+    cols[i].write(f"{persons[i]['description']}")
 expander_whatis = st.expander("What is FootWear?")
 with expander_whatis:
     
