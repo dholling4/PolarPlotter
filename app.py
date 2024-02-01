@@ -334,7 +334,7 @@ import pandas as pd
 
 def save_user_data(user_data):
     df = pd.DataFrame([user_data])
-    df.to_csv("/workspaces/PolarPlotter/Pre-orders/pre_order_data.csv", mode="a", index=False, header=not pd.read_csv("/workspaces/PolarPlotter/Pre-orders/pre_order_data.csv").exists())
+    df.to_csv("Pre-orders/pre_order_data.csv", mode="a", index=False, header=not pd.read_csv("Pre-orders/pre_order_data.csv").exists())
 
 st.title("Digital Athlete App - Pre-order Signup")
 
