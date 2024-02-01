@@ -328,8 +328,8 @@ with expander_terms:
         st.warning("Please accept the Terms and Conditions to use the app.")
 
 # PRE-ORDERS!!
-import os
-filepath="https://github.com/dholling4/PolarPlotter/blob/main/pre_orders/existing_pre_orders.csv"
+import os 
+filepath="pre_orders/existing_pre_orders.csv"
 def save_user_data(user_data):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(script_dir, filepath)
