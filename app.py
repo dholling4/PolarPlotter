@@ -328,29 +328,90 @@ with expander_terms:
         st.warning("Please accept the Terms and Conditions to use the app.")
 
 # PRE-ORDERS!!
-import os 
-csv_path="https://github.com/dholling4/PolarPlotter/blob/main/pre_orders/existing_pre_orders.csv"
-def save_user_data(user_data):
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
-    st.write(csv_path)
-    df = pd.DataFrame([user_data])
-    df.to_csv(csv_path, mode="a", index=False, header=not os.path.exists(csv_path))
+# import pandas as pd
 
+# def save_user_data(user_data):
+#     df = pd.DataFrame([user_data])
+#     # df.to_csv("Pre-orders/pre_order_data.csv", mode="a", index=False, header=not pd.read_csv("Pre-orders/pre_order_data.csv").exists())
+#     df.to_csv("https://raw.githubusercontent.com/dholling4/PolarPlotter/main/Pre-orders/pre_order_data.csv", mode="a", index=False, header=True)
+# st.title("Digital Athlete App - Pre-order Signup")
+
+# # Create a form for pre-order signup
+# with st.form("pre_order_form"):
+#     user_name = st.text_input("Name:")
+#     user_email = st.text_input("Email:")
+#     user_address = st.text_area("Address:")
+#     pre_order_button = st.form_submit_button(label="Pre-order Now")
+
+# if pre_order_button:
+#     user_data = {
+#         "Name": user_name,
+#         "Email": user_email,
+#         "Address": user_address
+#     }
+#     save_user_data(user_data)
+
+#     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
+
+import streamlit as st
+import pandas as pd
+import sqlite3
+
+# Function to save user data to SQLite sdatabase
+def save_user_data_to_db(user_data):
+    # Connect to SQLite database (create a new one if it doesn't exist)
+    conn = sqlite3.connect("pre_order_data2.db")
+    cursor = conn.cursor()
+
+    # Create a table if it doesn't exist
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pre_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            email TEXT,
+            phone TEXT
+        )
+    ''')
+
+    # Insert user data into the table
+    cursor.execute('''
+        INSERT INTO pre_orders (name, email, phone)
+        VALUES (?, ?, ?)
+    ''', (user_data["Name"], user_data["Email"], user_data["Phone (optional)"]))
+
+    # Commit changes and close the connection
+    conn.commit()
+    conn.close()
+
+# Streamlit app
 st.title("Digital Athlete App - Pre-order Signup")
 
 # Create a form for pre-order signup
 with st.form("pre_order_form"):
     user_name = st.text_input("Name:")
     user_email = st.text_input("Email:")
-    user_address = st.text_area("Address:")
+    user_address = st.text_area("Phone (optional):")
     pre_order_button = st.form_submit_button(label="Pre-order Now")
 
 if pre_order_button:
     user_data = {
         "Name": user_name,
         "Email": user_email,
-        "Address": user_address
+        "Phone (optional)": user_address
     }
-    save_user_data(user_data)
+
+    # Save user data to SQLite database
+    save_user_data_to_db(user_data)
 
     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
+
+# ------
+# Display existing pre-orders
+conn = sqlite3.connect("pre_order_data.db")
+
+existing_pre_orders = pd.read_sql_query("SELECT * FROM pre_orders", conn)
+# st.table(existing_pre_orders)
+existing_pre_orders.to_sql('pre_orders', conn, if_exists='replace', index=False)
+
+# Close the SQLite connection
+conn.close()
