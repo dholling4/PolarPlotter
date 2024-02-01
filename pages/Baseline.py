@@ -956,12 +956,50 @@ if uploaded_file is not None:
   """
   ## Video Results
   """
-
+fs=30
 # Function to plot the data
 # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
 #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
 
-# Stability Score Bar Chart
+# PLOT CONFIDENCE SCORES
+df = pd.DataFrame(
+  {
+      "Joint": ['Left Hip', 'Right Hip', 'Left Knee', 'Right Knee'],
+      "Confidence Score": [left_hip_list_conf, right_hip_list_conf, left_knee_list_conf, right_knee_list_conf],
+  }
+)  
+df_unstacked = df.set_index('Joint')['Confidence Score'].apply(pd.Series).stack().reset_index()
+df_unstacked.columns = ['Joint', 'Index', 'Confidence Score']
+
+# Plotly Boxplot
+fig_conf = px.box(df_unstacked, x='Joint', y='Confidence Score', points="all", title="Confidence Score Boxplots",
+             labels={"Confidence Score": "Confidence Score", "Joint": "Joint"})
+
+fig_conf.update_layout(
+      xaxis_title="",
+      yaxis_title="",
+      yaxis_title_font_size = 38, 
+      xaxis_title_font_size = 38, 
+      hoverlabel_font_size=12,
+      title_font=dict(
+          family="Courier New, monospace",
+          size=28,
+          color="white"
+          ),
+          xaxis=dict(
+          tickfont=dict(
+              size=18 
+          ) 
+          ),
+          yaxis=dict(
+          tickfont=dict(
+          size=28 
+      ),
+      
+  ))
+st.plotly_chart(fig_conf, use_container_width=True)
+
+# PLOT STABILITY SCORES
 chart_data = pd.DataFrame(
     {
         "Joint": ['Left Knee', 'Right Knee', 'Left Hip', 'Right Hip'],
@@ -1010,14 +1048,14 @@ motion_hip = pd.DataFrame(
     }
 )
 
-fig_hip = px.line(motion_hip, x=motion_hip.index, y=["Left Hip", "Right Hip"],
-                  labels={"index": "Frame"},
+fig_hip = px.line(motion_hip, x=motion_hip.index/fs, y=["Left Hip", "Right Hip"],
+                  labels={"index": "Time (sec)"},
                   title="Motion of Hips",
                   width=800, height=400)
 
 # fig_hip.update_layout(font=dict(size=24))
 fig_hip.update_layout(
-    xaxis_title="Frame",
+    xaxis_title="Time (sec)",
     yaxis_title="Distance",
     yaxis_title_font_size = 38, 
     xaxis_title_font_size = 38, 
@@ -1052,13 +1090,13 @@ motion_knee = pd.DataFrame(
     }
 )
 
-fig_knee = px.line(motion_knee, x=motion_knee.index, y=["Left Knee", "Right Knee"],
-                    labels={"index": "Frame"},
+fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
+                    labels={"index": "Time (sec)"},
                     title="Motion of Knees",
                     width=800, height=400)
 
 fig_knee.update_layout(
-    xaxis_title="Frame",
+    xaxis_title= "Time (sec)",
     yaxis_title="Distance",
     yaxis_title_font_size = 38, 
     xaxis_title_font_size = 38, 
