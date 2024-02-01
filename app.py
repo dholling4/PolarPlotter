@@ -328,8 +328,6 @@ with expander_terms:
         st.warning("Please accept the Terms and Conditions to use the app.")
 
 
-
-
 import pandas as pd
 
 def save_user_data(user_data):
