@@ -1,27 +1,32 @@
 import streamlit as st
+
 st.markdown("# Welcome to FootWear \U0001F45F")
 st.markdown("### FootWear: Smart Strides, Better Rides \U0001F45F")
 st.sidebar.markdown("# FootWear \U0001F45F")
 
-github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/footwear_pics"
-
 path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/footwear_pics/"
-path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
-
 persons = [
-    {"image_url": path + "back_footwear.jpg", "name": "comming soon...", "description": ""},
-    {"image_url": path + "run_footwear.jpg", "name": "", "description": ""},
+    # {"image_url": path + "back_footwear.jpg", "name": "coming soon...", "description": ""},
+    # {"image_url": path + "run_footwear.jpg", "name": "", "description": ""},
+    {"image_url": path + "walk_footwear_CV.png", "name": "", "description": ""},
+    {"image_url": path + "wave_rebellion sole_CV.png", "name": "", "description": ""},
+    {"image_url": path + "worn-out-shoes-224x300.jpg", "name": "", "description": ""},
+    # {"image_url": path + "worn_out_shoes.jpg", "name": "", "description": ""},
+    {"image_url": path + "worn_out_toe.jpg", "name": "", "description": ""},
 ]
-# Create six columns for each person
-cols = st.columns(2)
+st.image(persons[0]["image_url"], caption=persons[0]["name"], use_column_width=True)
 
-# Display the images as 6 columns
-for i in range(len(persons)):
-    cols[i].image(persons[i]["image_url"], caption=f"{persons[i]['name']}", use_column_width=True)
-    # display empty row except for the 4 and 6th column
-    if i == 0 or i == 1 or i == 2 or i == 4:
-        cols[i].write("")
-    cols[i].write(f"{persons[i]['description']}")
+l, m, r = st.columns(3)
+with l:
+    st.image(persons[1]["image_url"], caption=persons[0]["name"], use_column_width=True)
+
+with m:
+    st.image(persons[2]["image_url"], caption=persons[1]["name"], use_column_width=True)
+
+with r:
+    st.image(persons[3]["image_url"], caption=persons[2]["name"], width=130)
+
+
 expander_whatis = st.expander("What is FootWear?")
 with expander_whatis:
     
