@@ -29,7 +29,7 @@ persons = [
     {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
     {"image_url": github_url + "favour_ashe.png", "name": "Motion Analysis", "description": " "},
     {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "},
-    {"image_url": github_url + "thera_track.jpg", "name": "TheraTrack", "description": " "},
+    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/worn_out_toe.jpg", "name": "FootWear", "description": " "},
 
 ]  
 
@@ -66,9 +66,6 @@ st.title("Analyze biomechanics from smartphone video")
 display_video_from_github(github_repo_url, mp4_file_path)
 
 
-
-
-
 # =============================================================================
 """
 ### What is The Digital Athlete?
@@ -78,7 +75,7 @@ with expander_whatis:
     st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
     st.write("* Track your performance :chart_with_upwards_trend:")
     st.write("* Connect with your coach :runner: :iphone:")
-    st.write("* Communicate with your healthcare providers :male-doctor:")
+    st.write("* Get footwear recommendations :athletic_shoe:")
 
 st.header("\nFill out your profile")
 st.text_input("Name", key="name")
@@ -324,10 +321,10 @@ with col2:
         st.image(persons[2]["image_url"], caption=f"{persons[2]['name']}", use_column_width=True)
 
 with col3:
-    st.write("#### TheraTrack :male-doctor:")
+    st.write("#### FootWear \U0001F45F")
     expander_therapist = st.expander("Learn More..")
     with expander_therapist:
-        st.write("Connect with your healthcare provider to track your recovery and get personalized feedback.")
+        st.write("Snap and upload a picture of the sole of your shoe to get personalized footwear recommendations.")
         st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", use_column_width=True)
 
 
