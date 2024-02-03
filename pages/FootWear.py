@@ -10,8 +10,9 @@ persons = [
     # {"image_url": path + "run_footwear.jpg", "name": "", "description": ""},
     {"image_url": path + "walk_footwear_CV.png", "name": "", "description": ""},
     {"image_url": path + "wave_rebellion sole_CV.png", "name": "", "description": ""},
-    {"image_url": path + "worn-out-shoes-224x300.jpg", "name": "", "description": ""},
-    # {"image_url": path + "worn_out_shoes.jpg", "name": "", "description": ""},
+    # {"image_url": path + "worn-out-shoes-224x300.jpg", "name": "", "description": ""},
+    # {"image_url": path + "worn_out_sole.jpg", "name": "", "description": ""}
+    {"image_url": path + "shoe_detect_red.jpg", "name": "", "description": ""},
     {"image_url": path + "worn_out_toe.jpg", "name": "", "description": ""},
 ]
 st.image(persons[0]["image_url"], caption=persons[0]["name"], use_column_width=True)

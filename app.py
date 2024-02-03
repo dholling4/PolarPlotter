@@ -29,7 +29,7 @@ persons = [
     {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/digital_athlete.png", "name": "The Digital Athlete: Transforming your run using data-driven wearables & AI", "description": " "},
     {"image_url": github_url + "favour_ashe.png", "name": "Motion Analysis", "description": " "},
     {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "},
-    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/worn_out_toe.jpg", "name": "FootWear", "description": " "},
+    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
 
 ]  
 
