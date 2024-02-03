@@ -23,8 +23,8 @@ path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/
 path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
 persons = [
-    {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Team Captain of Auburn Track & Field"},
-    {"image_url": path + "david_e.png", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Decathlete"},
+    {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Auburn Track & Field"},
+    {"image_url": path + "david_e.png", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Track & Field"},
     {"image_url": path + "david_h.png", "name": "David Hollinger", "description": "PhD candidate, Mechanical Engineering, Nike Sports Research Lab Intern"},
     {"image_url": path + "avinash.png", "name": "Avinash Baskaran", "description": "PhD student, Mechanical Engineering, Neuromuscular Rehabilitation"},
     {"image_url": path + "qi_li.png", "name": "Qi Li", "description": "PhD student, Computer Science & Software Engineering"},
