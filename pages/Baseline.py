@@ -268,7 +268,7 @@ elif chart_type == 'Bar':
 dial1, dial2, dial3 = st.columns(3)
 title_font_size = 26
 with dial1:
-  value = 75  # Value to be displayed on the dial (e.g., gas mileage)
+  value = 70  # Value to be displayed on the dial (e.g., gas mileage)
   fig = go.Figure(go.Indicator(
       mode="gauge+number",
       value=value,
