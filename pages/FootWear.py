@@ -31,7 +31,7 @@ with r:
 expander_whatis = st.expander("What is FootWear?")
 with expander_whatis:
     
-    st.markdown("""Step into the future of athletic performance with FootWear, which brings computer vision technology to your fingertips, offering personalized insights into the condition of your running shoes.""")
+    st.markdown("""Step into the future of athletic performance with FootWear, a computer vision algorithm tool to assess worn tread of your running shoe.""")
 expander_howitworks = st.expander("How does FootWear work?")
 with expander_howitworks:
     st.markdown("""
