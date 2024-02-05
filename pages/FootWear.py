@@ -32,6 +32,7 @@ expander_whatis = st.expander("What is FootWear?")
 with expander_whatis:
     
     st.markdown("""Step into the future of athletic performance with FootWear, a computer vision algorithm tool to assess worn tread of your running shoe.""")
+st.write("## Get SOLEMate Insights!")
 expander_howitworks = st.expander("How does FootWear work?")
 with expander_howitworks:
     st.markdown("""
@@ -57,3 +58,53 @@ with expander_research:
                 and from [Validation of a portable shoe tread scanner to predict slip risk](https://www.sciencedirect.com/science/article/pii/S0022437523000671?via%3Dihub)
                 
     """)
+
+expander_technology = st.expander("Technology")
+with expander_technology:
+    st.markdown("""
+    FootWear leverages computer vision technology to analyze the wear and tear of your shoes, providing personalized recommendations based on your unique gait and activity level. This feature goes beyond the surface, classifying your pronation style and tailoring its suggestions to optimize your comfort, performance, and overall foot health. With FootWear, every stride is a step towards peak performance and comfort.
+    """)
+expander_future = st.expander("Future of FootWear")
+with expander_future:
+    st.markdown("""
+    The future of FootWear is bright. As the technology continues to evolve, FootWear will be able to provide even more personalized recommendations based on a user's unique gait and activity level. With FootWear, every stride is a step towards peak performance and comfort.
+    """)
+expander_contact = st.expander("Contact Us")
+with expander_contact:
+    st.markdown("""
+    Contact us at
+    - FootWear
+    - 123 FootWear Lane
+    - FootWear, CA 12345
+    - Phone: 123-456-7890
+    - Email:
+    - Web: [www.FootWear.com](www.FootWear.com)
+    """)
+expander_references = st.expander("References")
+with expander_references:
+    st.markdown("""
+    - [Validation of a portable shoe tread scanner to predict slip risk](https://www.sciencedirect.com/science/article/pii/S0022437523000671?via%3Dihub)
+    - [Stanford Research](http://cs231n.stanford.edu/reports/2017/pdfs/119.pdf)
+    """)
+expander_disclaimer = st.expander("Disclaimer")
+with expander_disclaimer:
+    st.markdown("""
+    FootWear is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. FootWear is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read on FootWear.
+    """)
+expander_privacy = st.expander("Privacy Policy")
+
+with expander_privacy:
+    st.markdown("""
+    Your privacy is important to us. To better protect your privacy, we provide this notice explaining our online information practices and the choices you can make about the way your information is collected and used. To make this notice easy to find, we make it available on our homepage and at every point where personally identifiable information may be requested.
+    """)
+expander_terms = st.expander("Terms of Use")
+with expander_terms:
+    st.markdown("""
+    By using FootWear, you agree to these terms and conditions. Please read them carefully.
+    """)
+expander_cookies = st.expander("Cookies")
+with expander_cookies:
+    st.markdown("""
+    To enrich and perfect your online experience, FootWear uses "Cookies", similar technologies and services provided by others to display personalized content, appropriate advertising and store your preferences on your computer.
+    """)
+expander_license = st.expander("License")
