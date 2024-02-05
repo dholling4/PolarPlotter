@@ -54,5 +54,6 @@ with expander_research:
     Footwear is a critical component of athletic performance and injury prevention. The right pair of shoes can enhance your performance and reduce the risk of injury. However, with the wide variety of athletic shoes available, it can be challenging to find the right pair. FootWear leverages computer vision technology to analyze the wear and tear of your shoes, providing personalized recommendations based on your unique gait and activity level. This feature goes beyond the surface, classifying your pronation style and tailoring its suggestions to optimize your comfort, performance, and overall foot health. With FootWear, every stride is a step towards peak performance and comfort.
     
     Learn more about the research behind FootWear [here](http://cs231n.stanford.edu/reports/2017/pdfs/119.pdf).
+                and from [Validation of a portable shoe tread scanner to predict slip risk](https://www.sciencedirect.com/science/article/pii/S0022437523000671?via%3Dihub)
                 
     """)

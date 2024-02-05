@@ -62,7 +62,7 @@ github_repo_url = "https://github.com/dholling4/PolarPlotter"
 mp4_file_path = "baseline_pics/phone.mp4"
 
 # Display the MP4 file
-st.title("Analyze biomechanics from smartphone video")
+st.title("Analyze your biomechanics from smartphone video")
 display_video_from_github(github_repo_url, mp4_file_path)
 
 
