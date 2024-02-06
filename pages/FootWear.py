@@ -33,6 +33,10 @@ with expander_whatis:
     
     st.markdown("""Step into the future of athletic performance with FootWear, a computer vision algorithm tool to assess worn tread of your running shoe.""")
 st.write("## Get SOLEMate Insights!")
+
+youtube_url = "https://www.youtube.com/watch?v=kav_rBFBwtA"
+st.video(youtube_url)
+
 expander_howitworks = st.expander("How does FootWear work?")
 with expander_howitworks:
     st.markdown("""
