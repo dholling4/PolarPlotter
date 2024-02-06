@@ -17,15 +17,15 @@ persons = [
 ]
 st.image(persons[0]["image_url"], caption=persons[0]["name"], use_column_width=True)
 
-l, m, r = st.columns(3)
-with l:
-    st.image(persons[1]["image_url"], caption=persons[0]["name"], use_column_width=True)
+# l, m, r = st.columns(3)
+# with l:
+    # st.image(persons[1]["image_url"], caption=persons[0]["name"], use_column_width=True)
 
-with m:
-    st.image(persons[2]["image_url"], caption=persons[1]["name"], use_column_width=True)
+# with m:
+    # st.image(persons[2]["image_url"], caption=persons[1]["name"], use_column_width=True)
 
-with r:
-    st.image(persons[3]["image_url"], caption=persons[2]["name"], width=130)
+# with r:
+st.image(persons[3]["image_url"], caption=persons[2]["name"], use_column_width=True)
 
 
 expander_whatis = st.expander("What is FootWear?")
