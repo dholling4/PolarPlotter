@@ -62,11 +62,13 @@ github_repo_url = "https://github.com/dholling4/PolarPlotter"
 mp4_file_path = "baseline_pics/phone.mp4"
 
 # Display the MP4 file
+st.write("#\n")
 st.title("Analyze your biomechanics from smartphone video")
 display_video_from_github(github_repo_url, mp4_file_path)
 
 
 # =============================================================================
+st.write("#\n")
 """
 ### What is The Digital Athlete?
 """
@@ -76,6 +78,8 @@ with expander_whatis:
     st.write("* Track your performance :chart_with_upwards_trend:")
     st.write("* Connect with your coach :runner: :iphone:")
     st.write("* Get footwear recommendations :athletic_shoe:")
+
+st.write("#\n")
 
 st.header("\nFill out your profile")
 st.text_input("Name", key="name")
