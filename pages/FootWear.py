@@ -91,9 +91,3 @@ with expander_terms:
     st.markdown("""
     By using FootWear, you agree to these terms and conditions. Please read them carefully.
     """)
-expander_cookies = st.expander("Cookies")
-with expander_cookies:
-    st.markdown("""
-    To enrich and perfect your online experience, FootWear uses "Cookies", similar technologies and services provided by others to display personalized content, appropriate advertising and store your preferences on your computer.
-    """)
-expander_license = st.expander("License")
