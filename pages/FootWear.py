@@ -13,7 +13,7 @@ persons = [
     # {"image_url": path + "worn-out-shoes-224x300.jpg", "name": "", "description": ""},
     # {"image_url": path + "worn_out_sole.jpg", "name": "", "description": ""}
     {"image_url": path + "two_worn_shoes.png", "name": "", "description": ""},
-    {"image_url": path + "worn_out_toe.jpg", "name": "", "description": ""},
+    {"image_url": path + "251shoe_report.png", "name": "", "description": ""},
 ]
 st.image(persons[0]["image_url"], caption=persons[0]["name"], use_column_width=True)
 
