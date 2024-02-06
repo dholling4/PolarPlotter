@@ -69,17 +69,6 @@ with expander_future:
     st.markdown("""
     The future of FootWear is bright. As the technology continues to evolve, FootWear will be able to provide even more personalized recommendations based on a user's unique gait and activity level. With FootWear, every stride is a step towards peak performance and comfort.
     """)
-expander_contact = st.expander("Contact Us")
-with expander_contact:
-    st.markdown("""
-    Contact us at
-    - FootWear
-    - 123 FootWear Lane
-    - FootWear, CA 12345
-    - Phone: 123-456-7890
-    - Email:
-    - Web: [www.FootWear.com](www.FootWear.com)
-    """)
 expander_references = st.expander("References")
 with expander_references:
     st.markdown("""
