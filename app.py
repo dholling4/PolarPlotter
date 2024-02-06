@@ -130,7 +130,11 @@ url_live = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection/inde
 url = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection-upload-video/index.html?model=' + model
 # live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
 # hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
-
+st.write('#\n')
+st.write('#\n')
+"""
+### Record Activity:
+"""
 left, right = st.columns(2)
 with left:  
     st.link_button('Record video data', url_live)
@@ -299,7 +303,8 @@ with right_column:
 #     annotations=[dict(font=dict(size=font_size))]
 # )
 # st.plotly_chart(fig)
-
+st.write('#\n')
+st.write('#\n')
 """
 ###
 ### Key Features
@@ -380,7 +385,6 @@ with expander_terms:
 
 #     st.success("Thank you for pre-ordering! We'll notify you when the Digital Athlete app is ready.")
 
-import streamlit as st
 import pandas as pd
 import sqlite3
 
@@ -411,6 +415,8 @@ def save_user_data_to_db(user_data):
     conn.close()
 
 # Streamlit app
+st.write('#\n')
+
 st.title("Digital Athlete App - Pre-order Signup")
 
 # Create a form for pre-order signup
