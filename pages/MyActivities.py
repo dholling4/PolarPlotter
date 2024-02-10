@@ -41,23 +41,23 @@ st.scatter_chart(
 
 # ------------------ #
 # EXAMPLE OF FOOTWEAR RECOMMENDATION
-# import streamlit as st
-# import plotly.express as px
+import streamlit as st
+import plotly.express as px
 
-# def generate_footwear_recommendation_chart(runner_data):
-#     # Replace this with your actual data processing and visualization logic
-#     # Here, I'm using a dummy scatter plot as an example
-#     fig = px.scatter(
-#         runner_data,
-#         x='stride_length',
-#         y='foot_strike_pattern',
-#         color='recommended_footwear',
-#         size='shoe_size',
-#         hover_data=['runner_name'],
-#         title='Footwear Recommendation for Runners',
-#         labels={'stride_length': 'Stride Length', 'foot_strike_pattern': 'Foot Strike Pattern'},
-#     )
-#     return fig
+def generate_footwear_recommendation_chart(runner_data):
+    # Replace this with your actual data processing and visualization logic
+    # Here, I'm using a dummy scatter plot as an example
+    fig = px.scatter(
+        runner_data,
+        x='stride_length',
+        y='foot_strike_pattern',
+        color='recommended_footwear',
+        size='shoe_size',
+        hover_data=['runner_name'],
+        title='Footwear Recommendation for Runners',
+        labels={'stride_length': 'Stride Length', 'foot_strike_pattern': 'Foot Strike Pattern'},
+    )
+    return fig
 
 # def main():
 #     st.title('Runner Footwear Recommendation App')

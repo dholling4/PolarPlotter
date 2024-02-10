@@ -2,6 +2,7 @@ import re
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import contextlib
 import plotly.express as px
 import numpy as np
 import xlrd
@@ -10,565 +11,7 @@ st.markdown("### Empowering Athletes Together\U0001F4AA")
 st.sidebar.markdown("# CoachConnect 👨‍🏫")
 st.button("My athletes\U0001F510")
 
-# st.write("## Individual Athlete Dashboard :chart_with_upwards_trend:")
-# path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
-# path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/"
-# png_url = path + "david_e.png"
 
-# l, r = st.columns(2)
-# with l:
-#     st.image(png_url, caption="David Edmonson", width=75)
-# with r:
-#     csv_file = st.file_uploader("Upload a CSV file", type=["csv"])
-#     if csv_file is not None:
-#         df = pd.read_csv(csv_file)
-#         # st.dataframe(df)
-#         date = df["Date"].tolist()
-#         CMJ = df["CMJ (cm)"].tolist()
-#         squat_iso_push = df["squat iso push (N/kg)"].tolist()
-#         flex = df["FLEX"].tolist()
-#         ext = df["EXT"].tolist()
-#         ratio_flex_ext = df["RATIO (FLEX/EXT)"].tolist()
-#         abd = df["ABD"].tolist()
-#         add = df["ADD"].tolist()
-#         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
-# csv_file = r'CoachConnect_files/coach_dashboard_corre.csv'
-# # csv_file = r"/workspaces/PolarPlotter/CoachConnect_files/coach_dashboard_corre.csv"
-# if csv_file is not None:
-#         df = pd.read_csv(csv_file)
-#         # st.dataframe(df)
-#         date = df["Date"].tolist()
-#         CMJ = df["CMJ (cm)"].tolist()
-#         squat_iso_push = df["squat iso push (N/kg)"].tolist()
-#         flex = df["FLEX"].tolist()
-#         ext = df["EXT"].tolist()
-#         ratio_flex_ext = df["RATIO (FLEX/EXT)"].tolist()
-#         abd = df["ABD"].tolist()
-#         add = df["ADD"].tolist()
-#         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
-
-# # selected_columns = st.multiselect('Select columns', df.columns)
-# # usecols=selected_columns
-# max_cols=["Max Squat (kg)",	"Max Deadlift (kg)", "Max Hip Thrust (kg)"]
-# injury_cols = ["Injury", "Date", "Days out",	"RTP"]
-# competition_cols = ["Competition",	"Date", "Results"]
-# max_df = df[max_cols].dropna()
-# injury_df = df[injury_cols].dropna()
-# competition_df = df[competition_cols].dropna()
-
-# st.dataframe(max_df)
-# col1, col2 = st.columns(2)
-
-# with col1:
-#     st.dataframe(injury_df)
-
-# with col2:
-#     st.dataframe(competition_df)
-
-# left, right = st.columns(2)    
-   
-# with left:
-#     fig = go.Figure()
-#     fig.add_trace(go.Scatter(x=date, y=CMJ,
-#                         mode='lines+markers',
-#                         name='CMJ'))
-#     fig.update_layout(
-#         title="CMJ",
-#         xaxis_title="Date",
-#         yaxis_title="(N/kg)",
-#         yaxis_title_font_size = 24, 
-#         xaxis_title_font_size = 24, 
-#         hoverlabel_font_size=24,
-#         title_font=dict(
-#             family="Courier New, monospace",
-#             size=42,
-#             color="white"
-#             ),
-#             xaxis=dict(
-#             tickfont=dict(
-#                 size=26 
-#             ) 
-#             ),
-#             yaxis=dict(
-#             tickfont=dict(
-#             size=26 
-#         )
-#     )
-#     )
-            
-#     st.plotly_chart(fig, use_container_width=True)
-
-
-#     # FLEX AND EXT
-#     fig = go.Figure()
-#     # Highlight bars in red if ratio_flex_ext > 1.2
-#     if ratio_flex_ext[0] > 1.2:
-#         ratio_color = 'red'
-#     else:
-#         ratio_color = 'blue'
-#     fig.add_trace(go.Bar(
-#         x=['FLEX', 'EXT', 'RATIO'],
-#         y=[flex[0], ext[0], ratio_flex_ext[0]],
-#         text=[np.round(flex[0],1), np.round(ext[0],1), np.round(ratio_flex_ext[0],2)],  # Display the values above each bar
-#         textposition='auto',  # Automatically position the text above the bars
-#         marker=dict(color=['lightblue','lightgreen', ratio_color]),
-#         name='Data'))
-
-#     fig.update_layout(
-#         title="FLEX - EXT",
-#         xaxis_title="2024",
-#         yaxis_title="N",
-#         yaxis_title_font_size = 24, 
-#         xaxis_title_font_size = 24, 
-#         hoverlabel_font_size=24,
-#         font=dict(family="Courier New, monospace", size=26, color="red"),
-#         title_font=dict(
-#             family="Courier New, monospace",
-#             size=42,
-#             color="white"
-#             ),
-#             xaxis=dict(
-#             tickfont=dict(
-#                 size=26 
-#             ) 
-#             ),
-#             yaxis=dict(
-#             tickfont=dict(
-#             size=26 
-#         )
-#     )
-#     )
-#     st.plotly_chart(fig, use_container_width=True)
-
-
-# with right:
-#     fig = go.Figure()
-#     fig.add_trace(go.Scatter(x=date, y=CMJ,
-#                         mode='lines+markers',
-#                         name='squat iso push'))
-#     fig.update_layout(
-#         title="Squat Iso Push",
-#         xaxis_title="Date",
-#         yaxis_title="N/kg",
-#         yaxis_title_font_size = 24, 
-#         xaxis_title_font_size = 24, 
-#         hoverlabel_font_size=24,
-#         title_font=dict(
-#             family="Courier New, monospace",
-#             size=36,
-#             color="white"
-#             ),
-#             xaxis=dict(
-#             tickfont=dict(
-#                 size=26 
-#             ) 
-#             ),
-#             yaxis=dict(
-#             tickfont=dict(
-#             size=26 
-#         )
-#     )
-#     )
-    
-#     st.plotly_chart(fig, use_container_width=True)
-
-#     # ABD AND ADD
-#     fig = go.Figure()
-#     # Highlight bars in red if ratio_flex_ext > 1.2
-#     if ratio_abd_add[0] > 1.2:
-#         ratio_color = 'red'
-#     else:
-#         ratio_color = 'blue'
-#     fig.add_trace(go.Bar(
-#         x=['ABD', 'ADD', 'RATIO'],
-#         y=[abd[0], add[0], ratio_abd_add[0]],
-#         text=[np.round(abd[0],1), np.round(add[0],1), np.round(ratio_abd_add[0],2)],  # Display the values above each bar
-#         textposition='auto',  # Automatically position the text above the bars
-#         marker=dict(color=['lightblue','lightgreen',ratio_color]),
-#         name='Data'
-#     ))
-#     fig.update_layout(
-#         title="ABD - ADD",
-#         xaxis_title="2024",
-#         yaxis_title="N",
-#         yaxis_title_font_size = 24, 
-#         xaxis_title_font_size = 24, 
-#         hoverlabel_font_size=24,
-#         font=dict(family="Courier New, monospace", size=26, color="red"),
-#         title_font=dict(
-#             family="Courier New, monospace",
-#             size=42,
-#             color="white"
-#             ),
-#             xaxis=dict(
-#             tickfont=dict(
-#                 size=26 
-#             ) 
-#             ),
-#             yaxis=dict(
-#             tickfont=dict(
-#             size=26 
-#         )
-#     )
-#     )
-#     st.plotly_chart(fig, use_container_width=True)
-
-
-st.write("## Team Dashboard :chart_with_upwards_trend:")
-
-# ---------- DATA ENTRY ----------
-option = st.radio(
-    label="Enter data",
-    options=(
-        "Upload an excel file ⬆️",
-        "Add data manually ✍️",
-    ),
-    help="Uploaded files are deleted from the server when you\n* upload another file\n* clear the file uploader\n* close the browser tab",
-)
-
-if option == "Upload an excel file ⬆️":
-    if uploaded_file := st.file_uploader(
-        label="Upload a file. File should have the format: Label|Value",
-        type=["xlsx", "csv", "xls"],
-    ):
-        input_df = pd.read_excel(uploaded_file)
-        st.dataframe(input_df, hide_index=True)
-
-else:
-    if option == "Add data manually ✍️":
-        df = pd.DataFrame(columns=["Label", "Value"]).reset_index(drop=True)
-
-    input_df = st.data_editor(
-        df,
-        num_rows="dynamic",
-        hide_index=True,
-    )
-# team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
-team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
-input_df = pd.read_excel(team_csv)
-
-if team_csv is not None:
-    xls = pd.ExcelFile(team_csv)
-    sheet_names_list = xls.sheet_names
-    sheet_names = ['FLEX/EXT RATIO', 'ADD/ABD RATIO']
-    for sheet in sheet_names_list:
-        sheet_names.append(sheet)
-   
-    selected_sheet = st.selectbox("Select a sheet", sheet_names)
-    if selected_sheet == "CMJ":
-        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
-        st.dataframe(df)
-    elif selected_sheet == "SJ" or selected_sheet == "SQUAT ISO HOLD":
-        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
-        st.dataframe(df)
-
-    elif selected_sheet == "FLEX/EXT RATIO":
-        color_flex_r, color_flex_g = list(), list()
-        df_alarm_flex_r1 = list() 
-        df_alarm_flex_g1 = list() 
-
-        df = pd.read_excel(xls, sheet_name= "Neck flexion", usecols=["Name", "FORCE/KG"])
-        df2 = pd.read_excel(xls, sheet_name= "Neck Extension", usecols=["Name", "FORCE/KG"])
-        df = df.sort_values('Name')
-        df2 = df2.sort_values('Name')
-        merged_df = df.merge(df2, on='Name')
-        merged_df = merged_df.rename(columns={"FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)", "FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)"})
-        merged_df['EXT/FLEX RATIO'] = merged_df['EXT (FORCE/KG)'] / merged_df['FLEX (FORCE/KG)']
-        merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
-
-        def highlight_greaterthan(s, threshold, column):
-            is_max = pd.Series(data=False, index=s.index)
-            is_max[column] = s.loc[column] >= threshold
-            return ['color: red' if is_max.any() else '' for v in is_max]
-
-        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column='EXT/FLEX RATIO', axis=1)
-        add_abd_expander = st.expander("EXT/FLEX RATIO")
-        with add_abd_expander:
-            st.dataframe(merged_df_style)
-
-        # PLOT BAR CHART
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'],
-            y=merged_df['FLEX (FORCE/KG)'],
-            name='FLEX',
-            marker_color='rgb(26, 254, 255)',
-        ))
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'],
-            y=merged_df['EXT (FORCE/KG)'],
-            name='EXT',
-            marker_color='rgb(26, 30, 255)'
-        ))
-        for color in range(len(merged_df)):
-            if merged_df['EXT/FLEX RATIO'][color] >= 1.2:
-                ratio_color_r = 'red'
-                df_alarm_r = merged_df['EXT/FLEX RATIO'].iloc[color]
-                df_alarm_flex_r1.append(df_alarm_r)
-                color_flex_r.append(color)
-                     
-            elif merged_df['EXT/FLEX RATIO'][color] < 1.2:
-                ratio_color_g = 'green'
-                df_alarm_g = merged_df['EXT/FLEX RATIO'].iloc[color]
-                df_alarm_flex_g1.append(df_alarm_g)
-                color_flex_g.append(color)
-    
-
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_flex_r],
-            y=df_alarm_flex_r1,
-            name='RATIO LEFT',
-            marker_color=ratio_color_r
-        ))
-
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_flex_g],
-            y=df_alarm_flex_g1,
-            name='RATIO LEFT',
-            marker_color=color_flex_g
-        ))
-        fig.update_layout(
-            title="FLEX - EXT",
-            # xaxis_title="Athlete",
-            yaxis_title="FORCE/KG",
-            yaxis_title_font_size = 24, 
-            xaxis_title_font_size = 24, 
-            hoverlabel_font_size=24,
-            title_font=dict(
-                family="Courier New, monospace",
-                size=42,
-                color="white"
-                ),
-                xaxis=dict(
-                tickfont=dict(
-                    size=18 
-                ) 
-                ),
-                yaxis=dict(
-                tickfont=dict(
-                size=18 
-            )
-        )
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)        
-
-    elif selected_sheet == "ADD/ABD RATIO":
-        # create empty dataframe
-        df_alarm_g1 = list()  
-        df_alarm_r1 = list()
-        color_r = list()
-        color_g = list()
-
-        df = pd.read_excel(xls, sheet_name= "Hip Abduction ", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
-        df2 = pd.read_excel(xls, sheet_name= "Hip adduction", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
-        df = df.sort_values('Name')
-        df2 = df2.sort_values('Name')
-        merged_df = df.merge(df2, on='Name')
-        merged_df = merged_df.rename(columns={"FORCE/KG LEFT_x": "ABD LEFT (FORCE/KG)", "FORCE/KG LEFT_y": "ADD LEFT (FORCE/KG)", "FORCE/KG RIGHT_x": "ABD RIGHT (FORCE/KG)", "FORCE/KG RIGHT_y": "ADD RIGHT (FORCE/KG)"})
-
-        merged_df['ADD/ABD LEFT RATIO'] = merged_df['ADD LEFT (FORCE/KG)'] / merged_df['ABD LEFT (FORCE/KG)']
-        merged_df['ADD/ABD RIGHT RATIO'] = merged_df['ADD RIGHT (FORCE/KG)'] / merged_df['ABD RIGHT (FORCE/KG)']
-        merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
-
-        def highlight_greaterthan(s, threshold, column):
-            is_max = pd.Series(data=False, index=s.index)
-            is_max[column] = s.loc[column] >= threshold
-            return ['color: red' if is_max.any() else '' for v in is_max]
-
-        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column=['ADD/ABD LEFT RATIO', 'ADD/ABD RIGHT RATIO'], axis=1)
-        add_abd_expander = st.expander("ADD/ABD RATIO")
-        with add_abd_expander:
-            st.dataframe(merged_df_style)
-       
-        # PLOT BAR CHART
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'],
-            y=merged_df['ADD LEFT (FORCE/KG)'],
-            name='ADD LEFT',
-            marker_color='rgb(26, 254, 255)'
-        ))
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'],
-            y=merged_df['ABD LEFT (FORCE/KG)'],
-            name='ABD LEFT',
-            marker_color='rgb(26, 30, 255)'
-        ))
-        for color in range(len(merged_df)):
-            if merged_df['ADD/ABD LEFT RATIO'][color] >= 1.2:
-                ratio_color_r = 'red'
-                df_alarm_r = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
-                df_alarm_r1.append(df_alarm_r)
-                color_r.append(color)
-                     
-            elif merged_df['ADD/ABD LEFT RATIO'][color] < 1.2:
-                ratio_color_g = 'green'
-                df_alarm_g = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
-                df_alarm_g1.append(df_alarm_g)
-                color_g.append(color)
-    
-
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_r],
-            y=df_alarm_r1,
-            name='RATIO LEFT',
-            marker_color=ratio_color_r
-        ))
-
-        fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_g],
-            y=df_alarm_g1,
-            name='RATIO LEFT',
-            marker_color=ratio_color_g
-        ))
-
-        fig.update_layout(
-            title="ABD - ADD",
-            # xaxis_title="Athlete",
-            yaxis_title="FORCE/KG",
-            yaxis_title_font_size = 24, 
-            xaxis_title_font_size = 24, 
-            hoverlabel_font_size=24,
-            title_font=dict(
-                family="Courier New, monospace",
-                size=42,
-                color="white"
-                ),
-                xaxis=dict(
-                tickfont=dict(
-                    size=18 
-                ) 
-                ),
-                yaxis=dict(
-                tickfont=dict(
-                size=18 
-            )
-        )
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        df = pd.read_excel(xls, sheet_name=selected_sheet)
-        st.dataframe(df)
-
-    if selected_sheet == "Neck Extension":
-        fig = go.Figure()
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
-                            name='Neck Extension'))
-        fig.update_layout(
-            title="Neck Extension",
-            xaxis_title="Ahtlete",
-            yaxis_title="FORCE/KG",
-            yaxis_title_font_size = 24, 
-            xaxis_title_font_size = 24, 
-            hoverlabel_font_size=24,
-            title_font=dict(
-                family="Courier New, monospace",
-                size=42,
-                color="white"
-                ),
-                xaxis=dict(
-                tickfont=dict(
-                    size=18 
-                ) 
-                ),
-                yaxis=dict(
-                tickfont=dict(
-                size=18 
-            )
-        )
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-
-if selected_sheet == "Neck flexion":
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
-                        name=selected_sheet))
-    fig.update_layout(
-        title=selected_sheet,
-        xaxis_title="Ahtlete",
-        yaxis_title="FORCE/KG",
-        yaxis_title_font_size = 24, 
-        xaxis_title_font_size = 24, 
-        hoverlabel_font_size=24,
-        title_font=dict(
-            family="Courier New, monospace",
-            size=42,
-            color="white"
-            ),
-            xaxis=dict(
-            tickfont=dict(
-                size=18 
-            ) 
-            ),
-            yaxis=dict(
-            tickfont=dict(
-            size=18 
-        )
-    )
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-
-if selected_sheet == "CMJ":
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-                        name=selected_sheet))
-    fig.update_layout(
-        title=selected_sheet,
-        xaxis_title="Ahtlete",
-        yaxis_title="Jump Height (cm)",
-        yaxis_title_font_size = 24, 
-        xaxis_title_font_size = 24, 
-        hoverlabel_font_size=24,
-        title_font=dict(
-            family="Courier New, monospace",
-            size=42,
-            color="white"
-            ),
-            xaxis=dict(
-            tickfont=dict(
-                size=18 
-            ) 
-            ),
-            yaxis=dict(
-            tickfont=dict(
-            size=18 
-        )
-    )
-    )    
-    st.plotly_chart(fig, use_container_width=True)
-
-if selected_sheet == "SJ":
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-                        name=selected_sheet))
-    fig.update_layout(
-        title=selected_sheet,
-        xaxis_title="Ahtlete",
-        yaxis_title="Jump Height (cm)",
-        yaxis_title_font_size = 24, 
-        xaxis_title_font_size = 24, 
-        hoverlabel_font_size=24,
-        title_font=dict(
-            family="Courier New, monospace",
-            size=42,
-            color="white"
-            ),
-            xaxis=dict(
-            tickfont=dict(
-                size=18 
-            ) 
-            ),
-            yaxis=dict(
-            tickfont=dict(
-            size=18 
-        )
-    )
-    )    
-    st.plotly_chart(fig, use_container_width=True)
 
 # ---------- FUNCTIONS ----------
 def _reset() -> None:
@@ -598,7 +41,7 @@ with st.sidebar:
     with st.expander("Customization options"):
         title = st.text_input(
             label="Plot title",
-            value="Job Requirements" if option == "Play with example data 💡" else "",
+            # value="Job Requirements" if option == "Play with example data 💡" else "",
             help="Sets the plot title.",
             key="title",
         )
@@ -913,92 +356,878 @@ with st.sidebar:
             on_click=_reset,
             use_container_width=True,
         )
+# st.write("## Individual Athlete Dashboard :chart_with_upwards_trend:")
+# path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+# path = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/headshots/"
+# png_url = path + "david_e.png"
+
+# l, r = st.columns(2)
+# with l:
+#     st.image(png_url, caption="David Edmonson", width=75)
+# with r:
+#     csv_file = st.file_uploader("Upload a CSV file", type=["csv"])
+#     if csv_file is not None:
+#         df = pd.read_csv(csv_file)
+#         # st.dataframe(df)
+#         date = df["Date"].tolist()
+#         CMJ = df["CMJ (cm)"].tolist()
+#         squat_iso_push = df["squat iso push (N/kg)"].tolist()
+#         flex = df["FLEX"].tolist()
+#         ext = df["EXT"].tolist()
+#         ratio_flex_ext = df["RATIO (FLEX/EXT)"].tolist()
+#         abd = df["ABD"].tolist()
+#         add = df["ADD"].tolist()
+#         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
+# csv_file = r'CoachConnect_files/coach_dashboard_corre.csv'
+# # csv_file = r"/workspaces/PolarPlotter/CoachConnect_files/coach_dashboard_corre.csv"
+# if csv_file is not None:
+#         df = pd.read_csv(csv_file)
+#         # st.dataframe(df)
+#         date = df["Date"].tolist()
+#         CMJ = df["CMJ (cm)"].tolist()
+#         squat_iso_push = df["squat iso push (N/kg)"].tolist()
+#         flex = df["FLEX"].tolist()
+#         ext = df["EXT"].tolist()
+#         ratio_flex_ext = df["RATIO (FLEX/EXT)"].tolist()
+#         abd = df["ABD"].tolist()
+#         add = df["ADD"].tolist()
+#         ratio_abd_add = df["RATIO (ABD/ADD)"].tolist()
+
+# # selected_columns = st.multiselect('Select columns', df.columns)
+# # usecols=selected_columns
+# max_cols=["Max Squat (kg)",	"Max Deadlift (kg)", "Max Hip Thrust (kg)"]
+# injury_cols = ["Injury", "Date", "Days out",	"RTP"]
+# competition_cols = ["Competition",	"Date", "Results"]
+# max_df = df[max_cols].dropna()
+# injury_df = df[injury_cols].dropna()
+# competition_df = df[competition_cols].dropna()
+
+# st.dataframe(max_df)
+# col1, col2 = st.columns(2)
+
+# with col1:
+#     st.dataframe(injury_df)
+
+# with col2:
+#     st.dataframe(competition_df)
+
+# left, right = st.columns(2)    
+   
+# with left:
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=date, y=CMJ,
+#                         mode='lines+markers',
+#                         name='CMJ'))
+#     fig.update_layout(
+#         title="CMJ",
+#         xaxis_title="Date",
+#         yaxis_title="(N/kg)",
+#         yaxis_title_font_size = 24, 
+#         xaxis_title_font_size = 24, 
+#         hoverlabel_font_size=24,
+#         title_font=dict(
+#             family="Courier New, monospace",
+#             size=42,
+#             color="white"
+#             ),
+#             xaxis=dict(
+#             tickfont=dict(
+#                 size=26 
+#             ) 
+#             ),
+#             yaxis=dict(
+#             tickfont=dict(
+#             size=26 
+#         )
+#     )
+#     )
+            
+#     st.plotly_chart(fig, use_container_width=True)
+
+
+#     # FLEX AND EXT
+#     fig = go.Figure()
+#     # Highlight bars in red if ratio_flex_ext > 1.2
+#     if ratio_flex_ext[0] > 1.2:
+#         ratio_color = 'red'
+#     else:
+#         ratio_color = 'blue'
+#     fig.add_trace(go.Bar(
+#         x=['FLEX', 'EXT', 'RATIO'],
+#         y=[flex[0], ext[0], ratio_flex_ext[0]],
+#         text=[np.round(flex[0],1), np.round(ext[0],1), np.round(ratio_flex_ext[0],2)],  # Display the values above each bar
+#         textposition='auto',  # Automatically position the text above the bars
+#         marker=dict(color=['lightblue','lightgreen', ratio_color]),
+#         name='Data'))
+
+#     fig.update_layout(
+#         title="FLEX - EXT",
+#         xaxis_title="2024",
+#         yaxis_title="N",
+#         yaxis_title_font_size = 24, 
+#         xaxis_title_font_size = 24, 
+#         hoverlabel_font_size=24,
+#         font=dict(family="Courier New, monospace", size=26, color="red"),
+#         title_font=dict(
+#             family="Courier New, monospace",
+#             size=42,
+#             color="white"
+#             ),
+#             xaxis=dict(
+#             tickfont=dict(
+#                 size=26 
+#             ) 
+#             ),
+#             yaxis=dict(
+#             tickfont=dict(
+#             size=26 
+#         )
+#     )
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
+
+
+# with right:
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=date, y=CMJ,
+#                         mode='lines+markers',
+#                         name='squat iso push'))
+#     fig.update_layout(
+#         title="Squat Iso Push",
+#         xaxis_title="Date",
+#         yaxis_title="N/kg",
+#         yaxis_title_font_size = 24, 
+#         xaxis_title_font_size = 24, 
+#         hoverlabel_font_size=24,
+#         title_font=dict(
+#             family="Courier New, monospace",
+#             size=36,
+#             color="white"
+#             ),
+#             xaxis=dict(
+#             tickfont=dict(
+#                 size=26 
+#             ) 
+#             ),
+#             yaxis=dict(
+#             tickfont=dict(
+#             size=26 
+#         )
+#     )
+#     )
+    
+#     st.plotly_chart(fig, use_container_width=True)
+
+#     # ABD AND ADD
+#     fig = go.Figure()
+#     # Highlight bars in red if ratio_flex_ext > 1.2
+#     if ratio_abd_add[0] > 1.2:
+#         ratio_color = 'red'
+#     else:
+#         ratio_color = 'blue'
+#     fig.add_trace(go.Bar(
+#         x=['ABD', 'ADD', 'RATIO'],
+#         y=[abd[0], add[0], ratio_abd_add[0]],
+#         text=[np.round(abd[0],1), np.round(add[0],1), np.round(ratio_abd_add[0],2)],  # Display the values above each bar
+#         textposition='auto',  # Automatically position the text above the bars
+#         marker=dict(color=['lightblue','lightgreen',ratio_color]),
+#         name='Data'
+#     ))
+#     fig.update_layout(
+#         title="ABD - ADD",
+#         xaxis_title="2024",
+#         yaxis_title="N",
+#         yaxis_title_font_size = 24, 
+#         xaxis_title_font_size = 24, 
+#         hoverlabel_font_size=24,
+#         font=dict(family="Courier New, monospace", size=26, color="red"),
+#         title_font=dict(
+#             family="Courier New, monospace",
+#             size=42,
+#             color="white"
+#             ),
+#             xaxis=dict(
+#             tickfont=dict(
+#                 size=26 
+#             ) 
+#             ),
+#             yaxis=dict(
+#             tickfont=dict(
+#             size=26 
+#         )
+#     )
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
+
+
+st.write("## Team Dashboard :chart_with_upwards_trend:")
+
+# ---------- DATA ENTRY ----------
+option = st.radio(
+    label="Enter data",
+    options=(
+        "Upload an excel file ⬆️",
+        "Add data manually ✍️",
+    ),
+    help="Uploaded files are deleted from the server when you\n* upload another file\n* clear the file uploader\n* close the browser tab",
+)
+
+if option == "Upload an excel file ⬆️":
+    if uploaded_file := st.file_uploader(
+        label="Upload a file. File should have the format: Label|Value",
+        type=["xlsx", "csv", "xls"],
+    ):
+        input_df = pd.read_excel(uploaded_file)
+        st.dataframe(input_df, hide_index=True)
+
+else:
+    if option == "Add data manually ✍️":
+        df = pd.DataFrame(columns=["Label", "Value"]).reset_index(drop=True)
+
+    input_df = st.data_editor(
+        df,
+        num_rows="dynamic",
+        hide_index=True,
+    )
+# team_csv = st.file_uploader("Upload a CSV file", type=["xls", "xlsx"])
+team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
+input_df = pd.read_excel(team_csv)
+
+if team_csv is not None:
+    # df = pd.read_excel(xls, sheet_name=selected_sheet)
+    # st.dataframe(df)
+
+    xls = pd.ExcelFile(team_csv)
+    sheet_names_list = xls.sheet_names
+    sheet_names = ['FLEX/EXT RATIO', 'ADD/ABD RATIO']
+    for sheet in sheet_names_list:
+        sheet_names.append(sheet)   
+    sheet_names.insert(sheet_names.index("CMJ") + 1,'CMJ/SJ RATIO')
+    selected_sheet = st.selectbox("Select a sheet", sheet_names)
+
+    # if selected_sheet == "CMJ":
+    #     df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+    #     st.dataframe(df)
+    # elif selected_sheet == "SJ" or selected_sheet == "SQUAT ISO HOLD":
+    #     df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+    #     st.dataframe(df)
+
+    if selected_sheet == "FLEX/EXT RATIO":
+        color_flex_r, color_flex_g = list(), list()
+        df_alarm_flex_r1 = list() 
+        df_alarm_flex_g1 = list() 
+
+        df = pd.read_excel(xls, sheet_name= "Neck flexion", usecols=["Name", "FORCE/KG"])
+        df2 = pd.read_excel(xls, sheet_name= "Neck Extension", usecols=["Name", "FORCE/KG"])
+        df = df.sort_values('Name')
+        df2 = df2.sort_values('Name')
+        merged_df = df.merge(df2, on='Name')
+        merged_df = merged_df.rename(columns={"FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)", "FORCE/KG_x": "FLEX (FORCE/KG)", "FORCE/KG_y": "EXT (FORCE/KG)"})
+        merged_df['EXT/FLEX RATIO'] = merged_df['EXT (FORCE/KG)'] / merged_df['FLEX (FORCE/KG)']
+        merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
+
+        def highlight_greaterthan(s, threshold, column):
+            is_max = pd.Series(data=False, index=s.index)
+            is_max[column] = s.loc[column] >= threshold
+            return ['color: red' if is_max.any() else '' for v in is_max]
+
+        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column='EXT/FLEX RATIO', axis=1)
+        add_abd_expander = st.expander("EXT/FLEX RATIO")
+        with add_abd_expander:
+            st.dataframe(merged_df_style)
+
+        # PLOT BAR CHART
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['FLEX (FORCE/KG)'],
+            name='FLEX',
+            marker_color='rgb(26, 254, 255)',
+        ))
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['EXT (FORCE/KG)'],
+            name='EXT',
+            marker_color='rgb(26, 30, 255)'
+        ))
+        for color in range(len(merged_df)):
+            if merged_df['EXT/FLEX RATIO'][color] >= 1.2:
+                ratio_color_r = 'red'
+                df_alarm_r = merged_df['EXT/FLEX RATIO'].iloc[color]
+                df_alarm_flex_r1.append(df_alarm_r)
+                color_flex_r.append(color)
+                     
+            elif merged_df['EXT/FLEX RATIO'][color] < 1.2:
+                ratio_color_g = 'green'
+                df_alarm_g = merged_df['EXT/FLEX RATIO'].iloc[color]
+                df_alarm_flex_g1.append(df_alarm_g)
+                color_flex_g.append(color)
+    
+
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'][color_flex_r],
+            y=df_alarm_flex_r1,
+            name='RATIO LEFT',
+            marker_color=ratio_color_r
+        ))
+
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'][color_flex_g],
+            y=df_alarm_flex_g1,
+            name='RATIO LEFT',
+            marker_color=color_flex_g
+        ))
+        fig.update_layout(
+            title="FLEX - EXT",
+            # xaxis_title="Athlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)        
+
+    if selected_sheet == "ADD/ABD RATIO":
+        # create empty dataframe
+        df_alarm_g1 = list()  
+        df_alarm_r1 = list()
+        color_r = list()
+        color_g = list()
+
+        df = pd.read_excel(xls, sheet_name= "Hip Abduction ", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
+        df2 = pd.read_excel(xls, sheet_name= "Hip adduction", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
+        df = df.sort_values('Name')
+        df2 = df2.sort_values('Name')
+        merged_df = df.merge(df2, on='Name')
+        merged_df = merged_df.rename(columns={"FORCE/KG LEFT_x": "ABD LEFT (FORCE/KG)", "FORCE/KG LEFT_y": "ADD LEFT (FORCE/KG)", "FORCE/KG RIGHT_x": "ABD RIGHT (FORCE/KG)", "FORCE/KG RIGHT_y": "ADD RIGHT (FORCE/KG)"})
+
+        merged_df['ADD/ABD LEFT RATIO'] = merged_df['ADD LEFT (FORCE/KG)'] / merged_df['ABD LEFT (FORCE/KG)']
+        merged_df['ADD/ABD RIGHT RATIO'] = merged_df['ADD RIGHT (FORCE/KG)'] / merged_df['ABD RIGHT (FORCE/KG)']
+        merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
+
+        def highlight_greaterthan(s, threshold, column):
+            is_max = pd.Series(data=False, index=s.index)
+            is_max[column] = s.loc[column] >= threshold
+            return ['color: red' if is_max.any() else '' for v in is_max]
+
+        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column=['ADD/ABD LEFT RATIO', 'ADD/ABD RIGHT RATIO'], axis=1)
+        add_abd_expander = st.expander("ADD/ABD RATIO")
+        with add_abd_expander:
+            st.dataframe(merged_df_style)
+       
+        # PLOT BAR CHART
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['ADD LEFT (FORCE/KG)'],
+            name='ADD LEFT',
+            marker_color='rgb(26, 254, 255)'
+        ))
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'],
+            y=merged_df['ABD LEFT (FORCE/KG)'],
+            name='ABD LEFT',
+            marker_color='rgb(26, 30, 255)'
+        ))
+        for color in range(len(merged_df)):
+            if merged_df['ADD/ABD LEFT RATIO'][color] >= 1.2:
+                ratio_color_r = 'red'
+                df_alarm_r = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
+                df_alarm_r1.append(df_alarm_r)
+                color_r.append(color)
+                     
+            elif merged_df['ADD/ABD LEFT RATIO'][color] < 1.2:
+                ratio_color_g = 'green'
+                df_alarm_g = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
+                df_alarm_g1.append(df_alarm_g)
+                color_g.append(color)
+    
+
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'][color_r],
+            y=df_alarm_r1,
+            name='RATIO LEFT',
+            marker_color=ratio_color_r
+        ))
+
+        fig.add_trace(go.Bar(
+            x=merged_df['Name'][color_g],
+            y=df_alarm_g1,
+            name='RATIO LEFT',
+            marker_color=ratio_color_g
+        ))
+
+        fig.update_layout(
+            title="ABD - ADD",
+            # xaxis_title="Athlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    if selected_sheet == "Neck Extension":
+        df = pd.read_excel(xls, sheet_name=selected_sheet)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
+                            name='Neck Extension'))
+        fig.update_layout(
+            title="Neck Extension",
+            xaxis_title="Ahtlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    if "Neck flexion" in selected_sheet:
+        df = pd.read_excel(xls, sheet_name=selected_sheet)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
+                            name='Neck Flexion'))
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    if "Hip add" in selected_sheet:
+        df = pd.read_excel(xls, sheet_name=selected_sheet)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG LEFT"],
+                            name="LEFT"))
+        
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG RIGHT"],
+                            name="RIGHT"))
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    if "Hip Abd" in selected_sheet:
+        df = pd.read_excel(xls, sheet_name=selected_sheet)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG LEFT"],
+                            name="LEFT"))
+        
+        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG RIGHT"],
+                            name="RIGHT"))
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="FORCE/KG",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    if selected_sheet == "CMJ":
+        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+        df_sj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="SJ")
+
+        st.dataframe(df)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers',
+                            name=selected_sheet))
+        
+        fig.add_trace(go.Scatter(x=df_sj["Athlete"], y=df_sj["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers',
+                            name="SJ"))
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="Jump Height (cm)",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )    
+        st.plotly_chart(fig, use_container_width=True)
+
+    if selected_sheet == "SJ":
+        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+        st.dataframe(df)
+        fig = go.Figure()
+        # fig.add_trace(go.Bar(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
+        #                     name=selected_sheet))
+    
+        fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
+                        mode='lines+markers',
+                        name=selected_sheet))
+        
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="Jump Height (cm)",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )),   
+        ),    
+
+    if selected_sheet == "CMJ/SJ RATIO":
+        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="CMJ")
+        df_sj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="SJ")
+        merged_df = pd.merge(df, df_sj, on="Athlete", suffixes=('_CMJ', '_SJ'))
+        merged_df["CMJ/SJ RATIO"] = merged_df["Jump Height (Imp-Mom) [cm]_CMJ"] / merged_df["Jump Height (Imp-Mom) [cm]_SJ"]        
+        df_ratio = merged_df[[ "Athlete", "CMJ/SJ RATIO", "Jump Height (Imp-Mom) [cm]_CMJ", "Jump Height (Imp-Mom) [cm]_SJ"]]
+        st.dataframe(df_ratio)
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers',
+                            name="CMJ"))
+        
+        fig.add_trace(go.Scatter(x=df_sj["Athlete"], y=df_sj["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers',
+                            name="SJ"))
+        
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="Jump Height (cm)",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )    
+        st.plotly_chart(fig, use_container_width=True)
+
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=df_sj["Athlete"], y=df_ratio["CMJ/SJ RATIO"],
+            # mode='lines+markers',
+            name="CMJ/SJ RATIO"))
+        
+        fig.update_layout(
+            title=selected_sheet,
+            xaxis_title="Ahtlete",
+            yaxis_title="",
+            yaxis_title_font_size = 24, 
+            xaxis_title_font_size = 24, 
+            hoverlabel_font_size=24,
+            title_font=dict(
+                family="Courier New, monospace",
+                size=42,
+                color="white"
+                ),
+                xaxis=dict(
+                tickfont=dict(
+                    size=18 
+                ) 
+                ),
+                yaxis=dict(
+                tickfont=dict(
+                size=18 
+            )
+        )
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        with contextlib.suppress(IndexError, NameError):
+            labels = df_ratio["Athlete"]
+            title = 'CMJ/SJ RATIO'
+            values = df_ratio["CMJ/SJ RATIO"]
+            # labels = (labels + [labels[0]])[::-1]
+            # values = (values + [values[0]])[::-1]
+            st.write("### " + title)
+
+            data = go.Scatterpolar(
+                r=values,
+                theta=labels,
+                mode="none" if mode == [] else "+".join(mode),
+                opacity=opacity,
+                hovertemplate=hovertemplate + "<extra></extra>",
+                marker_color=marker_color,
+                marker_opacity=marker_opacity,
+                marker_size=marker_size,
+                marker_symbol=marker_symbol,
+                line_color=line_color,
+                line_dash=line_dash,
+                line_shape=line_shape,
+                line_smoothing=line_smoothing,
+                line_width=line_width,
+                fill="toself",
+                fillcolor=f"RGBA{rgba}" if rgba else "RGBA(99, 110, 250, 0.5)",
+            )
+
+            layout = go.Layout(
+                title=dict(
+                    text=title,
+                    x=0.5,
+                    xanchor="center",
+                ),
+                paper_bgcolor="rgba(100,100,100,0)",
+                plot_bgcolor="rgba(100,100,100,0)",
+            )
+
+            fig = go.Figure(data=data, layout=layout)
+
+            st.plotly_chart(
+                fig,
+                use_container_width=True,
+                sharing="streamlit",
+                theme="streamlit",
+
+            )
+        # st.plotly_chart(data, use_container_width=True)
+
+        # st.plotly_chart(fig, use_container_width=True)
+ 
+        # st.write('### CMJ')
+        # st.dataframe(df)
+        # st.write('### SJ')
+        # st.dataframe(df_sj)
+        # st.write('### CMJ/SJ RATIO')
+    if selected_sheet == 'ISO SQUAT PUSH':
+        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+        st.dataframe(df)
+        fig = 0
+  
+    if selected_sheet == "CATEGORIES" or selected_sheet == "INJURIES":
+        df = pd.read_excel(xls, sheet_name=selected_sheet)
+        st.dataframe(df)
+        fig = 0
+            
+
 
 # ---------- VISUALIZATION ----------
-import contextlib
-with contextlib.suppress(IndexError, NameError):
-    labels = list(input_df[input_df.columns[0]])
-    # To close the polygon
-    # checkbox = st.radio("Select Activity", (input_df.columns[8:]))
+# with contextlib.suppress(IndexError, NameError):
+#     labels = ['FLEX/EXT RATIO', 'ADD/ABD RATIO', 'CMJ/SJ RATIO']
+#     checkbox = st.radio("Select Activity", ('FLEX/EXT RATIO', 'ADD/ABD RATIO', 
+#                                             'CMJ/SJ RATIO'))
 
-    # for i in range(8, len(input_df.columns)):
-    #     checkbox = st.checkbox(input_df.columns[i], value=True, key="checkbox" + str(i))
-    #     if checkbox:
-    #         title = input_df.columns[i]
-    #         values = list(input_df[input_df.columns[i]])
-    #         labels = (labels + [labels[0]])[::-1]
-    #         values = (values + [values[0]])[::-1]
-    #         l, r = st.columns(2)
-    #         with l:
-    #             st.write("### " + title)
-    #             data = go.Scatterpolar(
-    #                 r=values,
-    #                 theta=labels,
-    #                 mode="none" if mode == [] else "+".join(mode),
-    #                 opacity=opacity,
-    #                 hovertemplate=hovertemplate + "<extra></extra>",
-    #                 marker_color=marker_color,
-    #                 marker_opacity=marker_opacity,
-    #                 marker_size=marker_size,
-    #                 marker_symbol=marker_symbol,
-    #                 line_color=line_color,
-    #                 line_dash=line_dash,
-    #                 line_shape=line_shape,
-    #                 line_smoothing=line_smoothing,
-    #                 line_width=line_width,
-    #                 fill="toself",
-    #                 fillcolor=f"RGBA{rgba}" if rgba else "RGBA(99, 110, 250, 0.5)",
-    #             )
+#     if checkbox:
+#         title = checkbox
+#         values = list(input_df[input_df.columns[i]])
+#         labels = (labels + [labels[0]])[::-1]
+#         values = (values + [values[0]])[::-1]
+#         l, r = st.columns(2)
+#         with l:
+#             st.write("### " + title)
+#             data = go.Scatterpolar(
+#                 r=values,
+#                 theta=labels,
+#                 mode="none" if mode == [] else "+".join(mode),
+#                 opacity=opacity,
+#                 hovertemplate=hovertemplate + "<extra></extra>",
+#                 marker_color=marker_color,
+#                 marker_opacity=marker_opacity,
+#                 marker_size=marker_size,
+#                 marker_symbol=marker_symbol,
+#                 line_color=line_color,
+#                 line_dash=line_dash,
+#                 line_shape=line_shape,
+#                 line_smoothing=line_smoothing,
+#                 line_width=line_width,
+#                 fill="toself",
+#                 fillcolor=f"RGBA{rgba}" if rgba else "RGBA(99, 110, 250, 0.5)",
+#             )
 
-    #             layout = go.Layout(
-    #                 title=dict(
-    #                     text=title,
-    #                     x=0.5,
-    #                     xanchor="center",
-    #                 ),
-    #                 paper_bgcolor="rgba(100,100,100,0)",
-    #                 plot_bgcolor="rgba(100,100,100,0)",
-    #             )
+#             layout = go.Layout(
+#                 title=dict(
+#                     text=title,
+#                     x=0.5,
+#                     xanchor="center",
+#                 ),
+#                 paper_bgcolor="rgba(100,100,100,0)",
+#                 plot_bgcolor="rgba(100,100,100,0)",
+#             )
 
-    #             fig = go.Figure(data=data, layout=layout)
+#             fig = go.Figure(data=data, layout=layout)
 
-    #             st.plotly_chart(
-    #                 fig,
-    #                 use_container_width=True,
-    #                 sharing="streamlit",
-    #                 theme="streamlit",
+#             st.plotly_chart(
+#                 fig,
+#                 use_container_width=True,
+#                 sharing="streamlit",
+#                 theme="streamlit",
 
-    #             )
-    #         with r:
-    #             st.write("### " + title)
-    #             fig = go.Figure()
-    #             fig.add_trace(go.Scatter(x=labels, y=values,
-    #                                 mode='lines+markers',
-    #                                 name=title))
-    #             fig.update_layout(
-    #                 title=title,               
-    #                 yaxis_title_font_size = 12, 
-    #                 xaxis_title_font_size = 12, 
-    #                 hoverlabel_font_size=20,
-    #                 title_font=dict(
-    #                     family="Courier New, monospace",
-    #                     size=20,
-    #                     color="white"
-    #                     ),
-    #                     xaxis=dict(
-    #                     tickfont=dict(
-    #                         size=12 
-    #                     ) 
-    #                     ),
-    #                     yaxis=dict(
-    #                     tickfont=dict(
-    #                     size=12 
-    #                 )
-    #             )
-    #             )
-                
-    #             st.plotly_chart(fig, use_container_width=True)
-        
+#             )
+#         with r:
+#             st.write("### " + title)
+#             fig = go.Figure()
+#             fig.add_trace(go.Scatter(x=labels, y=values,
+#                                 mode='lines+markers',
+#                                 name=title))
+#             fig.update_layout(
+#                 title=title,               
+#                 yaxis_title_font_size = 12, 
+#                 xaxis_title_font_size = 12, 
+#                 hoverlabel_font_size=20,
+#                 title_font=dict(
+#                     family="Courier New, monospace",
+#                     size=20,
+#                     color="white"
+#                     ),
+#                     xaxis=dict(
+#                     tickfont=dict(
+#                         size=12 
+#                     ) 
+#                     ),
+#                     yaxis=dict(
+#                     tickfont=dict(
+#                     size=12 
+#                 )
+#             )
+#             )
+            
+#             st.plotly_chart(fig, use_container_width=True)
+
+    # ------------------
+
+
+# ------------------
+
+            
     lcol, rcol = st.columns(2)
 
     with lcol:
@@ -1006,12 +1235,14 @@ with contextlib.suppress(IndexError, NameError):
             st.write("Download static image from the plot toolbar")
             st.image("save_as_png.png")
 
-    fig.write_html("interactive.html")
-    with open("interactive.html", "rb") as file:
-        rcol.download_button(
-            "💾Download interactive plot",
-            data=file,
-            mime="text/html",
-            use_container_width=True,
-        )
+    if fig != 0:
+
+        fig.write_html("interactive.html")
+        with open("interactive.html", "rb") as file:
+            rcol.download_button(
+                "💾Download interactive plot",
+                data=file,
+                mime="text/html",
+                use_container_width=True,
+            )
 
