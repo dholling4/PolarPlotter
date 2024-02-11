@@ -14,6 +14,8 @@ persons = [
     # {"image_url": path + "worn_out_sole.jpg", "name": "", "description": ""}
     {"image_url": path + "two_worn_shoes.png", "name": "", "description": ""},
     {"image_url": path + "251shoe_report.png", "name": "", "description": ""},
+    {"image_url": path + "pronation_diagram.png", "name": "", "description": ""},
+
 ]
 st.image(persons[0]["image_url"], caption=persons[0]["name"], use_column_width=True)
 
@@ -36,6 +38,8 @@ st.write("## Get SOLEMate Insights!")
 
 youtube_url = "https://www.youtube.com/watch?v=kav_rBFBwtA"
 st.video(youtube_url)
+
+st.image(persons[4]["image_url"], caption="Pronation of the Foot", use_column_width=True)
 
 expander_howitworks = st.expander("How does FootWear work?")
 with expander_howitworks:
