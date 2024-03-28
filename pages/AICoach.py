@@ -13,7 +13,7 @@ client = OpenAI(
 ) 
 
 
-st.title("💬 Chatbot")
+st.title("🤖 Whalley: Your AI Virtual Coach")
 st.caption("🚀 A streamlit chatbot powered by Google Gemma")
 
 # Initialize chat history
