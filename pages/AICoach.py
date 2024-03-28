@@ -4,8 +4,14 @@ import os
 import sys
 from dotenv import load_dotenv, dotenv_values
 load_dotenv()
+# 
+import openai
 
+openai.api_key = "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"
+#
+import os
 
+os.environ["OPENAI_API_KEY"] = "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"
 # initialize the client
 client = OpenAI(
   base_url="https://api-inference.huggingface.co/v1",
