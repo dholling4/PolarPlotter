@@ -44,7 +44,7 @@ if prompt := st.chat_input():
     response = client.chat.completions.create(
     model="google/gemma-2b-it", 
     messages=st.session_state.messages,
-    max_tokens=200  # Adjust the max_tokens value as needed
+    max_tokens=600  # Adjust the max_tokens value as needed
     )
     msg = response.choices[0].message.content
     
