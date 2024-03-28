@@ -33,9 +33,9 @@ cycler==0.12.1
 # grpcio==1.59.3
 # h5py==3.10.0
 # hugchat
-openai
 langchain
 transformers
+openai
 python-dotenv
 # idna==3.6
 # imageio==2.33.0
