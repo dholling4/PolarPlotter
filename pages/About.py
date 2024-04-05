@@ -77,23 +77,17 @@ with expander_hollinger:
     st.write("I was a walk-on cross country and track runner at George Mason University (Fairfax, VA). Many of my teammates were spectacular, but numerous teammates experienced overuse injuries. Over-use injuries, such as stress fractures, were difficult to predict ahead of time, especially at the elite level. I feared developing an over-use injury. As a result, I under-trained and struggled to find breakthrough. Out of frutstration, I left NCAA competition and joined the Potomac River Running Elite Racing team in DC-VA where I began to run personal bests in the 5k (16:09), 10k (33:25), 10-mile (55:33) and half-marathon (1:15:40). I was able to learn how to properly push myself to new limits. I also ran a 2:50 marathon (Traverse City, MI) in 2018 to qualify for the Boston Marathon. I am now a PhD candidate studying the intersection of biomechanics, wearables, and AI to deliver personalized-insights into training to push athletes to achieve their potential.")
 
 # Create 2 headshots with advisors
-st.write("### Advisors")
+st.markdown("<h1 style='text-align: center; color: pink;'>Advisors                Collaborators</h1>", unsafe_allow_html=True)
+# write collaborator on the right side of the screen
+
 advisors = [
-    {"image_url": path + "dr_brian.png", "name": "Dr. Brian Dean", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
-    {"image_url": path + "dr_michael.png", "name": "Dr. Michael Esposito", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
+    {"image_url": path + "zabala.jpg", "name": "Michael Zabala, PhD", "description": "Auburn Alumni Engineering Council Endowed Associate Professor, Mechanical Engineering, Auburn University"},
+    {"image_url": path + "ford_dyke.jpg", "name": "Dr. Michael Esposito", "description": "Associate Clinical Professor, School of Kinesiology, Auburn University"},
+    {"image_url": path + "iee.png", "name": "", "description": ""},
+    {"image_url": path + "sylvia.jpg", "name": "Sylvia Corre Terente", "description": "Sport Science & Performance Coach Team Arkéa-Samsic"},
 ]
-cols = st.columns(2)
+cols = st.columns(4)
 for i in range(len(advisors)):
     cols[i].image(advisors[i]["image_url"], caption=f"{advisors[i]['name']}", use_column_width=True)
     cols[i].write(f"{advisors[i]['description']}")
 
-# Create 2 headshots with advisors
-st.write("### Collaborators")
-collaborators = [
-    {"image_url": path + "ford_dyke.png", "name": "Sylvia Corre Terente", "description": "Sport Science & Performance Coach Team Arkéa-Samsic"},
-    {"image_url": path + "ford_dyke.png", "name": "Dr. Jonathan Beck", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
-]
-cols = st.columns(2)
-for i in range(len(collaborators)):
-    cols[i].image(collaborators[i]["image_url"], caption=f"{collaborators[i]['name']}", use_column_width=True)
-    cols[i].write(f"{collaborators[i]['description']}")
