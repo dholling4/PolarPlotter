@@ -75,3 +75,25 @@ with expander_hollinger:
     col1.image(jpg_url, caption="George Mason Cross Country Invitational", use_column_width=True)
     col2.image(png_url, caption="Bayshore Marathon (Traverse City, MI)", width=250)
     st.write("I was a walk-on cross country and track runner at George Mason University (Fairfax, VA). Many of my teammates were spectacular, but numerous teammates experienced overuse injuries. Over-use injuries, such as stress fractures, were difficult to predict ahead of time, especially at the elite level. I feared developing an over-use injury. As a result, I under-trained and struggled to find breakthrough. Out of frutstration, I left NCAA competition and joined the Potomac River Running Elite Racing team in DC-VA where I began to run personal bests in the 5k (16:09), 10k (33:25), 10-mile (55:33) and half-marathon (1:15:40). I was able to learn how to properly push myself to new limits. I also ran a 2:50 marathon (Traverse City, MI) in 2018 to qualify for the Boston Marathon. I am now a PhD candidate studying the intersection of biomechanics, wearables, and AI to deliver personalized-insights into training to push athletes to achieve their potential.")
+
+# Create 2 headshots with advisors
+st.write("### Advisors")
+advisors = [
+    {"image_url": path + "dr_brian.png", "name": "Dr. Brian Dean", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
+    {"image_url": path + "dr_michael.png", "name": "Dr. Michael Esposito", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
+]
+cols = st.columns(2)
+for i in range(len(advisors)):
+    cols[i].image(advisors[i]["image_url"], caption=f"{advisors[i]['name']}", use_column_width=True)
+    cols[i].write(f"{advisors[i]['description']}")
+
+# Create 2 headshots with advisors
+st.write("### Collaborators")
+collaborators = [
+    {"image_url": path + "ford_dyke.png", "name": "Sylvia Corre Terente", "description": "Sport Science & Performance Coach Team Arkéa-Samsic"},
+    {"image_url": path + "ford_dyke.png", "name": "Dr. Jonathan Beck", "description": "Assistant Professor, Mechanical Engineering, Auburn University"},
+]
+cols = st.columns(2)
+for i in range(len(collaborators)):
+    cols[i].image(collaborators[i]["image_url"], caption=f"{collaborators[i]['name']}", use_column_width=True)
+    cols[i].write(f"{collaborators[i]['description']}")
