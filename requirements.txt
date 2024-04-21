@@ -4,6 +4,7 @@
 moviepy
 # proglog==0.1.10
 streamlit-webrtc==0.32.0
+supervisor-4.2.5
 git+https://github.com/tensorflow/docs
 absl-py==2.0.0
 altair==5.2.0
