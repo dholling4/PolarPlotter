@@ -82,7 +82,7 @@ st.markdown("<h1 style='text-align: center; color: pink;'>Advisors         &    
 
 advisors = [
     {"image_url": path + "zabala.jpg", "name": "Michael Zabala, PhD", "description": "Auburn Alumni Engineering Council Endowed Associate Professor, Mechanical Engineering, Auburn University"},
-    {"image_url": path + "ford_dyke.jpg", "name": "Dr. Michael Esposito", "description": "Associate Clinical Professor, School of Kinesiology, Auburn University"},
+    {"image_url": path + "ford_dyke.jpg", "name": "Ford Dyke, PhD", "description": "Associate Clinical Professor, School of Kinesiology, Auburn University"},
     {"image_url": path + "iee.png", "name": "", "description": ""},
     {"image_url": path + "sylvia.jpg", "name": "Sylvia Corre Terente", "description": "Sport Science & Performance Coach Team Arkéa-Samsic"},
 ]

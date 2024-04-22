@@ -153,6 +153,119 @@ with left_column:
 with right_column:
     st.button('Upload wearable data')
 
+
+# ------- POSE DETECTOR----------------
+import cv2 as cv
+import numpy as np
+import streamlit as st
+import subprocess
+
+# Clone the GitHub repository
+subprocess.run(["git", "clone", "https://github.com/misbah4064/human-pose-estimation-opencv.git"])
+
+# Define the body parts and their corresponding indices
+BODY_PARTS = { "Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
+               "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
+               "RAnkle": 10, "LHip": 11, "LKnee": 12, "LAnkle": 13, "REye": 14,
+               "LEye": 15, "REar": 16, "LEar": 17, "Background": 18 }
+
+# Define the pairs of body parts that form a pose
+POSE_PAIRS = [ ["Neck", "RShoulder"], ["Neck", "LShoulder"], ["RShoulder", "RElbow"],
+               ["RElbow", "RWrist"], ["LShoulder", "LElbow"], ["LElbow", "LWrist"],
+               ["Neck", "RHip"], ["RHip", "RKnee"], ["RKnee", "RAnkle"], ["Neck", "LHip"],
+               ["LHip", "LKnee"], ["LKnee", "LAnkle"], ["Neck", "Nose"], ["Nose", "REye"],
+               ["REye", "REar"], ["Nose", "LEye"], ["LEye", "LEar"] ]
+
+# Define input dimensions for the network
+width = 368
+height = 368
+inWidth = width
+inHeight = height
+
+# Load the pre-trained pose detection model
+net = cv.dnn.readNetFromTensorflow("human-pose-estimation-opencv/graph_opt.pb")
+thr = 0.2  # Confidence threshold for the detected keypoints
+
+# Function to detect poses in a frame
+def poseDetector(frame):
+    frameWidth = frame.shape[1]
+    frameHeight = frame.shape[0]
+
+    # Prepare the input blob for the network
+    net.setInput(cv.dnn.blobFromImage(frame, 1.0, (inWidth, inHeight), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+    out = net.forward()
+    out = out[:, :19, :, :]  # MobileNet output [1, 57, -1, -1], we only need the first 19 elements
+
+    assert(len(BODY_PARTS) == out.shape[1])
+
+    points = []
+    # Iterate over the body parts to extract keypoints
+    for i in range(len(BODY_PARTS)):
+        # Slice heatmap of corresponding body part
+        heatMap = out[0, i, :, :]
+
+        # Find the maximum confidence and corresponding location
+        _, conf, _, point = cv.minMaxLoc(heatMap)
+        x = (frameWidth * point[0]) / out.shape[3]
+        y = (frameHeight * point[1]) / out.shape[2]
+        points.append((int(x), int(y)) if conf > thr else None)
+
+    # Connect keypoints to form poses
+    for pair in POSE_PAIRS:
+        partFrom = pair[0]
+        partTo = pair[1]
+        assert(partFrom in BODY_PARTS)
+        assert(partTo in BODY_PARTS)
+
+        idFrom = BODY_PARTS[partFrom]
+        idTo = BODY_PARTS[partTo]
+
+        if points[idFrom] and points[idTo]:
+            # Draw line between keypoints
+            cv.line(frame, points[idFrom], points[idTo], (0, 255, 0), 3)
+            # Draw keypoints
+            cv.ellipse(frame, points[idFrom], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
+            cv.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
+
+    return frame
+
+# Streamlit App
+# st.title("Pose Detection with OpenCV")
+
+# File Uploader
+# video_file = st.file_uploader("Upload a video file", type=["mp4"])
+# video_file = '/workspaces/PolarPlotter/run_treadmill_outdoors_cut1.mp4'
+# if video_file is not None:
+#     # Process the uploaded video
+#     cap = cv.VideoCapture(video_file)
+#     frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+#     frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+#     fps = int(cap.get(cv.CAP_PROP_FPS))
+
+#     # Create VideoWriter object to save processed video
+#     output_video_path = "/workspaces/PolarPlotter/output_video.mp4"
+#     fourcc = cv.VideoWriter_fourcc(*'mp4v')
+#     out = cv.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
+
+#     # Process each frame in the input video
+#     while True:
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
+
+#         # Detect poses and overlay skeleton on the frame
+#         output_frame = poseDetector(frame)
+
+#         # Write the processed frame to the output video
+#         out.write(output_frame)
+
+#     # Release VideoCapture and VideoWriter objects
+#     cap.release()
+#     out.release()
+
+    # Display the original and processed videos
+# st.video("/workspaces/PolarPlotter/output_video.mp4")
+
 # st.write("# Your Run Efficiency Score:")
 # dial1, dial2, dial3 = st.columns(3)
 # title_font_size = 24
