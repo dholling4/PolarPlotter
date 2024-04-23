@@ -33,7 +33,9 @@ persons = [
     
 # Create six columns for each person
 cols = st.columns(6)
-
+url = 'https://www.linkedin.com/in/david-hollinger1/'
+st.markdown("[![LinkedIn](https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg)](https://www.linkedin.com/in/david-hollinger1/)")
+# st.markdown("[![Title]('https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg')]('https://www.linkedin.com/in/david-hollinger1/')")
 # Display the images as 6 columns
 for i in range(len(persons)):
     cols[i].image(persons[i]["image_url"], caption=f"{persons[i]['name']}", use_column_width=True)
