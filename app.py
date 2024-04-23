@@ -155,79 +155,79 @@ with right_column:
 
 
 # ------- POSE DETECTOR----------------
-import cv2 as cv
-import numpy as np
-import streamlit as st
-import subprocess
+# import cv2 as cv
+# import numpy as np
+# import streamlit as st
+# import subprocess
 
-# Clone the GitHub repository
-subprocess.run(["git", "clone", "https://github.com/misbah4064/human-pose-estimation-opencv.git"])
+# # Clone the GitHub repository
+# subprocess.run(["git", "clone", "https://github.com/misbah4064/human-pose-estimation-opencv.git"])
 
-# Define the body parts and their corresponding indices
-BODY_PARTS = { "Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
-               "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
-               "RAnkle": 10, "LHip": 11, "LKnee": 12, "LAnkle": 13, "REye": 14,
-               "LEye": 15, "REar": 16, "LEar": 17, "Background": 18 }
+# # Define the body parts and their corresponding indices
+# BODY_PARTS = { "Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
+#                "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
+#                "RAnkle": 10, "LHip": 11, "LKnee": 12, "LAnkle": 13, "REye": 14,
+#                "LEye": 15, "REar": 16, "LEar": 17, "Background": 18 }
 
-# Define the pairs of body parts that form a pose
-POSE_PAIRS = [ ["Neck", "RShoulder"], ["Neck", "LShoulder"], ["RShoulder", "RElbow"],
-               ["RElbow", "RWrist"], ["LShoulder", "LElbow"], ["LElbow", "LWrist"],
-               ["Neck", "RHip"], ["RHip", "RKnee"], ["RKnee", "RAnkle"], ["Neck", "LHip"],
-               ["LHip", "LKnee"], ["LKnee", "LAnkle"], ["Neck", "Nose"], ["Nose", "REye"],
-               ["REye", "REar"], ["Nose", "LEye"], ["LEye", "LEar"] ]
+# # Define the pairs of body parts that form a pose
+# POSE_PAIRS = [ ["Neck", "RShoulder"], ["Neck", "LShoulder"], ["RShoulder", "RElbow"],
+#                ["RElbow", "RWrist"], ["LShoulder", "LElbow"], ["LElbow", "LWrist"],
+#                ["Neck", "RHip"], ["RHip", "RKnee"], ["RKnee", "RAnkle"], ["Neck", "LHip"],
+#                ["LHip", "LKnee"], ["LKnee", "LAnkle"], ["Neck", "Nose"], ["Nose", "REye"],
+#                ["REye", "REar"], ["Nose", "LEye"], ["LEye", "LEar"] ]
 
-# Define input dimensions for the network
-width = 368
-height = 368
-inWidth = width
-inHeight = height
+# # Define input dimensions for the network
+# width = 368
+# height = 368
+# inWidth = width
+# inHeight = height
 
-# Load the pre-trained pose detection model
-net = cv.dnn.readNetFromTensorflow("human-pose-estimation-opencv/graph_opt.pb")
-thr = 0.2  # Confidence threshold for the detected keypoints
+# # Load the pre-trained pose detection model
+# net = cv.dnn.readNetFromTensorflow("human-pose-estimation-opencv/graph_opt.pb")
+# thr = 0.2  # Confidence threshold for the detected keypoints
 
-# Function to detect poses in a frame
-def poseDetector(frame):
-    frameWidth = frame.shape[1]
-    frameHeight = frame.shape[0]
+# # Function to detect poses in a frame
+# def poseDetector(frame):
+#     frameWidth = frame.shape[1]
+#     frameHeight = frame.shape[0]
 
-    # Prepare the input blob for the network
-    net.setInput(cv.dnn.blobFromImage(frame, 1.0, (inWidth, inHeight), (127.5, 127.5, 127.5), swapRB=True, crop=False))
-    out = net.forward()
-    out = out[:, :19, :, :]  # MobileNet output [1, 57, -1, -1], we only need the first 19 elements
+#     # Prepare the input blob for the network
+#     net.setInput(cv.dnn.blobFromImage(frame, 1.0, (inWidth, inHeight), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+#     out = net.forward()
+#     out = out[:, :19, :, :]  # MobileNet output [1, 57, -1, -1], we only need the first 19 elements
 
-    assert(len(BODY_PARTS) == out.shape[1])
+#     assert(len(BODY_PARTS) == out.shape[1])
 
-    points = []
-    # Iterate over the body parts to extract keypoints
-    for i in range(len(BODY_PARTS)):
-        # Slice heatmap of corresponding body part
-        heatMap = out[0, i, :, :]
+#     points = []
+#     # Iterate over the body parts to extract keypoints
+#     for i in range(len(BODY_PARTS)):
+#         # Slice heatmap of corresponding body part
+#         heatMap = out[0, i, :, :]
 
-        # Find the maximum confidence and corresponding location
-        _, conf, _, point = cv.minMaxLoc(heatMap)
-        x = (frameWidth * point[0]) / out.shape[3]
-        y = (frameHeight * point[1]) / out.shape[2]
-        points.append((int(x), int(y)) if conf > thr else None)
+#         # Find the maximum confidence and corresponding location
+#         _, conf, _, point = cv.minMaxLoc(heatMap)
+#         x = (frameWidth * point[0]) / out.shape[3]
+#         y = (frameHeight * point[1]) / out.shape[2]
+#         points.append((int(x), int(y)) if conf > thr else None)
 
-    # Connect keypoints to form poses
-    for pair in POSE_PAIRS:
-        partFrom = pair[0]
-        partTo = pair[1]
-        assert(partFrom in BODY_PARTS)
-        assert(partTo in BODY_PARTS)
+#     # Connect keypoints to form poses
+#     for pair in POSE_PAIRS:
+#         partFrom = pair[0]
+#         partTo = pair[1]
+#         assert(partFrom in BODY_PARTS)
+#         assert(partTo in BODY_PARTS)
 
-        idFrom = BODY_PARTS[partFrom]
-        idTo = BODY_PARTS[partTo]
+#         idFrom = BODY_PARTS[partFrom]
+#         idTo = BODY_PARTS[partTo]
 
-        if points[idFrom] and points[idTo]:
-            # Draw line between keypoints
-            cv.line(frame, points[idFrom], points[idTo], (0, 255, 0), 3)
-            # Draw keypoints
-            cv.ellipse(frame, points[idFrom], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
-            cv.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
+#         if points[idFrom] and points[idTo]:
+#             # Draw line between keypoints
+#             cv.line(frame, points[idFrom], points[idTo], (0, 255, 0), 3)
+#             # Draw keypoints
+#             cv.ellipse(frame, points[idFrom], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
+#             cv.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
 
-    return frame
+#     return frame
 
 # Streamlit App
 # st.title("Pose Detection with OpenCV")
