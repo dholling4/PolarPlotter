@@ -10,7 +10,7 @@ st.sidebar.markdown("# About")
 """
 # The Team
 """
-"##### We offer a diverse blend of talented athletes, biomechanical engineers, and computer scientists with the goal of leveraging big data to serve the athlete."
+"##### We bring together a diverse team comprising talented athletes, biomechanical engineers, and computer scientists. Our mission is to harness the power of data-driven biomechanics to benefit athletes."
 
 # Function to display image with name and description
 # def display_person(image_url, name, description):
@@ -47,28 +47,35 @@ xray = path2 + "xray.png"
 
 expander_allison = st.expander("Allison's story")
 with expander_allison:
-    st.write("Description of my story")
+    st.write("Ever since I was 12 years old, it was a dream of mine to compete in the SEC for four years.")
     download_link = f"https://drive.google.com/uc?export=download&id=13rZ4MEJwGjI76QpGgB7TXDPRZ_in9gWJ"
     video_url = path2 + "Allison%20High%20Jump.MP4"
     response = requests.get(download_link)
     st.video(video_url)
-    st.write('More information about training, injury, and the eventual surgery')
+    st.write('I competed for Auburn Track & Field, but my time was cut short. I suffered a torn labrum which required surgery. I came back too quickly, resulting in excessive metatarsal stress in my foot which led to another surgery. Following these two surgeries, I decided to medically retired from competing in the SEC.')
     persons = [
     {"image_url": path2 + "xray.png", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
     ]  
-    st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=275)
-    st.write('More information about the injury, trying to rehab it, and the eventual retirement')
+    foot = persons[0]["image_url"]
+
+    col1, col2 = st.columns(2)
+    col1.image(foot, caption=f"{persons[0]['name']}", use_column_width=True)
+    col2.image(path2 + "torn_labrum.PNG", caption="Surgery from torn labrum", use_column_width=True)
+    # st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=275)
+    st.write(' I am now pursuing an MBA at Auburn University and am excited to be a part of the Digital Athlete team.')
 
 expander_edmonson = st.expander("David Edmonson's story")
 with expander_edmonson:
-    st.write("Description of my story")
+    st.write("I was born in a small town in Jamaica and moved to the United States at the age of 18 to attend Auburn University, competing in the decathlon.")
     png_url = path2 + "Edmonson_1.png"
-    st.image(png_url, caption="Hurdle event during indoor heptathlon", width=250)
-    st.write('More information about the injury, trying to rehab it, and the eventual surgery')
+    injury_url = path2 + "edmonson_surgery_pic.PNG"
+    col1, col2 = st.columns(2)
+    col1.image(png_url, caption="Hurdle event during indoor heptathlon", use_column_width=True)
+    col2.image(injury_url, caption="Tight rope surgery to repair torn deltoid in the ankle", use_column_width=True)
+    st.write('During my Senior year, I tore my deltoid ligament in my ankle, requiring tight rope surgery. Following the surgery, I had to relearn how to walk and run. Unfortunately, I never had the chance to compete again in the SEC. I am now a Master student in Mechanical Engineering at Auburn University and am excited to be a part of the Digital Athlete team.')
 
 expander_hollinger = st.expander("David Hollinger's story")
 with expander_hollinger:
-    st.write("Description of my story")
     jpg_url = path2 + "gmu2.jpg"
     png_url = path2 + "Marathon.png"
     col1, col2 = st.columns(2)
