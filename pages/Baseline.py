@@ -53,7 +53,7 @@ with baseline_assessments:
     github_repo_url = "https://github.com/dholling4/PolarPlotter"
 
     # MP4 file path in the repository
-    mp4_file_path = "david_treadmill_skeleton.mp4"
+    mp4_file_path = "baseline_pics/david_treadmill_skeleton.mp4"
 
     # Display the MP4 file
     display_video_from_github(github_repo_url, mp4_file_path)
