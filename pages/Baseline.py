@@ -48,20 +48,23 @@ baseline_assessments = st.expander("Baseline Assessments")
 cols1, cols2 = st.columns(2)
 with baseline_assessments:
   with cols1:
-    st.write("#### Depth Squat")
-    # GitHub repository URL
+    st.write("#### Gait Analysis")
     github_repo_url = "https://github.com/dholling4/PolarPlotter"
-
     # MP4 file path in the repository
-    mp4_file_path = "baseline_pics/david_treadmill_skeleton.mp4"
-
+    mp4_file_path = "baseline_pics/phone.mp4"
     # Display the MP4 file
+    st.write("#\n")
+    display_video_from_github(github_repo_url, mp4_file_path)
+  with cols2:
+    st.write("#### Depth Squat")
+    github_repo_url = "https://github.com/dholling4/PolarPlotter"
+    # MP4 file path in the repository
+    mp4_file_path = "baseline_pics/GOOD_SQUAT_SKELETON.mp4"
+    # Display the MP4 file
+    st.write("#\n")
     display_video_from_github(github_repo_url, mp4_file_path)
 
-    st.image(squat_url, caption="Gait Analysis", use_column_width=True)
-    # display gif
 
-  with cols2:
     st.write("#### Single Leg Balance")
     st.image(gif_url, caption="Single Leg Balance", width=240)
 

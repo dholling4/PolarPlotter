@@ -59,7 +59,7 @@ def display_video_from_github(repo_url, file_path):
 github_repo_url = "https://github.com/dholling4/PolarPlotter"
 
 # MP4 file path in the repository
-mp4_file_path = "baseline_pics/david_treadmill_skeleton.mp4"
+mp4_file_path = "baseline_pics/phone.mp4"
 
 # Display the MP4 file
 st.write("#\n")
