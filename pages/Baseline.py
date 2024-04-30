@@ -20,7 +20,6 @@ st.markdown(" ### Check out the [Functional Movement Screen](%s)" % url)
 st.sidebar.markdown("# Baseline 🧘‍♀️🤸‍♂️📊")
 
 squat_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/baseline_pics/depth_squat_enhanced.png"
-squat_url = "/workspaces/PolarPlotter/GOOD_SQUAT_SKELETON.gif"
 gif_url = path + "balance.gif"
 
 run_front = path + "skeleton_run_frontview2.gif"
@@ -39,8 +38,6 @@ with baseline_assessments:
   with cols1:
     st.write("#### Depth Squat")
     st.image(squat_url, caption="Depth Squat", use_column_width=True)
-    # display gif
-
   with cols2:
     st.write("#### Single Leg Balance")
     st.image(gif_url, caption="Single Leg Balance", width=240)
@@ -1040,7 +1037,7 @@ if uploaded_file is not None:
   """
   ## Video Results
   """
-fs=20
+fs=1
 # Function to plot the data
 # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
 #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
@@ -1157,7 +1154,7 @@ fig_hip = px.line(motion_hip, x=motion_hip.index/fs, y=["Left Hip", "Right Hip"]
 # fig_hip.update_layout(font=dict(size=24))
 fig_hip.update_layout(
     xaxis_title="Time (sec)",
-    yaxis_title="Distance",
+    yaxis_title="Angles (deg)",
     yaxis_title_font_size = 38, 
     xaxis_title_font_size = 38, 
     hoverlabel_font_size=38,
@@ -1225,142 +1222,76 @@ fig_knee.update_layout(
 )
 st.plotly_chart(fig_knee, use_container_width=True)
 
-vert_oscillation = 100 * (np.max(nose_list_x) - np.min(nose_list_x)) # percent change of the video camera screen
+vert_oscillation = np.max(nose_list_x) - np.min(nose_list_x)
+st.write('##### Vertical Oscillation')
+st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
+st.write(f'Vertical Oscillation: {vert_oscillation} m')
+
+# knees and hips assymmetry
+st.write('##### Hip and Knee Assymmetry')
+st.write('Hip and knee assymmetry is the difference in the range of motion between the left and right hip and knee joints.')
+st.write(f'Left Hip ROM: {left_hip_rom} deg')
+st.write(f'Right Hip ROM: {right_hip_rom} deg')
 
 hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
 knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
 
 st.write('##### Hip and Knee Correlation')
 st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
-# round to 2 digits
-hip_corr = np.round(hip_corr, 2)
-knee_corr = np.round(knee_corr, 2)
 st.write(f'Hip Correlation: {hip_corr[0][1]}')
 st.write(f'Knee Correlation: {knee_corr[0][1]}')
 
-# DIAL PLOTS  
-dial1, dial2, dial3 = st.columns(3)
-title_font_size = 26
-with dial1:
-  value = knee_corr  # Value to be displayed on the dial (e.g., gas mileage)
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=value,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "Knee Symmetry Score", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,      
-      font=dict(size=24)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
-  # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
-  if knee_corr < 60:
-      st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
-  elif knee_corr > 60 and knee_corr < 80:
-      st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-  elif knee_corr > 80:
-     st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
+fig = px.bar(x=['Hip', 'Knee'], y=[hip_corr[0][1], knee_corr[0][1]], labels={'x': 'Joint', 'y': 'Correlation Coefficient'}, title='Hip and Knee Correlation', orientation='h')
+fig.update_layout(
+    xaxis_title="Joint",
+    yaxis_title="Correlation Coefficient",
+    yaxis_title_font_size = 38, 
+    xaxis_title_font_size = 38, 
+    hoverlabel_font_size=38,
+    title_font=dict(
+        family="Courier New, monospace",
+        size=40,
+        color="white"
+        ),
+        xaxis=dict(
+        tickfont=dict(
+            size=28 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=28 
+        )
+    )
+)
 
-  with st.expander('Knee Symmetry Score'):
-      st.write('Knee Mobility is the ability of the knee joint to move through its full range of motion. Knee mobility is important for running because it allows you to generate power from your knees and quads. A lack of knee mobility can lead to overstriding, which can lead to knee pain and shin splints. Knee mobility exercises can help improve your running form and prevent injuries.')
-      st.write('Recommended Drills')
-      st.write('* Depth Squat')
+st.plotly_chart(fig, use_container_width=True)
+# show radar plot for hip and knee assymmetry
+st.write('##### Hip and Knee Assymmetry Radar Plot')
+st.write('Hip and knee assymmetry is the difference in the range of motion between the left and right hip and knee joints.')
+fig = go.Figure()
+fig.add_trace(go.Scatterpolar(
+      r=[hip_corr, knee_corr],
+      theta=['Hip', 'Knee'],
+      fill='toself',
+      name='Assymmetry'
+))
 
-with dial2:
-  value = hip_corr
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=value,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "Foot Strike Score", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,
-      font=dict(size=24)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  if hip_corr < 60:
-      st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
-  elif hip_corr > 60 and hip_corr < 80:
-      st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-  elif hip_corr > 80:
-      st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
+fig.update_layout(
+  polar=dict(
+    radialaxis=dict(
+      visible=True,
+      range=[0, 100]
+    )),
+  showlegend=False
+)
 
-  with st.expander("Hip Symmetry Score"):
-      # st.plotly_chart(fig, use_container_width=True)
-      st.write('Hip Mobility is the ability of the hip joint to move through its full range of motion. Hip mobility is important for running because it allows you to generate power from your hips and glutes. A lack of hip mobility can lead to overstriding, which can lead to knee pain and shin splints. Hip mobility exercises can help improve your running form and prevent injuries.')
-      # recommended exercises for the hip
-      st.write('##### Recommended Drills')
-      st.write('* Bird Dogs')
-      st.write('* Hip Circles')
-      st.write('* Hip Flexor Stretch')
-      st.write('* Hip Hinge')
+st.plotly_chart(fig, use_container_width=True)
 
-# radar plot for vert_oscillation
-with dial3:
-  fig = go.Figure(go.Indicator(
-      mode="gauge+number",
-      value=vert_oscillation,
-      domain={'x': [0, 1], 'y': [0, 1]},
-      gauge=dict(
-          axis=dict(range=[0, 100]),
-          bar=dict(color="white"),
-          borderwidth=2,
-          bordercolor="gray",
-          steps=[
-              dict(range=[0, 25], color="red"),
-              dict(range=[25, 50], color="orange"),
-              dict(range=[50, 75], color="yellow"),
-              dict(range=[75, 100], color="green")
-          ],
-          threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value3)
-      )
-  ))
-  fig.update_layout(
-      title={'text': "VERTICAL OSCICILLATION", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-      title_font_size = title_font_size,
-      font=dict(size=28)
-  )
-  st.plotly_chart(fig, use_container_width=True)
-  # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
-  if vert_oscillation < 10:
-      st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
-  elif vert_oscillation > 10 and vert_oscillation < 25:
-      st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-  elif vert_oscillation > 25:
-      st.write("## <div style='text-align: center;'><span style='color: red;'>BAD</span>", unsafe_allow_html=True)
 
-  with st.expander("Vertical Oscillation"):
-      st.plotly_chart(fig, use_container_width=True)
-      st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
+
+
+
 
 
 
