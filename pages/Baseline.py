@@ -1257,10 +1257,10 @@ if uploaded_file is not None:
   st.write('##### Hip and Knee Correlation')
   st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
   # round to 2 digits
-  hip_corr = np.round(hip_corr, 2)
-  knee_corr = np.round(knee_corr, 2)
-  st.write(f'Hip Correlation: {hip_corr[0][1]}')
-  st.write(f'Knee Correlation: {knee_corr[0][1]}')
+  hip_corr = np.round(hip_corr[0][1], 2)
+  knee_corr = np.round(knee_corr[0][1], 2)
+  st.write(f'Hip Correlation: {hip_corr}')
+  st.write(f'Knee Correlation: {knee_corr}')
 
   # DIAL PLOTS  
   dial1, dial2, dial3 = st.columns(3)
