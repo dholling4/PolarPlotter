@@ -20,36 +20,18 @@ client = OpenAI(
 
 
 st.title("🤖 Whalley: Your AI Virtual Coach")
-st.caption("🚀 A streamlit chatbot powered by Google Gemma")
 
-# Initialize chat history
-if 'messages' not in st.session_state:
-    st.session_state['messages'] = [] #[{"role": "assistant", "content": "How can I help you?"}]
+import streamlit as st 
+from langchain.llms import Ollama
+llm = Ollama(model="llama2-uncensored:latest") # 👈 stef default
 
-# Display chat messages from history on app rerun
-for messasge in st.session_state.messages:
-    st.chat_message(messasge["role"]).write(messasge["content"])
-
-# React to user input
-if prompt := st.chat_input():
-    
-     # Display user message in chat message container
-    st.chat_message("user").write(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-    ##Get response to the message using client
-    response = client.chat.completions.create(model="google/gemma-2b-it", messages=st.session_state.messages)
-  # Add more tokens here!!!
-    response = client.chat.completions.create(
-    model="google/gemma-2b-it", 
-    messages=st.session_state.messages,
-    max_tokens=700  # Adjust the max_tokens value as needed
-    )
-    msg = response.choices[0].message.content
-    
-     # Display assistant response in chat message container
-    st.chat_message("assistant").write(msg)
-
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": msg})
+colA, colB = st.columns([.90, .10])
+with colA:
+    prompt = st.text_input("prompt", value="", key="prompt")
+response = ""
+with colB:
+    st.markdown("")
+    st.markdown("")
+    if st.button("🙋‍♀️", key="button"):
+        response = llm.predict(prompt)
+st.write(response)
