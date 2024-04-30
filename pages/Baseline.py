@@ -53,15 +53,12 @@ with baseline_assessments:
     github_repo_url = "https://github.com/dholling4/PolarPlotter"
 
     # MP4 file path in the repository
-    mp4_file_path = "/workspaces/PolarPlotter/GOOD_SQUAT_SKELETON.gif"
+    mp4_file_path = "/workspaces/PolarPlotter/david_treadmill_skeleton.mp4"
 
     # Display the MP4 file
-    st.write("#\n")
-    st.title("Analyze your biomechanics from smartphone video")
     display_video_from_github(github_repo_url, mp4_file_path)
 
-
-    st.image(squat_url, caption="Depth Squat", use_column_width=True)
+    st.image(squat_url, caption="Gait Analysis", use_column_width=True)
     # display gif
 
   with cols2:
