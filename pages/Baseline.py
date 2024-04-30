@@ -1222,6 +1222,79 @@ fig_knee.update_layout(
 )
 st.plotly_chart(fig_knee, use_container_width=True)
 
+vert_oscillation = np.max(nose_list_x) - np.min(nose_list_x)
+st.write('##### Vertical Oscillation')
+st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
+st.write(f'Vertical Oscillation: {vert_oscillation} m')
+
+# knees and hips assymmetry
+st.write('##### Hip and Knee Assymmetry')
+st.write('Hip and knee assymmetry is the difference in the range of motion between the left and right hip and knee joints.')
+st.write(f'Left Hip ROM: {left_hip_rom} deg')
+st.write(f'Right Hip ROM: {right_hip_rom} deg')
+
+hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
+knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
+
+st.write('##### Hip and Knee Correlation')
+st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
+st.write(f'Hip Correlation: {hip_corr[0][1]}')
+st.write(f'Knee Correlation: {knee_corr[0][1]}')
+
+fig = px.bar(x=['Hip', 'Knee'], y=[hip_corr[0][1], knee_corr[0][1]], labels={'x': 'Joint', 'y': 'Correlation Coefficient'}, title='Hip and Knee Correlation', orientation='h')
+fig.update_layout(
+    xaxis_title="Joint",
+    yaxis_title="Correlation Coefficient",
+    yaxis_title_font_size = 38, 
+    xaxis_title_font_size = 38, 
+    hoverlabel_font_size=38,
+    title_font=dict(
+        family="Courier New, monospace",
+        size=40,
+        color="white"
+        ),
+        xaxis=dict(
+        tickfont=dict(
+            size=28 
+        ) 
+        ),
+        yaxis=dict(
+        tickfont=dict(
+        size=28 
+        )
+    )
+)
+
+st.plotly_chart(fig, use_container_width=True)
+# show radar plot for hip and knee assymmetry
+st.write('##### Hip and Knee Assymmetry Radar Plot')
+st.write('Hip and knee assymmetry is the difference in the range of motion between the left and right hip and knee joints.')
+fig = go.Figure()
+fig.add_trace(go.Scatterpolar(
+      r=[hip_corr, knee_corr],
+      theta=['Hip', 'Knee'],
+      fill='toself',
+      name='Assymmetry'
+))
+
+fig.update_layout(
+  polar=dict(
+    radialaxis=dict(
+      visible=True,
+      range=[0, 100]
+    )),
+  showlegend=False
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+
+
+
 # PLOT 3 DIAL PLOTS BASED ON ARMSWING, HIP DRIVE, AND FOOTSTRIKE SCORES!!
 # SLOW pace arcs of motion: ankle, 50 degrees; knee, 95 degrees; and hip, 40 degrees.
 # FAST pace, the hip required more extension in early swing; the hip and knee required more flexion in middle and late swings. The fact that ankle motion did not change with the different speeds gave credence to the belief that push-off, or toe-off, is not the source of power in running
