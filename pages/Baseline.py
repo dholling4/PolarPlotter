@@ -6,9 +6,20 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import time
+import requests
 
 # RUNNING FORM BASELINE EXERCISES TO PERFORM
 # HIP --> hip_video, hip_video2, hip_add_video=https://www.youtube.com/watch?v=yCpB5LpS_So ,  https://www.youtube.com/watch?v=FNbmLgpur_c, https://www.youtube.com/watch?v=YQGb-ysmOfU
+# Function to display MP4 file
+
+def display_video_from_github(repo_url, file_path):
+    video_url = f"{repo_url}/raw/main/{file_path}"
+    video_response = requests.get(video_url)
+    
+    if video_response.status_code == 200:
+        st.video(video_response.content)
+    else:
+        st.error(f"Failed to load video from {video_url}")
 
 # st.video(hip_video)
 VERSION = "0.3.1"
@@ -38,6 +49,18 @@ cols1, cols2 = st.columns(2)
 with baseline_assessments:
   with cols1:
     st.write("#### Depth Squat")
+    # GitHub repository URL
+    github_repo_url = "https://github.com/dholling4/PolarPlotter"
+
+    # MP4 file path in the repository
+    mp4_file_path = "/workspaces/PolarPlotter/GOOD_SQUAT_SKELETON.gif"
+
+    # Display the MP4 file
+    st.write("#\n")
+    st.title("Analyze your biomechanics from smartphone video")
+    display_video_from_github(github_repo_url, mp4_file_path)
+
+
     st.image(squat_url, caption="Depth Squat", use_column_width=True)
     # display gif
 
