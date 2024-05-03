@@ -939,107 +939,67 @@ if uploaded_file is not None:
     crop_region = determine_crop_region(
         keypoints_with_scores, image_height, image_width)
     # bar.update(progress(frame_idx, num_frames-1))
-
-    nose_x = keypoints_with_scores[0,0,0,0]
-    left_shoulder_x = keypoints_with_scores[0,0,5,0]
-    right_shoulder_x = keypoints_with_scores[0,0,6,0]
-    left_elbow_x = keypoints_with_scores[0,0,7,0]
-    right_elbow_x = keypoints_with_scores[0,0,8,0]
-    left_wrist_x = keypoints_with_scores[0,0,9,0]
-    right_wrist_x = keypoints_with_scores[0,0,10,0]
-    # HIPS
-    left_hip_x = keypoints_with_scores[0,0,11,0]
-    right_hip_x = keypoints_with_scores[0,0,12,0]
-    # ANKLES
-    left_ankle_x = keypoints_with_scores[0,0,15,0]
-    right_ankle_x = keypoints_with_scores[0,0,16,0]
-    # KNEES
-    left_knee_x = keypoints_with_scores[0,0,13,0]
-    right_knee_x = keypoints_with_scores[0,0,14,0]
-
+    output = np.stack(output_images, axis=0)
+ 
+    # st.image(image_capture, use_column_width=True)
     # Append keypoints to list
-    nose_list_x.append(nose_x)
-    left_shoulder_list_x.append(left_shoulder_x)
-    right_shoulder_list_x.append(right_shoulder_x)
-    left_elbow_list_x.append(left_elbow_x)
-    right_elbow_list_x.append(right_elbow_x)
-    left_wrist_list_x.append(left_wrist_x)
-    right_wrist_list_x.append(right_wrist_x)
-    left_ankle_list_x.append(left_ankle_x)
-    right_ankle_list_x.append(right_ankle_x)
-    left_knee_list_x.append(left_knee_x)
-    right_knee_list_x.append(right_knee_x)
-    left_hip_list_x.append(left_hip_x)
-    right_hip_list_x.append(right_hip_x)
-
-
-    nose_y = keypoints_with_scores[0,0,0,1]
-    left_shoulder_y = keypoints_with_scores[0,0,5,1]
-    right_shoulder_y = keypoints_with_scores[0,0,6,1]
-    left_elbow_y = keypoints_with_scores[0,0,7,1]
-    right_elbow_y = keypoints_with_scores[0,0,8,1]
-    left_wrist_y = keypoints_with_scores[0,0,9,1]
-    right_wrist_y = keypoints_with_scores[0,0,10,1]
-    # HIPS
-    left_hip_y = keypoints_with_scores[0,0,11,1]
-    right_hip_y = keypoints_with_scores[0,0,12,1]
-    # ANKLES
-    left_ankle_y = keypoints_with_scores[0,0,15,1]
-    right_ankle_y = keypoints_with_scores[0,0,16,1]
-    # KNEES
-    left_knee_y = keypoints_with_scores[0,0,13,1]
-    right_knee_y = keypoints_with_scores[0,0,14,1]
-
-    # Append keypoints to list
-    nose_list_y.append(nose_y)
-    left_shoulder_list_y.append(left_shoulder_y)
-    right_shoulder_list_y.append(right_shoulder_y)
-    left_elbow_list_y.append(left_elbow_y)
-    right_elbow_list_y.append(right_elbow_y)
-    left_wrist_list_y.append(left_wrist_y)
-    right_wrist_list_y.append(right_wrist_y)
-    left_ankle_list_y.append(left_ankle_y)
-    right_ankle_list_y.append(right_ankle_y)
-    left_knee_list_y.append(left_knee_y)
-    right_knee_list_y.append(right_knee_y)
-    left_hip_list_y.append(left_hip_y)
-    right_hip_list_y.append(right_hip_y)
-
-    nose_c = keypoints_with_scores[0,0,0,2]
-    left_shoulder_c = keypoints_with_scores[0,0,5,2]
-    right_shoulder_c = keypoints_with_scores[0,0,6,2]
-    left_elbow_c = keypoints_with_scores[0,0,7,2]
-    right_elbow_c = keypoints_with_scores[0,0,8,2]
-    left_wrist_c = keypoints_with_scores[0,0,9,2]
-    right_wrist_c = keypoints_with_scores[0,0,10,2]
-    # HIPS
-    left_hip_c = keypoints_with_scores[0,0,11,2]
-    right_hip_c = keypoints_with_scores[0,0,12,2]
-    # ANKLES
-    left_ankle_c = keypoints_with_scores[0,0,15,2]
-    right_ankle_c = keypoints_with_scores[0,0,16,2]
-    # KNEES
-    left_knee_c = keypoints_with_scores[0,0,13,2]
-    right_knee_c = keypoints_with_scores[0,0,14,2]
-
-    # Append keypoints to list
-    nose_list_conf.append(nose_c)
-    left_shoulder_list_conf.append(left_shoulder_c)
-    right_shoulder_list_conf.append(right_shoulder_c)
-    left_elbow_list_conf.append(left_elbow_c)
-    right_elbow_list_conf.append(right_elbow_c)
-    left_wrist_list_conf.append(left_wrist_c)
-    right_wrist_list_conf.append(right_wrist_c)
-    left_ankle_list_conf.append(left_ankle_c)
-    right_ankle_list_conf.append(right_ankle_c)
-    left_knee_list_conf.append(left_knee_c)
-    right_knee_list_conf.append(right_knee_c)
-    left_hip_list_conf.append(left_hip_c)
-    right_hip_list_conf.append(right_hip_c)
+    nose_list_x.append(keypoints_with_scores[0,0,0,0])
+    left_shoulder_list_x.append( keypoints_with_scores[0,0,5,0])
+    right_shoulder_list_x.append(keypoints_with_scores[0,0,6,0])
+    left_elbow_list_x.append(keypoints_with_scores[0,0,7,0])
+    right_elbow_list_x.append(keypoints_with_scores[0,0,8,0])
+    left_wrist_list_x.append(keypoints_with_scores[0,0,9,0])
+    right_wrist_list_x.append(keypoints_with_scores[0,0,10,0])
     
-  output = np.stack(output_images, axis=0)
+    left_hip_list_x.append(keypoints_with_scores[0,0,11,0])
+    right_hip_list_x.append(keypoints_with_scores[0,0,12,0])
+
+    left_knee_list_x.append(keypoints_with_scores[0,0,13,0])
+    right_knee_list_x.append(keypoints_with_scores[0,0,14,0])
+
+    left_ankle_list_x.append(keypoints_with_scores[0,0,15,0])
+    right_ankle_list_x.append(keypoints_with_scores[0,0,16,0])
+
+    # Append keypoints to list
+    nose_list_y.append(keypoints_with_scores[0,0,0,1])
+    left_shoulder_list_y.append(keypoints_with_scores[0,0,5,1])
+    right_shoulder_list_y.append(keypoints_with_scores[0,0,6,1])
+    left_elbow_list_y.append(keypoints_with_scores[0,0,7,1])
+    right_elbow_list_y.append(keypoints_with_scores[0,0,8,1])
+    left_wrist_list_y.append(keypoints_with_scores[0,0,9,1])
+    right_wrist_list_y.append(keypoints_with_scores[0,0,10,1])
+    
+    left_hip_list_y.append(keypoints_with_scores[0,0,11,1])
+    right_hip_list_y.append(keypoints_with_scores[0,0,12,1])
+
+    left_knee_list_y.append(keypoints_with_scores[0,0,13,1])
+    right_knee_list_y.append(keypoints_with_scores[0,0,14,1])
+    
+    left_ankle_list_y.append(keypoints_with_scores[0,0,15,1])
+    right_ankle_list_y.append(keypoints_with_scores[0,0,16,1])
+
+    # Append keypoints to list
+    nose_list_conf.append(keypoints_with_scores[0,0,0,2])
+    left_shoulder_list_conf.append(keypoints_with_scores[0,0,5,2])
+    right_shoulder_list_conf.append(keypoints_with_scores[0,0,6,2])
+    left_elbow_list_conf.append(keypoints_with_scores[0,0,7,2])
+    right_elbow_list_conf.append(keypoints_with_scores[0,0,8,2])
+    left_wrist_list_conf.append(keypoints_with_scores[0,0,9,2])
+    right_wrist_list_conf.append(keypoints_with_scores[0,0,10,2])
+    
+    left_hip_list_conf.append(keypoints_with_scores[0,0,11,2])
+    right_hip_list_conf.append(keypoints_with_scores[0,0,12,2])
+    
+    left_knee_list_conf.append(keypoints_with_scores[0,0,13,2])
+    right_knee_list_conf.append(keypoints_with_scores[0,0,14,2])
+    
+    left_ankle_list_conf.append(keypoints_with_scores[0,0,15,2])
+    right_ankle_list_conf.append(keypoints_with_scores[0,0,16,2])
+
   image_capture = to_gif(output, duration=100)
+  # show image_capture
   st.write(image_capture)
+    
   def euclidean_distance(array):
     euclidean_distance = np.linalg.norm(array)
     return euclidean_distance
@@ -1051,7 +1011,6 @@ if uploaded_file is not None:
   right_hip_norm = euclidean_distance(right_hip_list_y) / num_frames
   left_shoulder_norm = euclidean_distance(left_shoulder_list_y) / num_frames
   right_shoulder_norm = euclidean_distance(right_shoulder_list_y) / num_frames
-  st.write(image_capture)
 
   # TOTAL TIME TO RUN
     # Calculate the elapsed time
@@ -1065,143 +1024,143 @@ if uploaded_file is not None:
   """
 
   # ======= DIAL PLOT =============
-  vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
-  hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
-  knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
+#   vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
+#   hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
+#   knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
 
-  st.write('##### Hip and Knee Correlation')
-  st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
-  # round to 2 digits
-  hip_corr = np.round(hip_corr[0][1], 2)
-  knee_corr = np.round(knee_corr[0][1], 2)
-  st.write(f'Hip Symmetry: {hip_corr}%')
-  st.write(f'Knee Symmetry: {knee_corr}%')
+#   st.write('##### Hip and Knee Correlation')
+#   st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
+#   # round to 2 digits
+#   hip_corr = np.round(hip_corr[0][1], 2)
+#   knee_corr = np.round(knee_corr[0][1], 2)
+#   st.write(f'Hip Symmetry: {hip_corr}%')
+#   st.write(f'Knee Symmetry: {knee_corr}%')
 
-# DIAL PLOTS  
-  dial1, dial2, dial3 = st.columns(3)
-  title_font_size = 26
-  with dial1:
-    value = knee_corr  # Value to be displayed on the dial (e.g., gas mileage)
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=value,
-        domain={'x': [0, 1], 'y': [0, 1]},
-        gauge=dict(
-            axis=dict(range=[0, 100]),
-            bar=dict(color="white"),
-            borderwidth=2,
-            bordercolor="gray",
-            steps=[
-                dict(range=[0, 25], color="red"),
-                dict(range=[25, 50], color="orange"),
-                dict(range=[50, 75], color="yellow"),
-                dict(range=[75, 100], color="green")
-            ],
-            threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-        )
-    ))
-    fig.update_layout(
-        title={'text': "KNEE SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-        title_font_size = title_font_size,      
-        font=dict(size=24)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
-    # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
-    if knee_corr < 60:
-        st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
-    elif knee_corr > 60 and knee_corr < 80:
-        st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif knee_corr > 80:
-      st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
+# # DIAL PLOTS  
+#   dial1, dial2, dial3 = st.columns(3)
+#   title_font_size = 26
+#   with dial1:
+#     value = knee_corr  # Value to be displayed on the dial (e.g., gas mileage)
+#     fig = go.Figure(go.Indicator(
+#         mode="gauge+number",
+#         value=value,
+#         domain={'x': [0, 1], 'y': [0, 1]},
+#         gauge=dict(
+#             axis=dict(range=[0, 100]),
+#             bar=dict(color="white"),
+#             borderwidth=2,
+#             bordercolor="gray",
+#             steps=[
+#                 dict(range=[0, 25], color="red"),
+#                 dict(range=[25, 50], color="orange"),
+#                 dict(range=[50, 75], color="yellow"),
+#                 dict(range=[75, 100], color="green")
+#             ],
+#             threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+#         )
+#     ))
+#     fig.update_layout(
+#         title={'text': "KNEE SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#         title_font_size = title_font_size,      
+#         font=dict(size=24)
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
+#     # if hip drive is low, recommend hip mobility exercises & strengthening, if really low, also recommend arm swing exercises
+#     # recommended drills: SuperMarios, Hill Sprints, single leg hops, deadlifts
+#     if knee_corr < 60:
+#         st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
+#     elif knee_corr > 60 and knee_corr < 80:
+#         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
+#     elif knee_corr > 80:
+#       st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
 
-    with st.expander('Knee Symmetry Score'):
-        st.write('Knee Mobility is the ability of the knee joint to move through its full range of motion. Knee mobility is important for running because it allows you to generate power from your knees and quads. A lack of knee mobility can lead to overstriding, which can lead to knee pain and shin splints. Knee mobility exercises can help improve your running form and prevent injuries.')
-        st.write('Recommended Drills')
-        st.write('* Depth Squat')
+#     with st.expander('Knee Symmetry Score'):
+#         st.write('Knee Mobility is the ability of the knee joint to move through its full range of motion. Knee mobility is important for running because it allows you to generate power from your knees and quads. A lack of knee mobility can lead to overstriding, which can lead to knee pain and shin splints. Knee mobility exercises can help improve your running form and prevent injuries.')
+#         st.write('Recommended Drills')
+#         st.write('* Depth Squat')
 
-  with dial2:
-    value = hip_corr
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=value,
-        domain={'x': [0, 1], 'y': [0, 1]},
-        gauge=dict(
-            axis=dict(range=[0, 100]),
-            bar=dict(color="white"),
-            borderwidth=2,
-            bordercolor="gray",
-            steps=[
-                dict(range=[0, 25], color="red"),
-                dict(range=[25, 50], color="orange"),
-                dict(range=[50, 75], color="yellow"),
-                dict(range=[75, 100], color="green")
-            ],
-            threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-        )
-    ))
-    fig.update_layout(
-        title={'text': "  HIP SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-        title_font_size = title_font_size,
-        font=dict(size=24)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    if hip_corr < 60:
-        st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
-    elif hip_corr > 60 and hip_corr < 80:
-        st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif hip_corr > 80:
-        st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
+#   with dial2:
+#     value = hip_corr
+#     fig = go.Figure(go.Indicator(
+#         mode="gauge+number",
+#         value=value,
+#         domain={'x': [0, 1], 'y': [0, 1]},
+#         gauge=dict(
+#             axis=dict(range=[0, 100]),
+#             bar=dict(color="white"),
+#             borderwidth=2,
+#             bordercolor="gray",
+#             steps=[
+#                 dict(range=[0, 25], color="red"),
+#                 dict(range=[25, 50], color="orange"),
+#                 dict(range=[50, 75], color="yellow"),
+#                 dict(range=[75, 100], color="green")
+#             ],
+#             threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+#         )
+#     ))
+#     fig.update_layout(
+#         title={'text': "  HIP SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#         title_font_size = title_font_size,
+#         font=dict(size=24)
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
+#     if hip_corr < 60:
+#         st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
+#     elif hip_corr > 60 and hip_corr < 80:
+#         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
+#     elif hip_corr > 80:
+#         st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
 
-    with st.expander("Hip Symmetry Score"):
-        # st.plotly_chart(fig, use_container_width=True)
-        st.write('Hip Mobility is the ability of the hip joint to move through its full range of motion. Hip mobility is important for running because it allows you to generate power from your hips and glutes. A lack of hip mobility can lead to overstriding, which can lead to knee pain and shin splints. Hip mobility exercises can help improve your running form and prevent injuries.')
-        # recommended exercises for the hip
-        st.write('##### Recommended Drills')
-        st.write('* Bird Dogs')
-        st.write('* Hip Circles')
-        st.write('* Hip Flexor Stretch')
-        st.write('* Hip Hinge')
+#     with st.expander("Hip Symmetry Score"):
+#         # st.plotly_chart(fig, use_container_width=True)
+#         st.write('Hip Mobility is the ability of the hip joint to move through its full range of motion. Hip mobility is important for running because it allows you to generate power from your hips and glutes. A lack of hip mobility can lead to overstriding, which can lead to knee pain and shin splints. Hip mobility exercises can help improve your running form and prevent injuries.')
+#         # recommended exercises for the hip
+#         st.write('##### Recommended Drills')
+#         st.write('* Bird Dogs')
+#         st.write('* Hip Circles')
+#         st.write('* Hip Flexor Stretch')
+#         st.write('* Hip Hinge')
 
-  # radar plot for vert_oscillation
-  with dial3:
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=vert_oscillation,
-        domain={'x': [0, 1], 'y': [0, 1]},
-        gauge=dict(
-            axis=dict(range=[0, 100]),
-            bar=dict(color="white"),
-            borderwidth=2,
-            bordercolor="gray",
-            steps=[
-                dict(range=[0, 25], color="red"),
-                dict(range=[25, 50], color="orange"),
-                dict(range=[50, 75], color="yellow"),
-                dict(range=[75, 100], color="green")
-            ],
-            threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
-        )
-    ))
-    fig.update_layout(
-        title={'text': "VERTICAL SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
-        title_font_size = title_font_size,
-        font=dict(size=28)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
-    if vert_oscillation < 10:
-        st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
-    elif vert_oscillation > 10 and vert_oscillation < 25:
-        st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif vert_oscillation > 25:
-        st.write("## <div style='text-align: center;'><span style='color: red;'>BAD</span>", unsafe_allow_html=True)
+#   # radar plot for vert_oscillation
+#   with dial3:
+#     fig = go.Figure(go.Indicator(
+#         mode="gauge+number",
+#         value=vert_oscillation,
+#         domain={'x': [0, 1], 'y': [0, 1]},
+#         gauge=dict(
+#             axis=dict(range=[0, 100]),
+#             bar=dict(color="white"),
+#             borderwidth=2,
+#             bordercolor="gray",
+#             steps=[
+#                 dict(range=[0, 25], color="red"),
+#                 dict(range=[25, 50], color="orange"),
+#                 dict(range=[50, 75], color="yellow"),
+#                 dict(range=[75, 100], color="green")
+#             ],
+#             threshold=dict(line=dict(color="black", width=4), thickness=0.75, value=value)
+#         )
+#     ))
+#     fig.update_layout(
+#         title={'text': "VERTICAL SCORE", 'y': 0.9, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+#         title_font_size = title_font_size,
+#         font=dict(size=28)
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
+#     # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
+#     if vert_oscillation < 10:
+#         st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
+#     elif vert_oscillation > 10 and vert_oscillation < 25:
+#         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
+#     elif vert_oscillation > 25:
+#         st.write("## <div style='text-align: center;'><span style='color: red;'>BAD</span>", unsafe_allow_html=True)
 
-    with st.expander("Vertical Oscillation"):
-        st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
+#     with st.expander("Vertical Oscillation"):
+#         st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
 
-  # ======= END DIAL PLOT =============
-  fs=25
+  ## ======= END DIAL PLOT =============
+  # fs=25
   # # Function to plot the data
   # # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
   # #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
@@ -1345,46 +1304,45 @@ if uploaded_file is not None:
   # st.plotly_chart(fig_hip, use_container_width=True)
 
   # Motion Knee Line Chart
-  motion_knee = pd.DataFrame(
-      {
-          "Left Knee": nose_list_x,
-          "Right Knee": left_ankle_list_x
-      }
-  )
+  # motion_knee = pd.DataFrame(
+  #     {
+  #         "Left Knee": left_knee_list_x,
+  #         "Right Knee": right_knee_list_x
+  #     }
+  # )
+  # fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
+  #                     labels={"index": "Time (sec)"},
+  #                     title="Motion of Knees",
+  #                     width=800, height=400)
 
-  fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
-                      labels={"index": "Time (sec)"},
-                      title="Motion of Knees",
-                      width=800, height=400)
+  # fig_knee.update_layout(
+  #     xaxis_title= "Time (sec)",
+  #     yaxis_title="Distance",
+  #     yaxis_title_font_size = 38, 
+  #     xaxis_title_font_size = 38, 
+  #     hoverlabel_font_size=38,
+  #     title_font=dict(
+  #         family="Courier New, monospace",
+  #         size=40,
+  #         color="white"
+  #         ),
+  #         xaxis=dict(
+  #         tickfont=dict(
+  #             size=28 
+  #         ) 
+  #         ),
+  #         yaxis=dict(
+  #         tickfont=dict(
+  #         size=28 
+  #         )
+  #     ),
 
-  fig_knee.update_layout(
-      xaxis_title= "Time (sec)",
-      yaxis_title="Distance",
-      yaxis_title_font_size = 38, 
-      xaxis_title_font_size = 38, 
-      hoverlabel_font_size=38,
-      title_font=dict(
-          family="Courier New, monospace",
-          size=40,
-          color="white"
-          ),
-          xaxis=dict(
-          tickfont=dict(
-              size=28 
-          ) 
-          ),
-          yaxis=dict(
-          tickfont=dict(
-          size=28 
-          )
-      ),
-
-      legend=dict(
-          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-          font=dict(size=32)  # Set legend label fontsize
-  )
-  )
-  st.plotly_chart(fig_knee, use_container_width=True)  
+  #     legend=dict(
+  #         title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+  #         font=dict(size=32)  # Set legend label fontsize
+  # )
+  # )
+  # st.plotly_chart(fig_knee, use_container_width=True)  
 # ---- END ---- 
   
 # ======== END MOVENET ========
@@ -1415,3 +1373,30 @@ if uploaded_file is not None:
 #       st.write('* Banded Hip Rotations')
      
 # # ========== DIGITAL ATHLETE ==========
+# possibly show joint angles as animated gif
+# from PIL import Image, ImageDraw
+
+# def ellipse(x, y, offset):
+#     image = Image.new("RGB", (400, 400), "blue")
+#     draw = ImageDraw.Draw(image)
+#     draw.ellipse((x, y, x+offset, y+offset), fill="red")
+#     return image
+
+
+# def make_gif():
+#     frames = []
+#     x = 0
+#     y = 0
+#     offset = 50
+#     for number in range(20):
+#         frames.append(ellipse(x, y, offset))
+#         x += 35
+#         y += 35
+        
+#     frame_one = frames[0]
+#     frame_one.save(r"C:\Users\dzh0063\OneDrive - Auburn University\Documents\Tiger Cage\SEC pitch\circle.gif", format="GIF", append_images=frames,
+#                    save_all=True, duration=100, loop=0)
+    
+
+# if __name__ == "__main__":
+#     make_gif()
