@@ -1039,7 +1039,7 @@ if uploaded_file is not None:
     
   output = np.stack(output_images, axis=0)
   image_capture = to_gif(output, duration=100)
-
+  st.write(image_capture)
   def euclidean_distance(array):
     euclidean_distance = np.linalg.norm(array)
     return euclidean_distance
@@ -1065,7 +1065,7 @@ if uploaded_file is not None:
   """
 
   # ======= DIAL PLOT =============
-  vert_oscillation = 100 * (np.max(nose_list_x) - np.min(nose_list_x)) # percent change of the video camera screen
+  vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
   hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
   knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
 
@@ -1198,11 +1198,10 @@ if uploaded_file is not None:
         st.write("## <div style='text-align: center;'><span style='color: red;'>BAD</span>", unsafe_allow_html=True)
 
     with st.expander("Vertical Oscillation"):
-        st.plotly_chart(fig, use_container_width=True)
         st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
 
   # ======= END DIAL PLOT =============
-  # fs=25
+  fs=25
   # # Function to plot the data
   # # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
   # #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
@@ -1345,47 +1344,47 @@ if uploaded_file is not None:
   #     ))
   # st.plotly_chart(fig_hip, use_container_width=True)
 
-  # # Motion Knee Line Chart
-  # motion_knee = pd.DataFrame(
-  #     {
-  #         "Left Knee": left_knee_list_x,
-  #         "Right Knee": right_knee_list_x
-  #     }
-  # )
+  # Motion Knee Line Chart
+  motion_knee = pd.DataFrame(
+      {
+          "Left Knee": nose_list_x,
+          "Right Knee": left_ankle_list_x
+      }
+  )
 
-  # fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
-  #                     labels={"index": "Time (sec)"},
-  #                     title="Motion of Knees",
-  #                     width=800, height=400)
+  fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
+                      labels={"index": "Time (sec)"},
+                      title="Motion of Knees",
+                      width=800, height=400)
 
-  # fig_knee.update_layout(
-  #     xaxis_title= "Time (sec)",
-  #     yaxis_title="Distance",
-  #     yaxis_title_font_size = 38, 
-  #     xaxis_title_font_size = 38, 
-  #     hoverlabel_font_size=38,
-  #     title_font=dict(
-  #         family="Courier New, monospace",
-  #         size=40,
-  #         color="white"
-  #         ),
-  #         xaxis=dict(
-  #         tickfont=dict(
-  #             size=28 
-  #         ) 
-  #         ),
-  #         yaxis=dict(
-  #         tickfont=dict(
-  #         size=28 
-  #         )
-  #     ),
+  fig_knee.update_layout(
+      xaxis_title= "Time (sec)",
+      yaxis_title="Distance",
+      yaxis_title_font_size = 38, 
+      xaxis_title_font_size = 38, 
+      hoverlabel_font_size=38,
+      title_font=dict(
+          family="Courier New, monospace",
+          size=40,
+          color="white"
+          ),
+          xaxis=dict(
+          tickfont=dict(
+              size=28 
+          ) 
+          ),
+          yaxis=dict(
+          tickfont=dict(
+          size=28 
+          )
+      ),
 
-  #     legend=dict(
-  #         title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-  #         font=dict(size=32)  # Set legend label fontsize
-  # )
-  # )
-  # st.plotly_chart(fig_knee, use_container_width=True)  
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
+  )
+  )
+  st.plotly_chart(fig_knee, use_container_width=True)  
 # ---- END ---- 
   
 # ======== END MOVENET ========
