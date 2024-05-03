@@ -1071,7 +1071,7 @@ if uploaded_file is not None:
         st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
     elif knee_corr > 60 and knee_corr < 80:
         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif knee_corr > 80:
+    elif knee_corr >= 80:
       st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
 
     with st.expander('Knee Symmetry Score'):
@@ -1109,7 +1109,7 @@ if uploaded_file is not None:
         st.write("## <div style='text-align: center;'><span style='color: red;'>POOR</span>", unsafe_allow_html=True)
     elif hip_corr > 60 and hip_corr < 80:
         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif hip_corr > 80:
+    elif hip_corr >= 80:
         st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
 
     with st.expander("Hip Symmetry Score"):
@@ -1149,11 +1149,11 @@ if uploaded_file is not None:
     )
     st.plotly_chart(fig, use_container_width=True)
     # if arm swing is low, then hip drive is low. Recommend hip mobility exercises and arm swing exercises
-    if vert_oscillation < 10:
+    if vert_oscillation >= 80:
         st.write("## <div style='text-align: center;'><span style='color: green;'>GOOD</span>", unsafe_allow_html=True)
-    elif vert_oscillation > 10 and vert_oscillation < 25:
+    elif vert_oscillation > 60 and vert_oscillation < 80:
         st.write("## <div style='text-align: center;'><span style='color: yellow;'>AVERAGE</span>", unsafe_allow_html=True)
-    elif vert_oscillation > 25:
+    elif vert_oscillation <60:
         st.write("## <div style='text-align: center;'><span style='color: red;'>BAD</span>", unsafe_allow_html=True)
 
     with st.expander("Vertical Oscillation"):
