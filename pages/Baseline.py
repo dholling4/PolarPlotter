@@ -995,10 +995,6 @@ if uploaded_file is not None:
     
     left_ankle_list_conf.append(keypoints_with_scores[0,0,15,2])
     right_ankle_list_conf.append(keypoints_with_scores[0,0,16,2])
-
-  image_capture = to_gif(output, duration=100)
-  # show image_capture
-  st.write(image_capture)
     
   def euclidean_distance(array):
     euclidean_distance = np.linalg.norm(array)
@@ -1019,9 +1015,12 @@ if uploaded_file is not None:
   # Display the elapsed time
   st.success(f"Video processing completed in {elapsed_time:.2f} seconds.")
 
-  """
-  ## Video Results
-  """
+image_capture = to_gif(output, duration=100)
+# show image_capture
+st.write(image_capture)
+"""
+## Video Results
+"""
 
   # ======= DIAL PLOT =============
 #   vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
