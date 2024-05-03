@@ -1016,8 +1016,9 @@ if uploaded_file is not None:
   st.success(f"Video processing completed in {elapsed_time:.2f} seconds.")
 
   image_capture = to_gif(output, duration=100)
-  # show image_capture
   st.write(image_capture)
+  st.image(output[0])
+
 """
 ## Video Results
 """
