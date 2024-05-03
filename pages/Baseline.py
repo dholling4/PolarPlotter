@@ -1019,9 +1019,9 @@ if uploaded_file is not None:
   st.write(image_capture)
   st.image(output[0])
 
-"""
-## Video Results
-"""
+  """
+  ## Video Results
+  """
 
   # ======= DIAL PLOT =============
   vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
