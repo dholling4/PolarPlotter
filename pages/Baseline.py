@@ -1017,7 +1017,7 @@ if uploaded_file is not None:
 
   image_capture = to_gif(output, duration=100)
   st.write(image_capture)
-  st.image(output[-5])
+  st.image(output[-25])
 
   """
   ## Video Results
