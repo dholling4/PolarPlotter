@@ -77,6 +77,14 @@ with expander_future:
     st.markdown("""
     The future of FootWear is bright. As the technology continues to evolve, FootWear will be able to provide even more personalized recommendations based on a user's unique gait and activity level. With FootWear, every stride is a step towards peak performance and comfort.
     """)
+expander_shoe_selection = st.expander("Shoe Selection")
+with expander_shoe_selection:
+    st.markdown('''
+                * Normal Pronation --> Neutral shoes or stability shoes with light structure.
+                
+                * Overpronation --> Motion control shoes or stability shoes with firm structure.
+                
+                * Supination --> Cushioned shoes or neutral shoes with soft midsoles.''')
 expander_references = st.expander("References")
 with expander_references:
     st.markdown("""
