@@ -1017,6 +1017,21 @@ if uploaded_file is not None:
 
   image_capture = to_gif(output, duration=100)
   st.write(image_capture)
+  with st.empty():
+    for hip in left_hip_list_x:
+        st.write(f"⏳ {hip} hip x")
+        time.sleep(0.2)
+    st.write(hip, "✔️ done for hip x!")
+  # with st.empty():
+  #   for hip in range(len(left_hip_list_x)):
+  #     st.write(keypoints_with_scores[0,0,11,0])
+      # plt.plot(left_hip_list_x[hip], left_hip_list_y[hip], 'ro')
+      # plt.plot(right_hip_list_x[hip], right_hip_list_y[hip], 'ro')
+      # plt.plot(left_knee_list_x[hip], left_knee_list_y[hip], 'ro')
+      # plt.plot(right_knee_list_x[hip], right_knee_list_y[hip], 'ro')
+      # plt.plot(left_ankle_list_x[hip], left_ankle_list_y[hip], 'ro')
+      # plt.plot(right_ankle_list_x[hip], right_ankle_list_y[hip], 'ro')
+
   st.image(output[-85])
 
   """
