@@ -7,7 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import time
 import requests
-import cv2
+# import cv2
 # RUNNING FORM BASELINE EXERCISES TO PERFORM
 # HIP --> hip_video, hip_video2, hip_add_video=https://www.youtube.com/watch?v=yCpB5LpS_So ,  https://www.youtube.com/watch?v=FNbmLgpur_c, https://www.youtube.com/watch?v=YQGb-ysmOfU
 # Function to display MP4 file
@@ -446,7 +446,7 @@ st.write("#### Upoad your video below :point_down:")
 # """)
 
 st.write("### Convert your MOV file to GIF using this software: https://cloudconvert.com/mov-to-gif")
-uploaded_file = st.file_uploader("Choose an image...",  type=".gif") # change type=None to upload any file type (iphones use .MOV) 
+uploaded_file = st.file_uploader("Choose a video...",  type=["mp4", "mov", "MOV", "gif"]) # change type=None to upload any file type (iphones use .MOV) or "gif"
 if uploaded_file is not None:
     # Display a loading message
     start_time = time.time()
@@ -889,7 +889,7 @@ def run_inference(movenet, image, crop_region, crop_size):
 if uploaded_file is not None:
   # update for .MOV  ========= START =========
   # import moviepy
-  # from moviepy.editor import VideoFileClip
+  from moviepy.editor import VideoFileClip
   # file_name = uploaded_file.name
   # file_path = "/workspaces/PolarPlotter/baseline_pics/" + str(file_name)
   # st.write(file_path)
@@ -911,8 +911,11 @@ if uploaded_file is not None:
   # update for .MOV  ========= END=======
 
   image_content = uploaded_file.read()
-  image = tf.image.decode_gif(image_content)
-  num_frames, image_height, image_width, _ = image.shape
+
+  file_extension = uploaded_file.name.split(".")[-1].lower()  # Get the lowercase file extension
+  if file_extension in ("gif", "mov"):  # if uploaded_file.name.endswith(".mp4"):
+    image = tf.image.decode_gif(image_content)
+    num_frames, image_height, image_width, _ = image.shape
   crop_region = init_crop_region(image_height, image_width)
 
   nose_list_x, left_shoulder_list_x, right_shoulder_list_x,left_elbow_list_x, right_elbow_list_x, left_wrist_list_x, right_wrist_list_x = [],[],[],[],[],[],[]
@@ -1017,11 +1020,7 @@ if uploaded_file is not None:
 
   image_capture = to_gif(output, duration=100)
   st.write(image_capture)
-  with st.empty():
-    for hip in left_hip_list_x:
-        st.write(f"⏳ {hip} hip x")
-        time.sleep(0.2)
-    st.write(hip, "✔️ done for hip x!")
+
   # with st.empty():
   #   for hip in range(len(left_hip_list_x)):
   #     st.write(keypoints_with_scores[0,0,11,0])
