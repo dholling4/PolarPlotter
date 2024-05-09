@@ -7,6 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import time
 import requests
+import cv2 as cv
 
 # RUNNING FORM BASELINE EXERCISES TO PERFORM
 # HIP --> hip_video, hip_video2, hip_add_video=https://www.youtube.com/watch?v=yCpB5LpS_So ,  https://www.youtube.com/watch?v=FNbmLgpur_c, https://www.youtube.com/watch?v=YQGb-ysmOfU
