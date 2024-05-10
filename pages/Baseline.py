@@ -945,7 +945,12 @@ if uploaded_file is not None:
     output = np.stack(output_images, axis=0)
  
     # st.image(image_capture, use_column_width=True)
+    # display frame number
+    # st.write(f"Frame {frame_idx} left hip x: {keypoints_with_scores[0,0,11,0]}")
+    # create a slider showing the values here for the hip
+    # st.slider("Left Hip X", min_value=0, max_value=1, value=keypoints_with_scores[0,0,11,0])
     # Append keypoints to list
+    
     nose_list_x.append(keypoints_with_scores[0,0,0,0])
     left_shoulder_list_x.append( keypoints_with_scores[0,0,5,0])
     right_shoulder_list_x.append(keypoints_with_scores[0,0,6,0])
