@@ -7,6 +7,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import time
 import requests
+
+# START WITH CALIBRATION 
+
 # import cv2
 # RUNNING FORM BASELINE EXERCISES TO PERFORM
 # HIP --> hip_video, hip_video2, hip_add_video=https://www.youtube.com/watch?v=yCpB5LpS_So ,  https://www.youtube.com/watch?v=FNbmLgpur_c, https://www.youtube.com/watch?v=YQGb-ysmOfU
@@ -422,7 +425,24 @@ from io import BytesIO
 url_squat = path + "depth_squat_instructions_transparent.png"
 
 # st.write("### Running Scores Determined from Range of Motion for slow and fast running from research by [Pink et al., 1994](%s)" % "https://journals.sagepub.com/doi/10.1177/036354659402200418?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed")
+st.write("# Welcome to the Running Analysis App! :runner: :chart_with_upwards_trend:")
+#### This app will help you analyze your running form and provide feedback on how to improve your running technique.")
+getting_started = st.expander("# Instructions:")
+
+with getting_started:
+  # st.write('### 0. Calibrate the capture volume by standing in the center of the frame and raising your arms to shoulder height.')
+  st.write("#### 1. Record a video of yourself running from the front and side view")
+  st.write("#### 2. Upload the video below")
+  st.write("#### 3. Wait for the results to appear (this may take 2-3 minutes depending on how long your video is)")
+  st.write("#### 4. View the results and recommendations for improving your running form")
+  st.write("#### 5. Repeat the process to track your progress over time")
+  st.write("#### 6. Have fun and happy running! :smile:")
+
+# st.write("### Running Scores Determined from Range of Motion for slow and fast running from research by [Pink et al., 1994](%s)" % "https://journals.sagepub.com/doi/10.1177/036354659402200418?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed")
+# st.write("### Instructions:")
+
 st.write("#### Upoad your video below :point_down:")
+
 # st.write("""###### Instructions for recording depth squat:
 # STEP 1: Position Setup""")
 # st.image(url_squat, caption="Depth Squat Instructions", width=500)
@@ -1046,6 +1066,8 @@ if uploaded_file is not None:
   vert_oscillation = 100 - (100 * (np.max(nose_list_x) - np.min(nose_list_x))) # percent change of the video camera screen
   hip_corr = 100 * np.corrcoef(left_hip_list_x, right_hip_list_x)
   knee_corr = 100 * np.corrcoef(left_knee_list_x, right_knee_list_x)
+  knee_corr_y = 100 * np.corrcoef(left_knee_list_y, right_knee_list_y)
+
 
   st.write('##### Hip and Knee Correlation')
   st.write('Hip and knee correlation is the relationship between the left and right hip and knee joints.')
@@ -1053,7 +1075,7 @@ if uploaded_file is not None:
   hip_corr = np.round(hip_corr[0][1], 2)
   knee_corr = np.round(knee_corr[0][1], 2)
   st.write(f'Hip Symmetry: {hip_corr}%')
-  st.write(f'Knee Symmetry: {knee_corr}%')
+  st.write(f'Knee Symmetry x: {knee_corr}%, y: {knee_corr_y}%')
 
 # DIAL PLOTS  
   dial1, dial2, dial3 = st.columns(3)
@@ -1179,10 +1201,10 @@ if uploaded_file is not None:
         st.write('Vertical Oscillation is the vertical movement of the body center of mass. It is the distance between the highest and lowest points of the body center of mass during running.')
 
   ## ======= END DIAL PLOT =============
-  # fs=25
+  fs=25
   # # Function to plot the data
-  # # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
-  # #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
+  # def plot_results(left_knee_norm, right_knee_norm, left_hip_norm, right_hip_norm,
+  #                  left_hip_list_x, right_hip_list_x, left_knee_list_x, right_knee_list_x):
 
   # # PLOT CONFIDENCE SCORES
   # df = pd.DataFrame(
@@ -1281,87 +1303,130 @@ if uploaded_file is not None:
   # elif left_hip_rom > 60 and left_hip_rom < 70:
   #     left_hip_norm = 99 # SUPERB
 
-  # motion_hip = pd.DataFrame(
-  #     {
-  #         "Left Hip": left_hip_list_x,
-  #         "Right Hip": right_hip_list_x
-  #     }
-  # )
+  motion_hip = pd.DataFrame(
+      {
+          "Left Hip": left_hip_list_x,
+          "Right Hip": right_hip_list_x
+      }
+  )
 
-  # fig_hip = px.line(motion_hip, x=motion_hip.index/fs, y=["Left Hip", "Right Hip"],
-  #                   labels={"index": "Time (sec)"},
-  #                   title="Motion of Hips",
-  #                   width=800, height=400)
+  fig_hip = px.line(motion_hip, x=motion_hip.index/fs, y=["Left Hip", "Right Hip"],
+                    labels={"index": "Time (sec)"},
+                    title="Motion of Hips",
+                    width=800, height=400)
 
-  # # fig_hip.update_layout(font=dict(size=24))
-  # fig_hip.update_layout(
-  #     xaxis_title="Time (sec)",
-  #     yaxis_title="Distance",
-  #     yaxis_title_font_size = 38, 
-  #     xaxis_title_font_size = 38, 
-  #     hoverlabel_font_size=38,
-  #     title_font=dict(
-  #         family="Courier New, monospace",
-  #         size=40,
-  #         color="white"
-  #         ),
-  #         xaxis=dict(
-  #         tickfont=dict(
-  #             size=28 
-  #         ) 
-  #         ),
-  #         yaxis=dict(
-  #         tickfont=dict(
-  #         size=28 
-  #         )
-  #     ),
+  # fig_hip.update_layout(font=dict(size=24))
+  fig_hip.update_layout(
+      xaxis_title="Time (sec)",
+      yaxis_title="Distance",
+      yaxis_title_font_size = 38, 
+      xaxis_title_font_size = 38, 
+      hoverlabel_font_size=38,
+      title_font=dict(
+          family="Courier New, monospace",
+          size=40,
+          color="white"
+          ),
+          xaxis=dict(
+          tickfont=dict(
+              size=28 
+          ) 
+          ),
+          yaxis=dict(
+          tickfont=dict(
+          size=28 
+          )
+      ),
 
-  #     legend=dict(
-  #         title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-  #         font=dict(size=32)  # Set legend label fontsize
-  #     ))
-  # st.plotly_chart(fig_hip, use_container_width=True)
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
+      ))
+  st.plotly_chart(fig_hip, use_container_width=True)
 
   # Motion Knee Line Chart
-  # motion_knee = pd.DataFrame(
-  #     {
-  #         "Left Knee": left_knee_list_x,
-  #         "Right Knee": right_knee_list_x
-  #     }
-  # )
-  # fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
-  #                     labels={"index": "Time (sec)"},
-  #                     title="Motion of Knees",
-  #                     width=800, height=400)
+  motion_knee = pd.DataFrame(
+      {
+          "Left Knee": left_knee_list_x,
+          "Right Knee": right_knee_list_x
+      }
+  )
+  fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
+                      labels={"index": "Time (sec)"},
+                      title="Motion of Knees",
+                      width=800, height=400)
 
-  # fig_knee.update_layout(
-  #     xaxis_title= "Time (sec)",
-  #     yaxis_title="Distance",
-  #     yaxis_title_font_size = 38, 
-  #     xaxis_title_font_size = 38, 
-  #     hoverlabel_font_size=38,
-  #     title_font=dict(
-  #         family="Courier New, monospace",
-  #         size=40,
-  #         color="white"
-  #         ),
-  #         xaxis=dict(
-  #         tickfont=dict(
-  #             size=28 
-  #         ) 
-  #         ),
-  #         yaxis=dict(
-  #         tickfont=dict(
-  #         size=28 
-  #         )
-  #     ),
+  fig_knee.update_layout(
+      xaxis_title= "Time (sec)",
+      yaxis_title="Distance",
+      yaxis_title_font_size = 38, 
+      xaxis_title_font_size = 38, 
+      hoverlabel_font_size=38,
+      title_font=dict(
+          family="Courier New, monospace",
+          size=40,
+          color="white"
+          ),
+          xaxis=dict(
+          tickfont=dict(
+              size=28 
+          ) 
+          ),
+          yaxis=dict(
+          tickfont=dict(
+          size=28 
+          )
+      ),
 
-  #     legend=dict(
-  #         title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
-  #         font=dict(size=32)  # Set legend label fontsize
-  # )
-  # )
-  # st.plotly_chart(fig_knee, use_container_width=True)  
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
+  )
+  )
+  st.plotly_chart(fig_knee, use_container_width=True)  
+
+## KNEE Y MOTION ========================================================
+# Motion Knee Line Chart
+  motion_knee = pd.DataFrame(
+      {
+          "Left Knee": left_knee_list_y,
+          "Right Knee": right_knee_list_y
+      }
+  )
+  fig_knee = px.line(motion_knee, x=motion_knee.index/fs, y=["Left Knee", "Right Knee"],
+                      labels={"index": "Time (sec)"},
+                      title="Motion of Knees",
+                      width=800, height=400)
+
+  fig_knee.update_layout(
+      xaxis_title= "Time (sec)",
+      yaxis_title="Distance",
+      yaxis_title_font_size = 38, 
+      xaxis_title_font_size = 38, 
+      hoverlabel_font_size=38,
+      title_font=dict(
+          family="Courier New, monospace",
+          size=40,
+          color="white"
+          ),
+          xaxis=dict(
+          tickfont=dict(
+              size=28 
+          ) 
+          ),
+          yaxis=dict(
+          tickfont=dict(
+          size=28 
+          )
+      ),
+
+      legend=dict(
+          title=dict(text='Joint', font=dict(size=36)),  # Set legend title fontsize
+          font=dict(size=32)  # Set legend label fontsize
+  )
+  )
+  st.plotly_chart(fig_knee, use_container_width=True)  
+
 # ---- END ---- 
   
 # ======== END MOVENET ========

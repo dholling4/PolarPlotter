@@ -559,7 +559,6 @@ with st.sidebar:
 #     )
 #     st.plotly_chart(fig, use_container_width=True)
 
-
 st.write("## Team Dashboard :chart_with_upwards_trend:")
 
 # ---------- DATA ENTRY ----------
@@ -593,10 +592,8 @@ else:
 team_csv = r"CoachConnect_files/CMJ - SJ - SQUAT ISO HOLD - GOOD MORNING -  EXT.FLEX - ADD.ABD.xls"
 input_df = pd.read_excel(team_csv)
 
+fontsize=22
 if team_csv is not None:
-    # df = pd.read_excel(xls, sheet_name=selected_sheet)
-    # st.dataframe(df)
-
     xls = pd.ExcelFile(team_csv)
     sheet_names_list = xls.sheet_names
     sheet_names = ['FLEX/EXT RATIO', 'ADD/ABD RATIO']
@@ -604,13 +601,6 @@ if team_csv is not None:
         sheet_names.append(sheet)   
     sheet_names.insert(sheet_names.index("CMJ") + 1,'CMJ/SJ RATIO')
     selected_sheet = st.selectbox("Select a sheet", sheet_names)
-
-    # if selected_sheet == "CMJ":
-    #     df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
-    #     st.dataframe(df)
-    # elif selected_sheet == "SJ" or selected_sheet == "SQUAT ISO HOLD":
-    #     df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
-    #     st.dataframe(df)
 
     if selected_sheet == "FLEX/EXT RATIO":
         color_flex_r, color_flex_g = list(), list()
@@ -632,8 +622,8 @@ if team_csv is not None:
             return ['color: red' if is_max.any() else '' for v in is_max]
 
         merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column='EXT/FLEX RATIO', axis=1)
-        add_abd_expander = st.expander("EXT/FLEX RATIO")
-        with add_abd_expander:
+        ext_flex_expander = st.expander("EXT/FLEX RATIO")
+        with ext_flex_expander:
             st.dataframe(merged_df_style)
 
         # PLOT BAR CHART
@@ -643,12 +633,18 @@ if team_csv is not None:
             y=merged_df['FLEX (FORCE/KG)'],
             name='FLEX',
             marker_color='rgb(26, 254, 255)',
+            text=np.round(merged_df['FLEX (FORCE/KG)'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
             y=merged_df['EXT (FORCE/KG)'],
             name='EXT',
-            marker_color='rgb(26, 30, 255)'
+            marker_color='rgb(26, 30, 255)',
+            text=np.round(merged_df['EXT (FORCE/KG)'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)  
         ))
         for color in range(len(merged_df)):
             if merged_df['EXT/FLEX RATIO'][color] >= 1.2:
@@ -662,24 +658,36 @@ if team_csv is not None:
                 df_alarm_g = merged_df['EXT/FLEX RATIO'].iloc[color]
                 df_alarm_flex_g1.append(df_alarm_g)
                 color_flex_g.append(color)
-    
 
+        # Determine colors and update xtick labels
+        xtick_colors = ['red' if ratio >= 1.2 else 'green' for ratio in merged_df['EXT/FLEX RATIO']]
+        # Create custom tick labels with HTML for colored text
+        custom_tick_labels = [
+            f'<span style="color:{color};">{name}</span>' for name, color in zip(merged_df['Name'], xtick_colors)
+        ]
+        
         fig.add_trace(go.Bar(
             x=merged_df['Name'][color_flex_r],
             y=df_alarm_flex_r1,
-            name='RATIO LEFT',
-            marker_color=ratio_color_r
+            name='EXT/FLEX RATIO LEFT',
+            marker_color=ratio_color_r,
+            text = np.round(merged_df['EXT/FLEX RATIO'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
 
         fig.add_trace(go.Bar(
             x=merged_df['Name'][color_flex_g],
             y=df_alarm_flex_g1,
             name='RATIO LEFT',
-            marker_color=color_flex_g
+            marker_color=color_flex_g,
+            text = np.round(merged_df['EXT/FLEX RATIO'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
+
         fig.update_layout(
             title="FLEX - EXT",
-            # xaxis_title="Athlete",
             yaxis_title="FORCE/KG",
             yaxis_title_font_size = 24, 
             xaxis_title_font_size = 24, 
@@ -690,35 +698,44 @@ if team_csv is not None:
                 color="white"
                 ),
                 xaxis=dict(
+                tickmode='array',
+                tickvals=list(range(len(merged_df['Name']))),
+                ticktext=custom_tick_labels,
+
                 tickfont=dict(
-                    size=18 
+                    size=18                   
                 ) 
                 ),
                 yaxis=dict(
                 tickfont=dict(
                 size=18 
             )
+        ),
+        legend = dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(
+                size=25
+            ),
+            
         )
-        )
-        
+        )        
         st.plotly_chart(fig, use_container_width=True)        
 
     if selected_sheet == "ADD/ABD RATIO":
-        # create empty dataframe
-        df_alarm_g1 = list()  
-        df_alarm_r1 = list()
-        color_r = list()
-        color_g = list()
-
-        df = pd.read_excel(xls, sheet_name= "Hip Abduction ", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
-        df2 = pd.read_excel(xls, sheet_name= "Hip adduction", usecols=["Name", "FORCE/KG LEFT", "FORCE/KG RIGHT"])
+        color_flex_r, color_flex_g = list(), list()
+        df_alarm_flex_r1 = list() 
+        df_alarm_flex_g1 = list() 
+        df = pd.read_excel(xls, sheet_name= "Hip Abduction ", usecols=["Name", "FORCE/KG LEFT"])
+        df2 = pd.read_excel(xls, sheet_name= "Hip adduction", usecols=["Name", "FORCE/KG LEFT"])
         df = df.sort_values('Name')
         df2 = df2.sort_values('Name')
         merged_df = df.merge(df2, on='Name')
         merged_df = merged_df.rename(columns={"FORCE/KG LEFT_x": "ABD LEFT (FORCE/KG)", "FORCE/KG LEFT_y": "ADD LEFT (FORCE/KG)", "FORCE/KG RIGHT_x": "ABD RIGHT (FORCE/KG)", "FORCE/KG RIGHT_y": "ADD RIGHT (FORCE/KG)"})
-
-        merged_df['ADD/ABD LEFT RATIO'] = merged_df['ADD LEFT (FORCE/KG)'] / merged_df['ABD LEFT (FORCE/KG)']
-        merged_df['ADD/ABD RIGHT RATIO'] = merged_df['ADD RIGHT (FORCE/KG)'] / merged_df['ABD RIGHT (FORCE/KG)']
+        merged_df['ADD/ABD RATIO LEFT'] = merged_df['ADD LEFT (FORCE/KG)'] / merged_df['ABD LEFT (FORCE/KG)']
         merged_df = merged_df[(merged_df != 0).all(axis=1)].reset_index(drop=True)
 
         def highlight_greaterthan(s, threshold, column):
@@ -726,56 +743,73 @@ if team_csv is not None:
             is_max[column] = s.loc[column] >= threshold
             return ['color: red' if is_max.any() else '' for v in is_max]
 
-        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column=['ADD/ABD LEFT RATIO', 'ADD/ABD RIGHT RATIO'], axis=1)
-        add_abd_expander = st.expander("ADD/ABD RATIO")
-        with add_abd_expander:
+        merged_df_style = merged_df.style.apply(highlight_greaterthan, threshold=1.2, column='ADD/ABD RATIO LEFT', axis=1)
+        ext_flex_expander = st.expander("ADD/ABD RATIO LEFT")
+        with ext_flex_expander:
             st.dataframe(merged_df_style)
-       
+
         # PLOT BAR CHART
         fig = go.Figure()
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
-            y=merged_df['ADD LEFT (FORCE/KG)'],
-            name='ADD LEFT',
-            marker_color='rgb(26, 254, 255)'
+            y=merged_df['ABD LEFT (FORCE/KG)'],
+            name='ABD LEFT',
+            marker_color='rgb(26, 254, 255)',
+            text=np.round(merged_df['ABD LEFT (FORCE/KG)'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
         fig.add_trace(go.Bar(
             x=merged_df['Name'],
-            y=merged_df['ABD LEFT (FORCE/KG)'],
-            name='ABD LEFT',
-            marker_color='rgb(26, 30, 255)'
+            y=merged_df['ADD LEFT (FORCE/KG)'],
+            name='ADD LEFT',
+            marker_color='rgb(26, 30, 255)',
+            text=np.round(merged_df['ADD LEFT (FORCE/KG)'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)  
         ))
         for color in range(len(merged_df)):
-            if merged_df['ADD/ABD LEFT RATIO'][color] >= 1.2:
+            if merged_df['ADD/ABD RATIO LEFT'][color] >= 1.2:
                 ratio_color_r = 'red'
-                df_alarm_r = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
-                df_alarm_r1.append(df_alarm_r)
-                color_r.append(color)
+                df_alarm_r = merged_df['ADD/ABD RATIO LEFT'].iloc[color]
+                df_alarm_flex_r1.append(df_alarm_r)
+                color_flex_r.append(color)
                      
-            elif merged_df['ADD/ABD LEFT RATIO'][color] < 1.2:
-                ratio_color_g = 'green'
-                df_alarm_g = merged_df['ADD/ABD LEFT RATIO'].iloc[color]
-                df_alarm_g1.append(df_alarm_g)
-                color_g.append(color)
-    
+            elif merged_df['ADD/ABD RATIO LEFT'][color] < 1.2:
+                ratio_color_g = 'lightgreen'
+                df_alarm_g = merged_df['ADD/ABD RATIO LEFT'].iloc[color]
+                df_alarm_flex_g1.append(df_alarm_g)
+                color_flex_g.append(color)
 
+        # Determine colors and update xtick labels
+        xtick_colors = ['red' if ratio >= 1.2 else 'green' for ratio in merged_df['ADD/ABD RATIO LEFT']]
+        # Create custom tick labels with HTML for colored text
+        custom_tick_labels = [
+            f'<span style="color:{color};">{name}</span>' for name, color in zip(merged_df['Name'], xtick_colors)
+        ]
+        
         fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_r],
-            y=df_alarm_r1,
-            name='RATIO LEFT',
-            marker_color=ratio_color_r
+            x=merged_df['Name'][color_flex_r],
+            y=df_alarm_flex_r1,
+            name='ADD/ABD RATIO LEFT',
+            marker_color=ratio_color_r,
+            text = np.round(merged_df['ADD/ABD RATIO LEFT'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
 
         fig.add_trace(go.Bar(
-            x=merged_df['Name'][color_g],
-            y=df_alarm_g1,
+            x=merged_df['Name'][color_flex_g],
+            y=df_alarm_flex_g1,
             name='RATIO LEFT',
-            marker_color=ratio_color_g
+            marker_color=color_flex_g,
+            text = np.round(merged_df['ADD/ABD RATIO LEFT'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)
         ))
 
         fig.update_layout(
             title="ABD - ADD",
-            # xaxis_title="Athlete",
             yaxis_title="FORCE/KG",
             yaxis_title_font_size = 24, 
             xaxis_title_font_size = 24, 
@@ -786,24 +820,45 @@ if team_csv is not None:
                 color="white"
                 ),
                 xaxis=dict(
+                tickmode='array',
+                tickvals=list(range(len(merged_df['Name']))),
+                ticktext=custom_tick_labels,
+
                 tickfont=dict(
-                    size=18 
+                    size=18                   
                 ) 
                 ),
                 yaxis=dict(
                 tickfont=dict(
                 size=18 
             )
-        )
-        )
+        ),
+        legend = dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(
+                size=25
+            ),            
+        ))        
         
         st.plotly_chart(fig, use_container_width=True)
 
     if selected_sheet == "Neck Extension":
         df = pd.read_excel(xls, sheet_name=selected_sheet)
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
-                            name='Neck Extension'))
+
+        fig.add_trace(go.Bar(
+            x=df['Name'],
+            y=df['FORCE/KG'],
+            name='Neck Extension',
+            marker_color='rgb(26, 254, 255)',
+            text=np.round(df['FORCE/KG'],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)))
+  
         fig.update_layout(
             title="Neck Extension",
             xaxis_title="Ahtlete",
@@ -833,8 +888,15 @@ if team_csv is not None:
     if "Neck flexion" in selected_sheet:
         df = pd.read_excel(xls, sheet_name=selected_sheet)
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG"],
-                            name='Neck Flexion'))
+        fig.add_trace(go.Bar(
+        x=df['Name'],
+        y=df['FORCE/KG'],
+        name='Neck Flexion',
+        marker_color='rgb(26, 254, 255)',
+        text=np.round(df['FORCE/KG'],1),
+        textposition='outside',
+        textfont=dict(size=fontsize)))
+  
         fig.update_layout(
             title=selected_sheet,
             xaxis_title="Ahtlete",
@@ -863,12 +925,21 @@ if team_csv is not None:
 
     if "Hip add" in selected_sheet:
         df = pd.read_excel(xls, sheet_name=selected_sheet)
+        filtered_df_left = df[df['FORCE/KG LEFT'] != 0]
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG LEFT"],
-                            name="LEFT"))
-        
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG RIGHT"],
-                            name="RIGHT"))
+        fig.add_trace(go.Bar(x=df["Name"], y=filtered_df_left["FORCE/KG LEFT"],
+                            name="LEFT",
+                            text=np.round(filtered_df_left['FORCE/KG LEFT'],1),
+                            textposition='outside',
+                            textfont=dict(size=fontsize)
+        ))
+        filtered_df = df[df['FORCE/KG RIGHT'] != 0]
+        fig.add_trace(go.Bar(x=filtered_df["Name"], y=filtered_df["FORCE/KG RIGHT"],
+                            name="RIGHT",
+                            text=np.round(filtered_df['FORCE/KG RIGHT'],1),
+                            textposition='outside',
+                            textfont=dict(size=fontsize)
+                            ))
         fig.update_layout(
             title=selected_sheet,
             xaxis_title="Ahtlete",
@@ -889,20 +960,33 @@ if team_csv is not None:
                 yaxis=dict(
                 tickfont=dict(
                 size=18 
-            )
-        )
-        )
+                )),
+            
+            legend = dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(size=25)))
         
         st.plotly_chart(fig, use_container_width=True)
 
     if "Hip Abd" in selected_sheet:
         df = pd.read_excel(xls, sheet_name=selected_sheet)
+        filtered_df = df[df['FORCE/KG LEFT'] != 0]
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG LEFT"],
-                            name="LEFT"))
+        fig.add_trace(go.Bar(x=filtered_df["Name"], y=filtered_df["FORCE/KG LEFT"],
+                            name="LEFT",
+                            text=np.round(filtered_df['FORCE/KG LEFT'],1),
+                            textposition='outside',
+                            textfont=dict(size=fontsize)))
         
-        fig.add_trace(go.Bar(x=df["Name"], y=df["FORCE/KG RIGHT"],
-                            name="RIGHT"))
+        fig.add_trace(go.Bar(x=filtered_df["Name"], y=filtered_df["FORCE/KG RIGHT"],
+                            name="RIGHT",
+                            text=np.round(filtered_df['FORCE/KG RIGHT'],1),
+                            textposition='outside',
+                            textfont=dict(size=fontsize)))
         fig.update_layout(
             title=selected_sheet,
             xaxis_title="Ahtlete",
@@ -930,18 +1014,20 @@ if team_csv is not None:
         st.plotly_chart(fig, use_container_width=True)
 
     if selected_sheet == "CMJ":
-        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
+        df_cmj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
         df_sj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="SJ")
-
-        st.dataframe(df)
+        st.dataframe(df_cmj)
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-                            mode='lines+markers',
-                            name=selected_sheet))
+        fig.add_trace(go.Scatter(x=df_cmj["Athlete"], y=df_cmj["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers+text',
+                            name=selected_sheet,
+                            text=np.round(df_cmj['Jump Height (Imp-Mom) [cm]'],1),
+                            textposition='top center',
+                            textfont=dict(size=14)
+                            ))
+                            # name=selected_sheet))
         
-        fig.add_trace(go.Scatter(x=df_sj["Athlete"], y=df_sj["Jump Height (Imp-Mom) [cm]"],
-                            mode='lines+markers',
-                            name="SJ"))
+       
         fig.update_layout(
             title=selected_sheet,
             xaxis_title="Ahtlete",
@@ -962,21 +1048,26 @@ if team_csv is not None:
                 yaxis=dict(
                 tickfont=dict(
                 size=18 
-            )
-        )
-        )    
+            )),
+            legend = dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(size=25))) 
         st.plotly_chart(fig, use_container_width=True)
 
     if selected_sheet == "SJ":
         df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name=selected_sheet)
         st.dataframe(df)
-        fig = go.Figure()
-        # fig.add_trace(go.Bar(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-        #                     name=selected_sheet))
-    
+        fig = go.Figure()   
         fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-                        mode='lines+markers',
-                        name=selected_sheet))
+                        mode='lines+markers+text',
+                        name=selected_sheet,
+                        text=np.round(df['Jump Height (Imp-Mom) [cm]'],1),
+                        textposition='top center',
+                        textfont=dict(size=14)))
         
         fig.update_layout(
             title=selected_sheet,
@@ -1002,21 +1093,26 @@ if team_csv is not None:
         ),    
 
     if selected_sheet == "CMJ/SJ RATIO":
-        df = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="CMJ")
+        df_cmj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="CMJ")
         df_sj = pd.read_excel(xls, skiprows=[0,1,2,3,4,5,6], sheet_name="SJ")
-        merged_df = pd.merge(df, df_sj, on="Athlete", suffixes=('_CMJ', '_SJ'))
+        merged_df = pd.merge(df_cmj, df_sj, on="Athlete", suffixes=('_CMJ', '_SJ'))
         merged_df["CMJ/SJ RATIO"] = merged_df["Jump Height (Imp-Mom) [cm]_CMJ"] / merged_df["Jump Height (Imp-Mom) [cm]_SJ"]        
         df_ratio = merged_df[[ "Athlete", "CMJ/SJ RATIO", "Jump Height (Imp-Mom) [cm]_CMJ", "Jump Height (Imp-Mom) [cm]_SJ"]]
         st.dataframe(df_ratio)
 
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=df["Athlete"], y=df["Jump Height (Imp-Mom) [cm]"],
-                            mode='lines+markers',
-                            name="CMJ"))
+        fig.add_trace(go.Scatter(x=df_cmj["Athlete"], y=df_cmj["Jump Height (Imp-Mom) [cm]"],
+                            mode='lines+markers+text',
+                            name="CMJ",
+                            # text='ratio',
+                            text=np.round(df_cmj['Jump Height (Imp-Mom) [cm]']/df_sj['Jump Height (Imp-Mom) [cm]'],1),
+                            textposition='top center',
+                            textfont=dict(size=fontsize)))
         
         fig.add_trace(go.Scatter(x=df_sj["Athlete"], y=df_sj["Jump Height (Imp-Mom) [cm]"],
                             mode='lines+markers',
-                            name="SJ"))
+                            name="SJ"                            
+                           ))
         
         fig.update_layout(
             title=selected_sheet,
@@ -1046,7 +1142,10 @@ if team_csv is not None:
         fig = go.Figure()
         fig.add_trace(go.Bar(x=df_sj["Athlete"], y=df_ratio["CMJ/SJ RATIO"],
             # mode='lines+markers',
-            name="CMJ/SJ RATIO"))
+            name="CMJ/SJ RATIO",
+             text=np.round(df_ratio["CMJ/SJ RATIO"],1),
+            textposition='outside',
+            textfont=dict(size=fontsize)))
         
         fig.update_layout(
             title=selected_sheet,
