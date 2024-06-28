@@ -24,7 +24,7 @@ path2 = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
 persons = [
     {"image_url": path + "allison.png", "name": "Allison Tanner", "description": "MBA student, Auburn Track & Field"},
-    {"image_url": path + "david_e.png", "name": "David Edmonson", "description": "Master student, Mechanical Engineering, Auburn Track & Field"},
+    {"image_url": path + "david_e.png", "name": "David Edmondson", "description": "Master student, Mechanical Engineering, Auburn Track & Field"},
     {"image_url": path + "david_h.png", "name": "David Hollinger", "description": "PhD candidate, Mechanical Engineering, Nike Sports Research Lab Intern"},
     {"image_url": path + "avinash.png", "name": "Avinash Baskaran", "description": "PhD student, Mechanical Engineering, Neuromuscular Rehabilitation"},
     {"image_url": path + "qi_li.png", "name": "Qi Li", "description": "PhD student, Computer Science & Software Engineering"},
@@ -68,7 +68,7 @@ with expander_allison:
     # st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=275)
     st.write(' I am now pursuing an MBA at Auburn University and am excited to be a part of the Digital Athlete team.')
 
-expander_edmonson = st.expander("David Edmonson's story")
+expander_edmonson = st.expander("David Edmondson's story")
 with expander_edmonson:
     st.write("I was born in a small town in Jamaica and moved to the United States at the age of 18 to attend Auburn University, competing in the decathlon.")
     png_url = path2 + "Edmonson_1.png"
