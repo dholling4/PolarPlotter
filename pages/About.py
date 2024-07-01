@@ -56,7 +56,7 @@ with expander_allison:
     video_url = path2 + "Allison%20High%20Jump.MP4"
     response = requests.get(download_link)
     st.video(video_url)
-    st.write('I competed for Auburn Track & Field, but my time was cut short. I suffered a torn labrum which required surgery. I came back too quickly, resulting in excessive metatarsal stress in my foot which led to another surgery. Following these two surgeries, I decided to medically retired from competing in the SEC.')
+    st.write('I competed for Auburn Track & Field, but my time was cut short. I suffered a torn labrum which required surgery. I came back too quickly, resulting in excessive metatarsal stress in my foot which led to another surgery. Following these two surgeries, I decided to medically retire from competing in the SEC.')
     persons = [
     {"image_url": path2 + "xray.png", "name": "X-ray of foot cyst due to excessive metatarsal stress", "description": " "},
     ]  
