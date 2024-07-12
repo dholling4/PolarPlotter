@@ -26,8 +26,8 @@ st.sidebar.markdown("# The Digital Athlete ")
 download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
 david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
 persons = [
-    {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo2.png", "name": "The Digital Athlete: Transforming your run using data-driven feedback & AI", "description": " "},
-    {"image_url": github_url + "drill-2-skeleton.png", "name": "Motion Analysis", "description": " "},
+    {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/white stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
+    {"image_url": github_url + "photos/david_ContentDay_A-skip_skeleton.png", "name": "Motion Analysis", "description": " "},
     {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "}, 
     {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
 
@@ -64,7 +64,8 @@ mp4_file_path = "baseline_pics/phone.mp4"
 # Display the MP4 file
 st.write("#\n")
 st.title("Analyze your biomechanics from smartphone video")
-display_video_from_github(github_repo_url, mp4_file_path)
+st.image(github_url + "photos/squat_content_day_skeleton.PNG", caption=f"{persons[1]['name']}", use_column_width=True)
+# displagy_video_from_github(github_repo_url, mp4_file_path)
 
 
 # =============================================================================
