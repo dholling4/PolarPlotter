@@ -135,7 +135,6 @@ url = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection-upload-vi
 # live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
 # hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
 st.write('#\n')
-st.write('#\n')
 """
 ### Record Activity:
 """
@@ -420,7 +419,6 @@ with right_column:
 #     annotations=[dict(font=dict(size=font_size))]
 # )
 # st.plotly_chart(fig)
-st.write('#\n')
 st.write('#\n')
 """
 ###
