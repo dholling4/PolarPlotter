@@ -79,6 +79,8 @@ with expander_whatis:
     st.write("* Connect with your coach :runner: :iphone:")
     st.write("* Get footwear recommendations :athletic_shoe:")
 
+st.write("#\n")
+
 st.header("\nFill out your profile")
 st.text_input("Name", key="name")
 name = st.session_state.name
