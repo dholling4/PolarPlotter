@@ -1,156 +1,156 @@
-# import contextlib
-# import plotly.express as px
-# import pandas as pd
-# import plotly.graph_objects as go
-# import streamlit as st
-# import base64
-# import streamlit as st
-# import numpy as np
-# import pandas as pd
-# import webbrowser
-# import datetime
-# import requests
-# from io import BytesIO
-# from PIL import Image
-# import base64
-# import os
+import contextlib
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+import base64
+import streamlit as st
+import numpy as np
+import pandas as pd
+import webbrowser
+import datetime
+import requests
+from io import BytesIO
+from PIL import Image
+import base64
+import os
 
-# def display_github_image(image_url):
-#     raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
-#     st.image(raw_url, caption='Image from GitHub', use_column_width=True)
+def display_github_image(image_url):
+    raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+    st.image(raw_url, caption='Image from GitHub', use_column_width=True)
 
-# github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
-# st.sidebar.markdown("# The Digital Athlete ")
-# download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
-# david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
-# persons = [
-#     {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/blue stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
-#     {"image_url": github_url + "photos/david_ContentDay_A-skip_skeleton.png", "name": "Motion Analysis", "description": " "},
-#     {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "}, 
-#     {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
+st.sidebar.markdown("# The Digital Athlete ")
+download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
+david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
+persons = [
+    # {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/blue stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
+    {"image_url": github_url + "photos/david_ContentDay_A-skip_skeleton.png", "name": "Motion Analysis", "description": " "},
+    {"image_url": github_url+ "coach.jpg", "name": "CoachConnect", "description": " "}, 
+    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
 
-# ]  
+]  
 
-# col1, col2 = st.columns(2)
-# with col1:
-#     st.write("# Welcome to The Digital Athlete!")
-#     st.write("#### Empowering Athletes. :muscle: \n#### Elevating Performance. :weight_lifter: \n#### Together. :people_holding_hands:")
-# with col2:
-#     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
+col1, col2 = st.columns(2)
+with col1:
+    st.write("# Welcome to The Digital Athlete!")
+    st.write("#### Empowering Athletes. :muscle: \n#### Elevating Performance. :weight_lifter: \n#### Together. :people_holding_hands:")
+with col2:
+    st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
 
-# # =============================================================================
-# from io import BytesIO
-# import requests
-# from PIL import Image
+# =============================================================================
+from io import BytesIO
+import requests
+from PIL import Image
 
-# # Function to display MP4 file
-# def display_video_from_github(repo_url, file_path):
-#     video_url = f"{repo_url}/raw/main/{file_path}"
-#     video_response = requests.get(video_url)
+# Function to display MP4 file
+def display_video_from_github(repo_url, file_path):
+    video_url = f"{repo_url}/raw/main/{file_path}"
+    video_response = requests.get(video_url)
     
-#     if video_response.status_code == 200:
-#         st.video(video_response.content)
-#     else:
-#         st.error(f"Failed to load video from {video_url}")
+    if video_response.status_code == 200:
+        st.video(video_response.content)
+    else:
+        st.error(f"Failed to load video from {video_url}")
 
-# # GitHub repository URL
-# github_repo_url = "https://github.com/dholling4/PolarPlotter"
+# GitHub repository URL
+github_repo_url = "https://github.com/dholling4/PolarPlotter"
 
-# # MP4 file path in the repository
-# mp4_file_path = "baseline_pics/phone.mp4"
+# MP4 file path in the repository
+mp4_file_path = "baseline_pics/phone.mp4"
 
-# # Display the MP4 file
-# st.write("#\n")
-# st.title("Analyze your biomechanics from smartphone video")
-# st.image(github_url + "photos/squat_content_day_skeleton.PNG", caption=f"{persons[1]['name']}", use_column_width=True)
-# # displagy_video_from_github(github_repo_url, mp4_file_path)
-
-
-# # =============================================================================
-# st.write("#\n")
-# """
-# ### What is The Digital Athlete?
-# """
-# expander_whatis = st.expander("Learn More")
-# with expander_whatis:
-#     st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
-#     st.write("* Track your performance :chart_with_upwards_trend:")
-#     st.write("* Connect with your coach :runner: :iphone:")
-#     st.write("* Get footwear recommendations :athletic_shoe:")
-
-# st.write("#\n")
-
-# st.header("\nFill out your profile")
-# st.text_input("Name", key="name")
-# name = st.session_state.name
-# st.text_input("Age", key="age")
-# age = st.session_state.age
-# st.text_input("Height", key="height")
-# st.text_input("weight (lbs)", key="weight")
-# chosen_sex = st.radio('Sex:',
-#              ('Male', 'Female', 'Other'))
-# if chosen_sex == 'Other':
-#         custom_input = st.text_input("Enter your preferred sex")
+# Display the MP4 file
+st.write("#\n")
+st.title("Analyze your biomechanics from smartphone video")
+st.image(github_url + "photos/squat_content_day_skeleton.PNG", caption=f"{persons[1]['name']}", use_column_width=True)
+# displagy_video_from_github(github_repo_url, mp4_file_path)
 
 
+# =============================================================================
+st.write("#\n")
+"""
+### What is The Digital Athlete?
+"""
+expander_whatis = st.expander("Learn More")
+with expander_whatis:
+    st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
+    st.write("* Track your performance :chart_with_upwards_trend:")
+    st.write("* Connect with your coach :runner: :iphone:")
+    st.write("* Get footwear recommendations :athletic_shoe:")
 
-# """
-# ##### Select your activity
-# """
+st.write("#\n")
 
-# left_column, right_column = st.columns(2)
-# df = pd.DataFrame({
-#     'first column': ['Running', 'Cycling','Golf'],
-#     })
-# with left_column:
-#     chosen_run = st.checkbox("Running")
-#     chosen_cycle = st.checkbox("Cycling")
-#     chosen_other = st.checkbox("Other")
-#     if chosen_run:
-#         st.write(":runner:")
-#     if chosen_cycle:
-#         st.write(":bicyclist:")
-#     if chosen_other:
-#         st.write(":weight_lifter:")
-#         custom_input = st.text_input("Enter your activity")
+st.header("\nFill out your profile")
+st.text_input("Name", key="name")
+name = st.session_state.name
+st.text_input("Age", key="age")
+age = st.session_state.age
+st.text_input("Height", key="height")
+st.text_input("weight (lbs)", key="weight")
+chosen_sex = st.radio('Sex:',
+             ('Male', 'Female', 'Other'))
+if chosen_sex == 'Other':
+        custom_input = st.text_input("Enter your preferred sex")
 
-# with right_column:
-#     chosen = st.radio(
-#         'Your Level:',
-#         ("Beginner", "Intermediate", "Elite"))
+
+
+"""
+##### Select your activity
+"""
+
+left_column, right_column = st.columns(2)
+df = pd.DataFrame({
+    'first column': ['Running', 'Cycling','Golf'],
+    })
+with left_column:
+    chosen_run = st.checkbox("Running")
+    chosen_cycle = st.checkbox("Cycling")
+    chosen_other = st.checkbox("Other")
+    if chosen_run:
+        st.write(":runner:")
+    if chosen_cycle:
+        st.write(":bicyclist:")
+    if chosen_other:
+        st.write(":weight_lifter:")
+        custom_input = st.text_input("Enter your activity")
+
+with right_column:
+    chosen = st.radio(
+        'Your Level:',
+        ("Beginner", "Intermediate", "Elite"))
     
-# # Add a selectbox to the sidebar:
-# # add_selectbox = st.sidebar.selectbox(
-# #     'How would you like to be contacted?',
-# #     ('Email', 'Home phone', 'Mobile phone')
-# # # )
-# # """
-# # ### Record Activity
-# # """
-# # # url can have movenet, blazepose or posenet at the end
-# model = 'movenet'
-# url_live = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection/index.html?model=' + model
-# url = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection-upload-video/index.html?model=' + model
-# # live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
-# # hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
-# st.write('#\n')
+# Add a selectbox to the sidebar:
+# add_selectbox = st.sidebar.selectbox(
+#     'How would you like to be contacted?',
+#     ('Email', 'Home phone', 'Mobile phone')
+# # )
 # """
-# ### Record Activity:
+# ### Record Activity
 # """
-# left, right = st.columns(2)
-# with left:  
-#     st.link_button('Record video data', url_live)
-# with right:
-#     st.button('Record wearable data')
-# """
-# ### Upload Activity:
-# """
-# left_column, right_column = st.columns(2)
-# with left_column:
-#     st.link_button('Upload video data', url)
-# with right_column:
-#     st.button('Upload wearable data')
+# # url can have movenet, blazepose or posenet at the end
+model = 'movenet'
+url_live = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection/index.html?model=' + model
+url = 'https://storage.googleapis.com/tfjs-models/demos/pose-detection-upload-video/index.html?model=' + model
+# live_hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection/index.html?model=mediapipe_hands'
+# hand_url = 'https://storage.googleapis.com/tfjs-models/demos/hand-pose-detection-upload-video/index.html?model=mediapipe_hands'
+st.write('#\n')
+"""
+### Record Activity:
+"""
+left, right = st.columns(2)
+with left:  
+    st.link_button('Record video data', url_live)
+with right:
+    st.button('Record wearable data')
+"""
+### Upload Activity:
+"""
+left_column, right_column = st.columns(2)
+with left_column:
+    st.link_button('Upload video data', url)
+with right_column:
+    st.button('Upload wearable data')
 
 
 # # ------- POSE DETECTOR----------------
