@@ -1,58 +1,58 @@
-# import streamlit as st
+import streamlit as st
 
-# # Page title
-# st.title("Virtual Race Challenge")
+# Page title
+st.title("Virtual Race Challenge")
 
-# # Introduction and Description
-# st.write(
-#     "Welcome to the Virtual Race Challenge! Lace up your shoes, hit the pavement, and join our global community in this exciting virtual race."
-# )
+# Introduction and Description
+st.write(
+    "Welcome to the Virtual Race Challenge! Lace up your shoes, hit the pavement, and join our global community in this exciting virtual race."
+)
 
-# # Race Details
-# st.header("Race Details")
-# st.write(
-#     "Date: [Your Virtual Race Date]\n"
-#     "Distance: [Your Virtual Race Distance]\n"
-#     "Location: Anywhere, it's virtual!\n"
-#     "How to Participate: [Instructions for Participation]\n"
-# )
+# Race Details
+st.header("Race Details")
+st.write(
+    "Date: [Your Virtual Race Date]\n"
+    "Distance: [Your Virtual Race Distance]\n"
+    "Location: Anywhere, it's virtual!\n"
+    "How to Participate: [Instructions for Participation]\n"
+)
 
-# # Participation Form
-# st.subheader("Participate Now!")
-# user_name = st.text_input("Your Name:")
-# user_email = st.text_input("Your Email:")
-# st.button("Join the Race")
+# Participation Form
+st.subheader("Participate Now!")
+user_name = st.text_input("Your Name:")
+user_email = st.text_input("Your Email:")
+st.button("Join the Race")
 
-# # Medals and Badges
-# st.header("Win Medals and Badges")
-# st.write(
-#     "Complete the race and earn exclusive medals and badges to showcase your achievement. Compete with others and climb the leaderboard!"
-# )
+# Medals and Badges
+st.header("Win Medals and Badges")
+st.write(
+    "Complete the race and earn exclusive medals and badges to showcase your achievement. Compete with others and climb the leaderboard!"
+)
 
-# # Prizes
-# st.header("Exclusive Prizes")
-# st.write(
-#     "Top Performers and Participants stand a chance to win exciting prizes:\n"
-#     "- Free Premium Subscription to The Digital Athlete\n"
-#     "- Exclusive Video Content Access\n"
-#     "- Free Gear and Merchandise\n"
-# )
+# Prizes
+st.header("Exclusive Prizes")
+st.write(
+    "Top Performers and Participants stand a chance to win exciting prizes:\n"
+    "- Free Premium Subscription to The Digital Athlete\n"
+    "- Exclusive Video Content Access\n"
+    "- Free Gear and Merchandise\n"
+)
 
-# # Leaderboard
-# st.header("Leaderboard")
-# st.write("Track your progress and see how you compare to other participants.")
+# Leaderboard
+st.header("Leaderboard")
+st.write("Track your progress and see how you compare to other participants.")
 
-# # Terms and Conditions
-# st.header("Terms and Conditions")
-# st.write("Make sure to read and agree to the terms and conditions before participating.")
+# Terms and Conditions
+st.header("Terms and Conditions")
+st.write("Make sure to read and agree to the terms and conditions before participating.")
 
-# # Footer
-# st.markdown(
-#     """
-#     ---
-#     *The Virtual Race Challenge is brought to you by [Your Company Name].*
-#     """
-# )
+# Footer
+st.markdown(
+    """
+    ---
+    *The Virtual Race Challenge is brought to you by [Your Company Name].*
+    """
+)
 
 
 
