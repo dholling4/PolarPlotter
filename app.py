@@ -21,7 +21,7 @@ def display_github_image(image_url):
 
 github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
-st.sidebar.markdown("# The Digital Athlete ")
+st.sidebar.markdown("#")
 download_link = "https://drive.google.com/uc?export=download&id=1MCxkD8d3-JBgi-xVA_IlzMZ_SJ4AOtbE"
 david_e = "/workspaces/PolarPlotter/DavidEdmonson_logo_labeled.png"
 persons = [
@@ -34,7 +34,7 @@ persons = [
 
 col1, col2 = st.columns(2)
 with col1:
-    st.write("# Welcome to The Digital Athlete!")
+    st.write("# Welcome!")
     st.write("#### Empowering Athletes. :muscle: \n#### Elevating Performance. :weight_lifter: \n#### Together. :people_holding_hands:")
 with col2:
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
@@ -63,18 +63,18 @@ mp4_file_path = "baseline_pics/phone.mp4"
 # Display the MP4 file
 st.write("#\n")
 st.title("Analyze your biomechanics from smartphone video")
-st.image(github_url + "photos/squat_content_day_skeleton.PNG", caption=f"{persons[1]['name']}", use_column_width=True)
+# st.image(github_url + "photos/squat_content_day_skeleton.PNG", caption=f"{persons[1]['name']}", use_column_width=True)
 # displagy_video_from_github(github_repo_url, mp4_file_path)
 
 
 # =============================================================================
 st.write("#\n")
 """
-### What is The Digital Athlete?
+### What do we offer?
 """
 expander_whatis = st.expander("Learn More")
 with expander_whatis:
-    st.write("The Digital Athlete is a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
+    st.write("We offer a platform that *empowers* athletes to take control of their health and performance. Our goal is to provide athletes with the tools they need to perform at their best. We provide a suite of tools that allow athletes to:") 
     st.write("* Track your performance :chart_with_upwards_trend:")
     st.write("* Connect with your coach :runner: :iphone:")
     st.write("* Get footwear recommendations :athletic_shoe:")
