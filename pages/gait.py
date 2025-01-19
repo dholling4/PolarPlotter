@@ -1,7 +1,8 @@
 import streamlit as st
 import cv2
 import mediapipe as mp
-import numpy as np
+import tempfile
+import os
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -12,8 +13,19 @@ def process_video(video_path):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
     
-    # Initialize a list to store frames with pose landmarks
-    processed_frames = []
+    # Get the video properties (frame rate, width, height)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # Create a temporary file to save the processed video
+    temp_output_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+    temp_output_path = temp_output_file.name
+    temp_output_file.close()  # Close the file so OpenCV can write to it
+    
+    # Create a video writer to save the processed frames
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for .mp4
+    out = cv2.VideoWriter(temp_output_path, fourcc, fps, (width, height))
     
     while cap.isOpened():
         ret, frame = cap.read()
@@ -30,40 +42,35 @@ def process_video(video_path):
         if results.pose_landmarks:
             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
         
-        # Convert the frame back to BGR to display in Streamlit
-        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        
-        # Store the processed frame for later use
-        processed_frames.append(frame_bgr)
+        # Write the frame with the pose landmarks drawn to the video file
+        out.write(frame)
     
     cap.release()
-    return processed_frames
+    out.release()
+    
+    return temp_output_path
 
-def display_processed_video(frames):
-    # Display processed video frame by frame
-    for frame in frames:
-        # Convert the frame to RGB for Streamlit display
-        st.image(frame, channels="BGR", use_column_width=True)
-
-# Streamlit app
 def main():
-    st.title("Pose Estimation from .MOV File")
+    st.title("Pose Estimation from .MOV File with Skeleton Overlay")
     
     # Upload .MOV file
     uploaded_file = st.file_uploader("Upload a .MOV file", type=["mov"])
     
     if uploaded_file is not None:
-        # Save the uploaded file
+        # Save the uploaded file to a temporary location
         with open("uploaded_video.mov", "wb") as f:
             f.write(uploaded_file.getbuffer())
         
         st.success("File uploaded successfully! Processing the video...")
         
-        # Process the video to extract frames with pose estimation
-        frames = process_video("uploaded_video.mov")
+        # Process the video and get the path to the processed video
+        processed_video_path = process_video("uploaded_video.mov")
         
-        # Display processed video with pose landmarks
-        display_processed_video(frames)
+        # Stream the processed video with pose landmarks
+        st.video(processed_video_path)
+
+        # Optionally, cleanup the temporary file
+        os.remove(processed_video_path)
 
 if __name__ == "__main__":
     main()
