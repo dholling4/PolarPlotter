@@ -2,6 +2,7 @@
 # imageio_ffmpeg==0.4.9
 # moviepy==1.0.3 
 # cv2
+mediapipe
 moviepy
 # proglog==0.1.10
 streamlit-webrtc==0.32.0
