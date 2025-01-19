@@ -9,6 +9,13 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
+import moviepy.editor at mp
+        
+def convert_mov_to_mp4(input_path, output_path):
+    clip = mp.VideoFileClip(input_path)
+    clip.write_videofile(output_path, codec="libx264")
+
+
 def process_video(video_path):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
