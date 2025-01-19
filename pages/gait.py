@@ -1,14 +1,14 @@
+import streamlit as st
 import cv2
 import mediapipe as mp
-import matplotlib.pyplot as plt
 import tempfile
 import os
+from matplotlib import pyplot as plt
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-# Keypoints of interest
 KEYPOINTS_OF_INTEREST = {
     23: "Left Hip",
     24: "Right Hip",
@@ -29,7 +29,7 @@ def process_first_frame(video_path):
         # Read the first frame
         ret, frame = cap.read()
         if not ret:
-            print("Failed to read the video or the video is empty.")
+            st.error("Failed to read the video or the video is empty.")
             return
         
         # Convert the frame to RGB (MediaPipe expects RGB images)
@@ -46,35 +46,40 @@ def process_first_frame(video_path):
             )
             
             # Display the annotated frame with the skeleton overlay
-            plt.figure(figsize=(10, 6))
-            plt.title("First Frame with Skeleton Overlay")
-            plt.imshow(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB))
-            plt.axis("off")
-            plt.show()
+            st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption="Skeleton Overlay")
             
-            # Filter and display keypoints of interest
-            print("Keypoints of Interest:")
+            # Display keypoints and their values
+            st.write("Pose Landmarks (Keypoints):")
+            keypoints = []
             for id, landmark in enumerate(results.pose_landmarks.landmark):
                 if id in KEYPOINTS_OF_INTEREST:
-                    print(
-                        f"{KEYPOINTS_OF_INTEREST[id]} (ID {id}): "
-                        f"x={landmark.x:.3f}, y={landmark.y:.3f}, z={landmark.z:.3f}, visibility={landmark.visibility:.3f}"
+                    keypoints.append(
+                        f"{KEYPOINTS_OF_INTEREST[id]}: x={landmark.x:.3f}, y={landmark.y:.3f}, z={landmark.z:.3f}, Visibility: {landmark.visibility:.3f}"
                     )
+            st.text("\n".join(keypoints))
         else:
-            print("No pose landmarks detected in the first frame.")
+            st.error("No pose landmarks detected in the first frame.")
     
     # Release the video capture
     cap.release()
 
 def main():
-    print("Please enter the path to your video file (e.g., video.mov):")
-    video_path = input("File Path: ").strip()
+    st.title("Pose Estimation on First Frame")
     
-    if video_path and os.path.exists(video_path):
-        print(f"Processing video: {video_path}")
-        process_first_frame(video_path)
-    else:
-        print("Invalid file path. Please try again.")
+    # Upload video file
+    uploaded_file = st.file_uploader("Upload a .MOV file", type=["mov"])
+    
+    if uploaded_file is not None:
+        # Save the uploaded file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mov") as temp_file:
+            temp_file.write(uploaded_file.read())
+            temp_path = temp_file.name
+        
+        # Process the first frame of the video
+        process_first_frame(temp_path)
+        
+        # Clean up the temporary file
+        os.remove(temp_path)
 
 if __name__ == "__main__":
     main()
