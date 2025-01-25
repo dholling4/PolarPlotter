@@ -38,6 +38,89 @@ def calculate_angle(v1, v2):
     angle_degrees = np.degrees(angle_radians)
     return angle_degrees
 
+def process_video(video_path):
+    # Open the video file
+    cap = cv2.VideoCapture(video_path)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    
+    # Lists to store joint angles over time
+    left_knee_angles, right_knee_angles = [], []
+    left_hip_angles, right_hip_angles = [], []
+    left_ankle_angles, right_ankle_angles = [], []
+
+    # Initialize MediaPipe Pose
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+        for _ in range(frame_count):
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # Convert the frame to RGB (MediaPipe expects RGB images)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Process the frame to detect poses
+            results = pose.process(frame_rgb)
+            
+            # Process detected landmarks
+            if results.pose_landmarks:
+                # Extract landmarks
+                landmarks = results.pose_landmarks.landmark
+                def get_coords(landmark):
+                    return np.array([landmark.x, landmark.y, landmark.z])
+
+                left_hip = get_coords(landmarks[23])
+                right_hip = get_coords(landmarks[24])
+                left_knee = get_coords(landmarks[25])
+                right_knee = get_coords(landmarks[26])
+                left_ankle = get_coords(landmarks[27])
+                right_ankle = get_coords(landmarks[28])
+                left_foot = get_coords(landmarks[31])
+                right_foot = get_coords(landmarks[32])
+
+                # Calculate vectors
+                left_thigh_vector = left_hip - left_knee
+                left_shank_vector = left_knee - left_ankle
+                right_thigh_vector = right_hip - right_knee
+                right_shank_vector = right_knee - right_ankle
+                left_foot_vector = left_ankle - left_foot
+                right_foot_vector = right_ankle - right_foot
+
+                # Calculate joint angles
+                left_knee_angles.append(calculate_angle(left_thigh_vector, left_shank_vector))
+                right_knee_angles.append(calculate_angle(right_thigh_vector, right_shank_vector))
+                left_hip_angles.append(calculate_angle(left_thigh_vector, right_thigh_vector))
+                right_hip_angles.append(calculate_angle(right_thigh_vector, left_thigh_vector))
+                left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
+                right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
+    # Display range of motion for each joint
+    st.write("### Range of Motion (Degrees):")
+    st.write(f"Left Hip: {max(left_hip_angles) - min(left_hip_angles):.2f}")
+    st.write(f"Right Hip: {max(right_hip_angles) - min(right_hip_angles):.2f}")
+    st.write(f"Left Knee: {max(left_knee_angles) - min(left_knee_angles):.2f}")
+    st.write(f"Right Knee: {max(right_knee_angles) - min(right_knee_angles):.2f}")
+    st.write(f"Left Ankle: {max(left_ankle_angles) - min(left_ankle_angles):.2f}")
+    st.write(f"Right Ankle: {max(right_ankle_angles) - min(right_ankle_angles):.2f}")
+
+    # Plot joint angles over time
+    fig, ax = plt.subplots(3, 2, figsize=(12, 10))
+    ax[0, 0].plot(left_hip_angles, label="Left Hip")
+    ax[0, 1].plot(right_hip_angles, label="Right Hip", color='orange')
+    ax[1, 0].plot(left_knee_angles, label="Left Knee")
+    ax[1, 1].plot(right_knee_angles, label="Right Knee", color='orange')
+    ax[2, 0].plot(left_ankle_angles, label="Left Ankle")
+    ax[2, 1].plot(right_ankle_angles, label="Right Ankle", color='orange')
+
+    for row in ax:
+        for col in row:
+            col.set_xlabel("Frame")
+            col.set_ylabel("Angle (degrees)")
+            col.legend()
+
+    st.pyplot(fig)
+
+    # Release the video capture
+    cap.release()
+
 def process_first_frame(video_path):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
@@ -65,66 +148,7 @@ def process_first_frame(video_path):
             
             # Display the annotated frame with the skeleton overlay
             st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption="Skeleton Overlay")
-            # Display keypoints and their values
-            st.write("Pose Landmarks (Keypoints):")
-            keypoints = []
-           
-                 # Extract landmarks
-            left_hip = results.pose_landmarks.landmark[23]
-            right_hip = results.pose_landmarks.landmark[24]
-            left_knee = results.pose_landmarks.landmark[25]
-            right_knee = results.pose_landmarks.landmark[26]
-            left_ankle = results.pose_landmarks.landmark[27]
-            right_ankle = results.pose_landmarks.landmark[28]
-            left_foot = results.pose_landmarks.landmark[31]
-            right_foot = results.pose_landmarks.landmark[32]
-            
-            # Convert landmarks to numpy arrays
-            def get_coords(landmark):
-                return np.array([landmark.x, landmark.y, landmark.z])
-
-            left_hip_coords = get_coords(left_hip)
-            right_hip_coords = get_coords(right_hip)
-            left_knee_coords = get_coords(left_knee)
-            right_knee_coords = get_coords(right_knee)
-            left_ankle_coords = get_coords(left_ankle)
-            right_ankle_coords = get_coords(right_ankle)
-            left_foot_coords = get_coords(left_foot)
-            right_foot_coords = get_coords(right_foot)
-
-            # Calculate vectors
-            left_thigh_vector = left_hip_coords - left_knee_coords
-            left_shank_vector = left_knee_coords - left_ankle_coords
-            right_thigh_vector = right_hip_coords - right_knee_coords
-            right_shank_vector = right_knee_coords - right_ankle_coords
-            left_foot_vector = left_ankle_coords - left_foot_coords
-            right_foot_vector = right_ankle_coords - right_foot_coords
-
-            # Calculate angles
-            left_knee_angle = calculate_angle(left_thigh_vector, left_shank_vector)
-            right_knee_angle = calculate_angle(right_thigh_vector, right_shank_vector)
-            left_hip_angle = calculate_angle(left_thigh_vector, right_thigh_vector)
-            right_hip_angle = calculate_angle(right_thigh_vector, left_thigh_vector)
-            left_ankle_angle = calculate_angle(left_shank_vector, left_foot_vector)
-            right_ankle_angle = calculate_angle(right_shank_vector, right_foot_vector)
-
-            # Display results
-            st.write(f"Left Knee Angle: {left_knee_angle:.2f} degrees")
-            st.write(f"Right Knee Angle: {right_knee_angle:.2f} degrees")
-            st.write(f"Left Hip Angle: {left_hip_angle:.2f} degrees")
-            st.write(f"Right Hip Angle: {right_hip_angle:.2f} degrees")
-            st.write(f"Left Ankle Angle: {left_ankle_angle:.2f} degrees")
-            st.write(f"Right Ankle Angle: {right_ankle_angle:.2f} degrees")
-
-            for id, landmark in enumerate(results.pose_landmarks.landmark):
-                if id in KEYPOINTS_OF_INTEREST:
-                    keypoints.append(
-                        f"{KEYPOINTS_OF_INTEREST[id]}: x={landmark.x:.3f}, y={landmark.y:.3f}, z={landmark.z:.3f}, Visibility: {landmark.visibility:.3f}"
-                    )
-            st.text("\n".join(keypoints))
-        else:
-            st.error("No pose landmarks detected in the first frame.")
-    
+                      
     # Release the video capture
     cap.release()
 
@@ -142,9 +166,11 @@ def main():
         
         # Process the first frame of the video
         process_first_frame(temp_path)
+        process_video(temp_path)
         
         # Clean up the temporary file
         os.remove(temp_path)
 
 if __name__ == "__main__":
     main()
+
