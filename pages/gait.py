@@ -92,6 +92,7 @@ def process_video(video_path):
                 right_hip_angles.append(calculate_angle(right_thigh_vector, left_thigh_vector))
                 left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
                 right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
+    
     # Display range of motion for each joint
     st.write("### Range of Motion (Degrees):")
     st.write(f"Left Hip: {max(left_hip_angles) - min(left_hip_angles):.2f}")
@@ -102,21 +103,55 @@ def process_video(video_path):
     st.write(f"Right Ankle: {max(right_ankle_angles) - min(right_ankle_angles):.2f}")
 
     # Plot joint angles over time
-    fig, ax = plt.subplots(3, 2, figsize=(12, 10))
-    ax[0, 0].plot(left_hip_angles, label="Left Hip")
-    ax[0, 1].plot(right_hip_angles, label="Right Hip", color='orange')
-    ax[1, 0].plot(left_knee_angles, label="Left Knee")
-    ax[1, 1].plot(right_knee_angles, label="Right Knee", color='orange')
-    ax[2, 0].plot(left_ankle_angles, label="Left Ankle")
-    ax[2, 1].plot(right_ankle_angles, label="Right Ankle", color='orange')
+    time = np.arange(0, len(left_hip_angles)) / 60  # Time in seconds
+    tick_fontsize=20
 
-    for row in ax:
-        for col in row:
-            col.set_xlabel("Frame")
-            col.set_ylabel("Angle (degrees)")
-            col.legend()
-
+    st.write('## Hip Angles')
+    fig, ax = plt.subplots(2, 1, figsize=(12, 8))
+    ax[0].plot(time, left_hip_angles, label="Left Hip")
+    ax[1].plot(time, right_hip_angles, label="Right Hip", color='orange')
+    ax[0].legend(fontsize=24)
+    ax[1].legend(fontsize=24)
+    ax[0].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[1].set_xlabel("Time (s)", fontsize=20)
+    ax[1].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[0].set_xlim([time[0], time[-1]])
+    ax[1].set_xlim([time[0], time[-1]])
+    ax[0].tick_params(axis='both', labelsize=tick_fontsize)
+    ax[1].tick_params(axis='both', labelsize=tick_fontsize)
     st.pyplot(fig)
+
+    st.write('## Knee Angles')
+    fig2, ax = plt.subplots(2, 1, figsize=(12, 8))
+    ax[0].plot(time, left_knee_angles, label="Left Knee")
+    ax[1].plot(time, right_knee_angles, label="Right Knee", color='orange')
+    ax[0].legend(fontsize=24)
+    ax[1].legend(fontsize=24)
+    ax[0].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[1].set_xlabel("Time (s)", fontsize=20)
+    ax[1].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[0].set_xlim([time[0], time[-1]])
+    ax[1].set_xlim([time[0], time[-1]])
+    ax[0].tick_params(axis='both', labelsize=tick_fontsize)
+    ax[1].tick_params(axis='both', labelsize=tick_fontsize)
+    st.pyplot(fig2)
+
+    st.write('## Ankle Angles')
+    fig3, ax = plt.subplots(2, 1, figsize=(12, 8))
+    ax[0].plot(time, left_ankle_angles, label="Left Ankle")
+    ax[1].plot(time, right_ankle_angles, label="Right Ankle", color='orange')
+    ax[0].legend(fontsize=24)
+    ax[1].legend(fontsize=24)
+    ax[0].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[1].set_xlabel("Time (s)", fontsize=20)
+    ax[1].set_ylabel("Angle (degrees)", fontsize=20)
+    ax[0].set_xlim([time[0], time[-1]])
+    ax[1].set_xlim([time[0], time[-1]])
+
+    ax[0].tick_params(axis='both', labelsize=tick_fontsize)
+    ax[1].tick_params(axis='both', labelsize=tick_fontsize)
+    st.pyplot(fig3)
+
 
     # Release the video capture
     cap.release()
@@ -153,15 +188,30 @@ def process_first_frame(video_path):
     cap.release()
 
 def main():
-    st.title("Pose Estimation on First Frame")
+    st.title("Pose Estimation Gait Analysis")
     
     # Upload video file
-    uploaded_file = st.file_uploader("Upload a .MOV file", type=["mov"])
+    front_video = st.file_uploader("Upload side video (.MOV file)", type=["mov"])
+    side_video = st.file_uploader("Upload back video (.MOV file)", type=["mov"])
+
     
-    if uploaded_file is not None:
+    if front_video is not None:
         # Save the uploaded file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mov") as temp_file:
-            temp_file.write(uploaded_file.read())
+            temp_file.write(front_video.read())
+            temp_path = temp_file.name
+        
+        # Process the first frame of the video
+        process_first_frame(temp_path)
+        process_video(temp_path)
+        
+        # Clean up the temporary file
+        os.remove(temp_path)
+
+    if side_video is not None:
+        # Save the uploaded file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mov") as temp_file:
+            temp_file.write(side_video.read())
             temp_path = temp_file.name
         
         # Process the first frame of the video
@@ -173,4 +223,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
