@@ -64,7 +64,7 @@ def process_video(video_path):
                 break
             middle_frames.append(frame)
 
-    st.success(f"Extracted frames for middle seconds ({len(middle_frames)} frames at {fps} FPS).")
+    st.success(f"Extracted frames for middle seconds ({len(middle_frames)} frames at {np.round(fps,1)} FPS).")
 
     # Lists to store joint angles over time
     left_knee_angles, right_knee_angles = [], []
@@ -73,7 +73,7 @@ def process_video(video_path):
 
     # Initialize MediaPipe Pose
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        for _ in range(middle_frames):
+        for _ in range(len(middle_frames)):
             ret, frame = cap.read()
             if not ret:
                 break
