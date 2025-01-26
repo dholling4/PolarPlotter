@@ -45,23 +45,22 @@ def process_video(video_path):
     fps = cap.get(cv2.CAP_PROP_FPS)  # Frames per second
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration = total_frames / fps  # Calculate duration in seconds
-
+ 
     if duration > 65:
         st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload shorter than a 60-second video.")
     else:
         # Calculate +- 10% of the middle seconds
-        start_time = duration - 0.1*duration  # Middle start time in seconds 
-        end_time = duration + 0.1*duration    # Middle end time in seconds
+        start_time = duration*0.5 - 0.1*duration  # Middle start time in seconds 
+        end_time = duration*0.5 + 0.1*duration    # Middle end time in seconds
         start_frame = int(start_time * fps)
         end_frame = int(end_time * fps)
  
-    st.success(f"Extracted frames for start frame ({start_frame} end frame {end_frame} frames at {np.round(fps,1)} FPS).")
-
+    st.success(f"Upload successful!")
     # Lists to store joint angles over time
     left_knee_angles, right_knee_angles = [], []
     left_hip_angles, right_hip_angles = [], []
     left_ankle_angles, right_ankle_angles = [], []
-    st.text(total_frames)
+
     # Initialize MediaPipe Pose
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         for _ in range(start_frame, end_frame):
