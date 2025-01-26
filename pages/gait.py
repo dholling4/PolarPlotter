@@ -41,8 +41,31 @@ def calculate_angle(v1, v2):
 def process_video(video_path):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
-    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    
+
+    fps = cap.get(cv2.CAP_PROP_FPS)  # Frames per second
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = total_frames / fps  # Calculate duration in seconds
+
+    if duration < 59:
+        st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload a 60-second video.")
+    else:
+        # Calculate middle 20 seconds
+        start_time = 25  # Middle start time in seconds
+        end_time = 35    # Middle end time in seconds
+        start_frame = int(start_time * fps)
+        end_frame = int(end_time * fps)
+
+        # Extract frames from middle seconds
+        middle_frames = []
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)  # Start from the middle segment
+        while cap.get(cv2.CAP_PROP_POS_FRAMES) < end_frame:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            middle_frames.append(frame)
+
+    st.success(f"Extracted frames for middle {len(middle_frames) * fps} seconds ({len(middle_frames)} frames at {fps} FPS).")
+
     # Lists to store joint angles over time
     left_knee_angles, right_knee_angles = [], []
     left_hip_angles, right_hip_angles = [], []
@@ -50,7 +73,7 @@ def process_video(video_path):
 
     # Initialize MediaPipe Pose
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        for _ in range(frame_count):
+        for _ in range(middle_frames):
             ret, frame = cap.read()
             if not ret:
                 break
@@ -152,7 +175,6 @@ def process_video(video_path):
     ax[1].tick_params(axis='both', labelsize=tick_fontsize)
     st.pyplot(fig3)
 
-
     # Release the video capture
     cap.release()
 
@@ -191,10 +213,9 @@ def main():
     st.title("Pose Estimation Gait Analysis")
     
     # Upload video file
-    front_video = st.file_uploader("Upload side video (.MOV file)", type=["mov"])
-    side_video = st.file_uploader("Upload back video (.MOV file)", type=["mov"])
+    front_video = st.file_uploader("Upload side video (mp4, mov, avi, mkv file)", type=["mp4", "mov", "avi", "mkv"])
+    side_video = st.file_uploader("Upload back video (mp4, mov, avi, mkv file)", type=["mp4", "mov", "avi", "mkv"])
 
-    
     if front_video is not None:
         # Save the uploaded file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mov") as temp_file:
@@ -202,8 +223,8 @@ def main():
             temp_path = temp_file.name
         
         # Process the first frame of the video
-        process_first_frame(temp_path)
-        process_video(temp_path)
+        process_first_frame(temp_path) # display the skeleton overlay
+        process_video(temp_path) # analyze the video
         
         # Clean up the temporary file
         os.remove(temp_path)
