@@ -49,9 +49,9 @@ def process_video(video_path):
     if duration > 65:
         st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload shorter than a 60-second video.")
     else:
-        # Calculate middle 20 seconds
-        start_time = 25  # Middle start time in seconds
-        end_time = 35    # Middle end time in seconds
+        # Calculate +- 10% of the middle seconds
+        start_time = duration - 0.1*duration  # Middle start time in seconds 
+        end_time = duration + 0.1*duration    # Middle end time in seconds
         start_frame = int(start_time * fps)
         end_frame = int(end_time * fps)
 
