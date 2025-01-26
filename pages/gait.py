@@ -23,6 +23,21 @@ KEYPOINTS_OF_INTEREST = {
     32: "Right Foot"
 }
 
+import ffmpeg
+
+def get_rotation(video_path):
+    """Retrieve rotation metadata from the video."""
+    try:
+        probe = ffmpeg.probe(video_path)
+        video_stream = next(
+            stream for stream in probe['streams'] if stream['codec_type'] == 'video'
+        )
+        rotation = int(video_stream.get('tags', {}).get('rotate', 0))
+        return rotation
+    except Exception as e:
+        print(f"Error retrieving video metadata: {e}")
+        return 0
+
 def calculate_angle(v1, v2):
     """
     Calculate the angle between two vectors using the dot product.
@@ -172,7 +187,10 @@ def process_video(video_path):
 def process_first_frame(video_path):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
-    
+    rotation = get_rotation(video_path)
+    st.text('Rotation: ')
+    st.text(rotation)
+
     # Initialize MediaPipe Pose
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         # Read the first frame
@@ -180,6 +198,14 @@ def process_first_frame(video_path):
         if not ret:
             st.error("Failed to read the video or the video is empty.")
             return
+        
+        # Apply rotation based on metadata
+        if rotation == 90:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        elif rotation == 180:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+        elif rotation == 270:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
         
         # Convert the frame to RGB (MediaPipe expects RGB images)
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
