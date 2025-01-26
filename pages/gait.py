@@ -46,8 +46,8 @@ def process_video(video_path):
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration = total_frames / fps  # Calculate duration in seconds
 
-    if duration < 59:
-        st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload a 60-second video.")
+    if duration > 65:
+        st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload shorter than a 60-second video.")
     else:
         # Calculate middle 20 seconds
         start_time = 25  # Middle start time in seconds
@@ -64,7 +64,7 @@ def process_video(video_path):
                 break
             middle_frames.append(frame)
 
-    st.success(f"Extracted frames for middle {len(middle_frames) * fps} seconds ({len(middle_frames)} frames at {fps} FPS).")
+    st.success(f"Extracted frames for middle seconds ({len(middle_frames)} frames at {fps} FPS).")
 
     # Lists to store joint angles over time
     left_knee_angles, right_knee_angles = [], []
