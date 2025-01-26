@@ -54,26 +54,17 @@ def process_video(video_path):
         end_time = duration + 0.1*duration    # Middle end time in seconds
         start_frame = int(start_time * fps)
         end_frame = int(end_time * fps)
-
-        # Extract frames from middle seconds
-        middle_frames = []
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)  # Start from the middle segment
-        while cap.get(cv2.CAP_PROP_POS_FRAMES) < end_frame:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            middle_frames.append(frame)
-
-    st.success(f"Extracted frames for middle seconds ({len(middle_frames)} frames at {np.round(fps,1)} FPS).")
+ 
+    st.success(f"Extracted frames for start frame ({start_frame} end frame {end_frame} frames at {np.round(fps,1)} FPS).")
 
     # Lists to store joint angles over time
     left_knee_angles, right_knee_angles = [], []
     left_hip_angles, right_hip_angles = [], []
     left_ankle_angles, right_ankle_angles = [], []
-
+    st.text(total_frames)
     # Initialize MediaPipe Pose
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        for _ in range(len(middle_frames)):
+        for _ in range(start_frame, end_frame):
             ret, frame = cap.read()
             if not ret:
                 break
