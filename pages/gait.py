@@ -50,8 +50,8 @@ def process_video(video_path):
         st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload shorter than a 60-second video.")
     else:
         # Calculate +- 10% of the middle seconds
-        start_time = duration*0.5 - 0.125*duration  # Middle start time in seconds 
-        end_time = duration*0.5 + 0.125*duration    # Middle end time in seconds
+        start_time = duration*0.5 - 0.1*duration  # Middle start time in seconds 
+        end_time = duration*0.5 + 0.1*duration    # Middle end time in seconds
         start_frame = int(start_time * fps)
         end_frame = int(end_time * fps)
  
@@ -122,7 +122,7 @@ def process_video(video_path):
 
     st.write('## Hip Angles')
     fig, ax = plt.subplots(2, 1, figsize=(12, 8))
-    ax[0].plot(time[start_frame:], left_hip_angles[start_frame:], label="Left Hip")
+    ax[0].plot(time, left_hip_angles, label="Left Hip")
     ax[1].plot(time, right_hip_angles, label="Right Hip", color='orange')
     ax[0].legend(fontsize=24)
     ax[1].legend(fontsize=24)
