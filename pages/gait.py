@@ -116,8 +116,8 @@ def process_video(video_path):
     st.write(f"Right Ankle: {max(right_ankle_angles) - min(right_ankle_angles):.2f}")
 
     # Plot joint angles over time
-    start_time_plot = duration*0.5 - 0.1*duration
-    time = np.arange(start_time_plot, len(left_hip_angles)) / 30  # Time in seconds
+    # start_time_plot = duration*0.5 - 0.1*duration
+    time = np.arange(0, len(left_hip_angles)) / 30  # Time in seconds
     tick_fontsize=20
 
     st.write('## Hip Angles')
