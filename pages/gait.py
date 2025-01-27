@@ -79,7 +79,7 @@ def process_video(video_path):
                 # Extract landmarks
                 landmarks = results.pose_landmarks.landmark
                 def get_coords(landmark):
-                    return np.array([landmark.x, landmark.y, landmark.z])
+                    return np.array([landmark.x, landmark.y])
 
                 left_hip = get_coords(landmarks[23])
                 right_hip = get_coords(landmarks[24])
@@ -214,6 +214,7 @@ def main():
         
         # Process the first frame of the video
         process_first_frame(temp_path) # display the skeleton overlay
+        st.write('Flexion/Extension Angles')
         process_video(temp_path) # analyze the video
         
         # Clean up the temporary file
@@ -227,6 +228,8 @@ def main():
         
         # Process the first frame of the video
         process_first_frame(temp_path)
+        st.write('Abduction/Adduction Angles')
+
         process_video(temp_path)
         
         # Clean up the temporary file
