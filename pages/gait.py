@@ -122,7 +122,7 @@ def process_video(video_path):
 
     st.write('## Hip Angles')
     fig, ax = plt.subplots(2, 1, figsize=(12, 8))
-    ax[0].plot(time, left_hip_angles, label="Left Hip")
+    ax[0].plot(time, left_hip_angles[start_frame:], label="Left Hip")
     ax[1].plot(time, right_hip_angles, label="Right Hip", color='orange')
     ax[0].legend(fontsize=24)
     ax[1].legend(fontsize=24)
@@ -215,7 +215,7 @@ def main():
         
         # Process the first frame of the video
         process_first_frame(temp_path) # display the skeleton overlay
-        st.write('Flexion/Extension Angles')
+        st.write('### Flexion/Extension Angles')
         process_video(temp_path) # analyze the video
         
         # Clean up the temporary file
@@ -229,7 +229,7 @@ def main():
         
         # Process the first frame of the video
         process_first_frame(temp_path)
-        st.write('Abduction/Adduction Angles')
+        st.write('### Abduction/Adduction Angles')
 
         process_video(temp_path)
         
