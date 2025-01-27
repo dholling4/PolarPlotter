@@ -50,8 +50,8 @@ def process_video(video_path):
         st.error(f"Uploaded video duration is {duration:.2f} seconds. Please upload shorter than a 60-second video.")
     else:
         # Calculate +- 10% of the middle seconds
-        start_time = duration*0.5 - 0.1*duration  # Middle start time in seconds 
-        end_time = duration*0.5 + 0.1*duration    # Middle end time in seconds
+        start_time = duration*0.5 - 0.125*duration  # Middle start time in seconds 
+        end_time = duration*0.5 + 0.125*duration    # Middle end time in seconds
         start_frame = int(start_time * fps)
         end_frame = int(end_time * fps)
  
@@ -116,7 +116,8 @@ def process_video(video_path):
     st.write(f"Right Ankle: {max(right_ankle_angles) - min(right_ankle_angles):.2f}")
 
     # Plot joint angles over time
-    time = np.arange(0, len(left_hip_angles)) / 30  # Time in seconds
+    start_time_plot = duration*0.5 - 0.1*duration
+    time = np.arange(start_time_plot, len(left_hip_angles)) / 30  # Time in seconds
     tick_fontsize=20
 
     st.write('## Hip Angles')
