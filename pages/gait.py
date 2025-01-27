@@ -122,7 +122,7 @@ def process_video(video_path):
 
     st.write('## Hip Angles')
     fig, ax = plt.subplots(2, 1, figsize=(12, 8))
-    ax[0].plot(time, left_hip_angles[start_frame:], label="Left Hip")
+    ax[0].plot(time[start_frame:], left_hip_angles[start_frame:], label="Left Hip")
     ax[1].plot(time, right_hip_angles, label="Right Hip", color='orange')
     ax[0].legend(fontsize=24)
     ax[1].legend(fontsize=24)
