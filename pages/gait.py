@@ -1,6 +1,7 @@
 import streamlit as st
 import cv2
 import mediapipe as mp
+from mediapipe import solutions
 import numpy as np
 import tempfile
 import os
@@ -25,6 +26,10 @@ KEYPOINTS_OF_INTEREST = {
 }
 
 def process_first_frame(video_path):
+
+    neon_green = (57, 255, 20)
+    cool_blue = (0, 91, 255)
+
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -36,9 +41,6 @@ def process_first_frame(video_path):
     time = frame_number / fps
 
     st.write(f'Frame Number:  {frame_number} | Time :  {time:.2f} sec')
-    value_range = st.slider("Select a range of frames", 0, total_frames-1, (1, total_frames-2))
-    st.write("Cropped Region (frames):", value_range)
-    st.write(f'Cropped Region (time): {value_range[0]/fps :.2f} - {value_range[1]/fps :.2f} sec')
 
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
@@ -55,7 +57,9 @@ def process_first_frame(video_path):
         if results.pose_landmarks:
             annotated_frame = frame.copy()
             mp_drawing.draw_landmarks(
-                annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS
+                annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=18, circle_radius=12),
+            connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=18)
             )
             st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number}")
     cap.release()
@@ -95,22 +99,6 @@ def plot_joint_angles(time, angles, label, frame_time):
     )
     
     st.plotly_chart(fig)
-
-# def process_first_frame(video_path):
-#     cap = cv2.VideoCapture(video_path)
-#     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-#     fps = cap.get(cv2.CAP_PROP_FPS)
-#     duration = total_frames / fps
-
-#     st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
-
-#     frame_number = st.slider("Select frame", 0, total_frames - 1)
-#     frame_time = frame_number / fps
-    
-#     st.write(f'Frame Number: {frame_number} | Time: {frame_time:.2f} sec')
-    
-#     cap.release()
-#     return frame_number, frame_time
 
 def process_video(video_path, output_txt_path, frame_time):
     cap = cv2.VideoCapture(video_path)
