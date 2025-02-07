@@ -152,19 +152,19 @@ def process_video(video_path, output_txt_path, frame_time):
     time = np.arange(0, len(left_hip_angles)) / fps  
     cap.release()
 
-    hip_angles = st.checkbox('Hip Angles', value=True)
+    hip_angles = st.checkbox('Hip Angles', value=False)
     if hip_angles:
         st.write('### Hip Angles')
         plot_joint_angles(time, left_hip_angles, 'Left Hip', frame_time)
         plot_joint_angles(time, right_hip_angles, 'Right Hip', frame_time)
 
-    knee_angles = st.checkbox('Knee Angles', value=True)
+    knee_angles = st.checkbox('Knee Angles', value=False)
     if knee_angles:
         st.write('### Knee Angles')
         plot_joint_angles(time, left_knee_angles, 'Left Knee', frame_time)
         plot_joint_angles(time, right_knee_angles, 'Right Knee', frame_time)
 
-    ankle_angles = st.checkbox('Ankle Angles', value=True)
+    ankle_angles = st.checkbox('Ankle Angles', value=False)
     if ankle_angles:
         st.write('### Ankle Angles')
         plot_joint_angles(time, left_ankle_angles, 'Left Ankle', frame_time)
