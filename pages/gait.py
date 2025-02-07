@@ -7,6 +7,7 @@ import tempfile
 import os
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
+import pandas as pd
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -41,7 +42,6 @@ def process_first_frame(video_path):
     time = frame_number / fps
 
     st.write(f'Frame Number:  {frame_number} | Time :  {time:.2f} sec')
-
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
     ret, frame = cap.read()
@@ -51,15 +51,14 @@ def process_first_frame(video_path):
         return
     
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         results = pose.process(frame_rgb)
         if results.pose_landmarks:
             annotated_frame = frame.copy()
             mp_drawing.draw_landmarks(
                 annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=18, circle_radius=12),
-            connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=18)
+                landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=10, circle_radius=7),
+            connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
             )
             st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number}")
     cap.release()
@@ -152,18 +151,63 @@ def process_video(video_path, output_txt_path, frame_time):
     
     time = np.arange(0, len(left_hip_angles)) / fps  
     cap.release()
-    
-    st.write('## Hip Angles')
-    plot_joint_angles(time, left_hip_angles, 'Left Hip', frame_time)
-    plot_joint_angles(time, right_hip_angles, 'Right Hip', frame_time)
-    
-    st.write('## Knee Angles')
-    plot_joint_angles(time, left_knee_angles, 'Left Knee', frame_time)
-    plot_joint_angles(time, right_knee_angles, 'Right Knee', frame_time)
-    
-    st.write('## Ankle Angles')
-    plot_joint_angles(time, left_ankle_angles, 'Left Ankle', frame_time)
-    plot_joint_angles(time, right_ankle_angles, 'Right Ankle', frame_time)
+
+    hip_angles = st.checkbox('Hip Angles', value=True)
+    if hip_angles:
+        st.write('### Hip Angles')
+        plot_joint_angles(time, left_hip_angles, 'Left Hip', frame_time)
+        plot_joint_angles(time, right_hip_angles, 'Right Hip', frame_time)
+
+    knee_angles = st.checkbox('Knee Angles', value=True)
+    if knee_angles:
+        st.write('### Knee Angles')
+        plot_joint_angles(time, left_knee_angles, 'Left Knee', frame_time)
+        plot_joint_angles(time, right_knee_angles, 'Right Knee', frame_time)
+
+    ankle_angles = st.checkbox('Ankle Angles', value=True)
+    if ankle_angles:
+        st.write('### Ankle Angles')
+        plot_joint_angles(time, left_ankle_angles, 'Left Ankle', frame_time)
+        plot_joint_angles(time, right_ankle_angles, 'Right Ankle', frame_time)
+
+  # show tables
+    df = pd.DataFrame({'Time': time, 'Left Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
+    st.write('### Joint Angles (deg)')
+    st.dataframe(df)
+
+    st.write('### Range of Motion')
+    # create dataframe of range of motion
+    df_rom = pd.DataFrame({'Joint': ['Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
+    # add columns for the min and max angles for each joint
+    df_rom['Min Angle (degrees)'] = [np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
+    df_rom['Max Angle (degrees)'] = [np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
+    df_rom.columns = ['Joint', 'Min Angle (deg)', 'Max Angle (deg)', 'Range of Motion (deg)',]
+    st.dataframe(df_rom)
+
+    # show the range of motion as a spider plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=[np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
+        theta=['Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'],
+        fill='toself',
+        name='Range of Motion'
+    ))
+
+    max_all_joint_angles = np.max([np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)])
+
+    fig.update_layout(
+        title="Range of Motion",
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, max_all_joint_angles + 5]
+            )),
+        showlegend=False
+    )
+    st.plotly_chart(fig)
+
+
+        
 
 def main():
     st.title("Joint Angle Analysis from Video")
