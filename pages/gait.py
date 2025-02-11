@@ -26,7 +26,7 @@ KEYPOINTS_OF_INTEREST = {
     32: "Right Foot"
 }
 
-def process_first_frame(video_path):
+def process_first_frame(video_path, video_index):
 
     neon_green = (57, 255, 20)
     cool_blue = (0, 91, 255)
@@ -38,7 +38,8 @@ def process_first_frame(video_path):
 
     st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
 
-    frame_number = st.slider("Select frame", 0, total_frames - 1)
+    frame_number = st.slider(f"Select frame ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}")
+
     time = frame_number / fps
 
     st.write(f'Frame Number:  {frame_number} | Time :  {time:.2f} sec')
@@ -219,7 +220,7 @@ def main():
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
-                frame_number, frame_time = process_first_frame(temp_video_path)
+                frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
