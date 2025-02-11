@@ -152,6 +152,8 @@ def process_video(video_path, output_txt_path, frame_time):
     time = np.arange(0, len(left_hip_angles)) / fps  
     cap.release()
 
+    st.write('Check the boxes below to plot the joint angles.')
+
     hip_angles = st.checkbox('Hip Angles', value=False)
     if hip_angles:
         st.write('### Hip Angles')
