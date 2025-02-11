@@ -99,7 +99,7 @@ def plot_joint_angles(time, angles, label, frame_time):
     
     st.plotly_chart(fig)
 
-def process_video(video_path, output_txt_path, frame_time):
+def process_video(video_path, output_txt_path, frame_time, video_index):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -154,19 +154,19 @@ def process_video(video_path, output_txt_path, frame_time):
 
     st.write('Check the boxes below to plot the joint angles.')
 
-    hip_angles = st.checkbox('Hip Angles', value=False)
+    hip_angles = st.checkbox('Hip Angles', value=False, key=f'hip_angles_{video_index}')
     if hip_angles:
         st.write('### Hip Angles')
         plot_joint_angles(time, left_hip_angles, 'Left Hip', frame_time)
         plot_joint_angles(time, right_hip_angles, 'Right Hip', frame_time)
 
-    knee_angles = st.checkbox('Knee Angles', value=False)
+    knee_angles = st.checkbox('Knee Angles', value=False, key=f'knee_angles_{video_index}')
     if knee_angles:
         st.write('### Knee Angles')
         plot_joint_angles(time, left_knee_angles, 'Left Knee', frame_time)
         plot_joint_angles(time, right_knee_angles, 'Right Knee', frame_time)
 
-    ankle_angles = st.checkbox('Ankle Angles', value=False)
+    ankle_angles = st.checkbox('Ankle Angles', value=False, key=f'ankle_angles_{video_index}')
     if ankle_angles:
         st.write('### Ankle Angles')
         plot_joint_angles(time, left_ankle_angles, 'Left Ankle', frame_time)
@@ -207,22 +207,20 @@ def process_video(video_path, output_txt_path, frame_time):
         showlegend=False
     )
     st.plotly_chart(fig)
-
-
-        
+       
 
 def main():
     st.title("Joint Angle Analysis from Video")
     video_files = st.file_uploader("Upload video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
-        for video_file in video_files:
+        for idx, video_file in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(temp_video_path)
-                process_video(temp_video_path, output_txt_path, frame_time)
+                process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
     main()
