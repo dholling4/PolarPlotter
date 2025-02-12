@@ -148,14 +148,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 
                 trunk_height = np.linalg.norm(shoulder_mid - hip_mid)  # Euclidean distance between shoulder and hip midpoints
                 # Estimate C7 and T10 positions as percentages of trunk height
-                c7_offset = trunk_height * 0.18  # C7 is approximately 18% from the top of the trunk
+                c7_offset = trunk_height *0.18  # C7 is approximately 18% from the top of the trunk
                 t10_offset = trunk_height * 0.50  # T10 is approximately 50% from the top of the trunk
 
                 # C7 and T10 coordinates based on the midpoint positions and offsets
-                c7_position = shoulder_mid - np.array([0, c7_offset])
-                t10_position = shoulder_mid - np.array([0, t10_offset])
-                thorax_vector = c7_position - hip_mid
-                lumbar_vector = t10_position - hip_mid
+                c7_vector = shoulder_mid - np.array([0, c7_offset])
+                t10_vector = shoulder_mid - np.array([0, t10_offset])
+                thorax_vector = c7_vector - hip_mid
+                lumbar_vector = t10_vector - hip_mid
 
                 trunk_vector = shoulder_mid - hip_mid
 
@@ -170,7 +170,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 left_foot_vector = left_ankle - left_foot
                 right_foot_vector = right_ankle - right_foot
 
-                thorax_angles.append(calculate_angle(thorax_vector, vertical_vector))
+                thorax_angles.append(calculate_angle(thorax_vector, lumbar_vector))
                 lumbar_angles.append(calculate_angle(lumbar_vector, vertical_vector))
 
                 spine_flexion_angles.append(calculate_angle(trunk_vector, vertical_vector))                
@@ -186,20 +186,23 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
     st.write('Check the boxes below to plot the joint angles.')
 
-    plot_thorax_angles = st.checkbox('Thorax Angles', value=False, key=f'thorax_angles_{video_index}')
-    if plot_thorax_angles:
-        st.write('### Thorax Angles')
-        plot_joint_angles(time, thorax_angles, 'Thorax', frame_time)
-
-    plot_lumbar_angles = st.checkbox('Lumbar Angles', value=False, key=f'lumbar_angles_{video_index}')
-    if plot_lumbar_angles:
-        st.write('### Lumbar Angles')
-        plot_joint_angles(time, lumbar_angles, 'Lumbar', frame_time)
-
     plot_spine_flexion_angles = st.checkbox('Spine Flexion', value=False, key=f'spine_flexion_{video_index}')
     if plot_spine_flexion_angles:
-        st.write('### Spine Flexion')
-        plot_joint_angles(time, spine_flexion_angles, 'Spine Flexion', frame_time)
+        st.write('### Thorax, Lumbar, and Spine Flexion Angles')
+        fig = go.Figure()
+
+        # Combine thorax, lumbar, and spine flexion angles on a single plot
+        fig.add_trace(go.Scatter(x=time, y=thorax_angles, mode='lines', name='Thorax'))
+        fig.add_trace(go.Scatter(x=time, y=lumbar_angles, mode='lines', name='Lumbar'))
+        fig.add_trace(go.Scatter(x=time, y=spine_flexion_angles, mode='lines', name='Spine Flexion'))
+        
+        fig.update_layout(
+            title="Thorax, Lumbar, and Spine Flexion Angles Over Time",
+            xaxis_title="Time (s)",
+            yaxis_title="Angle (degrees)"
+        )
+        
+        st.plotly_chart(fig)
 
     hip_angles = st.checkbox('Hip Angles', value=False, key=f'hip_angles_{video_index}')
     if hip_angles:
@@ -222,10 +225,12 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
   # show tables
     df = pd.DataFrame({'Time': time, 'Spine': spine_flexion_angles, 'Left Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
     st.write('### Joint Angles (deg)')
+
     st.dataframe(df)
 
     st.write('### Range of Motion')
     # create dataframe of range of motion
+    
     df_rom = pd.DataFrame({'Joint': ['Spine', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
     # add columns for the min and max angles for each joint
     df_rom['Min Angle (degrees)'] = [np.min(spine_flexion_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
@@ -235,22 +240,52 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
     # show the range of motion as a spider plot
     fig = go.Figure()
+    
+    rom_values = [
+    np.ptp(right_knee_angles),
+    np.ptp(right_hip_angles),
+    np.ptp(spine_flexion_angles),
+    np.ptp(left_hip_angles),
+    np.ptp(left_knee_angles),
+    np.ptp(left_ankle_angles),
+    np.ptp(right_ankle_angles)
+        ]
+    
+    joint_labels = ['Right Knee', 'Right Hip', 'Spine Flexion', 'Left Hip', 'Left Knee', 'Left Ankle', 'Right Ankle']
+
     fig.add_trace(go.Scatterpolar(
         r=[np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
-        theta=['Right Knee', 'Right Hip', 'Spine Flexion', 'Left Hip', 'Left Knee', 'Left Ankle', 'Right Ankle'],
+        theta=joint_labels,
         fill='toself',
         name='Range of Motion'
     ))
 
     max_all_joint_angles = np.max([np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)])
-
+    
+    # Add annotations for each data point (ROM value)
+    annotations = []
+    for i, value in enumerate(rom_values):
+        annotations.append(
+            dict(
+                r=value + 1,  # Slightly offset for visibility
+                theta=joint_labels[i],
+                text=f"{value:.1f}°",  # Display ROM value with 1 decimal places
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=-20,
+                font=dict(size=12, color="black")
+            )
+        )
     fig.update_layout(
         title="Range of Motion",
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, max_all_joint_angles + 5]
+                range=[0, max_all_joint_angles + 5],
+                tickfont=dict(color='black')  # Set black font for tick values
             )),
+        # annotations=annotations,
         showlegend=False
     )
     st.plotly_chart(fig)
