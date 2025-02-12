@@ -197,7 +197,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         fig.add_trace(go.Scatter(x=time, y=spine_flexion_angles, mode='lines', name='Spine Flexion'))
         
         fig.update_layout(
-            title="Thorax, Lumbar, and Spine Flexion Angles Over Time",
             xaxis_title="Time (s)",
             yaxis_title="Angle (degrees)"
         )
