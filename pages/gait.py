@@ -112,6 +112,9 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     left_knee_angles, right_knee_angles = [], []
     left_hip_angles, right_hip_angles = [], []
     left_ankle_angles, right_ankle_angles = [], []
+    spine_flexion_angles = []
+    thorax_angles, lumbar_angles = [], []
+
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         for _ in range(start_frame, end_frame):
@@ -127,6 +130,9 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 def get_coords(landmark):
                     return np.array([landmark.x, landmark.y])
                 
+                left_shoulder = get_coords(landmarks[11])
+                right_shoulder = get_coords(landmarks[12])                 
+                
                 left_hip = get_coords(landmarks[23])
                 right_hip = get_coords(landmarks[24])
                 left_knee = get_coords(landmarks[25])
@@ -136,6 +142,27 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 left_foot = get_coords(landmarks[31])
                 right_foot = get_coords(landmarks[32])
 
+                # midpoint of trunk vector
+                shoulder_mid = (left_shoulder + right_shoulder) / 2
+                hip_mid = (left_hip + right_hip) / 2
+                
+                trunk_height = np.linalg.norm(shoulder_mid - hip_mid)  # Euclidean distance between shoulder and hip midpoints
+                # Estimate C7 and T10 positions as percentages of trunk height
+                c7_offset = trunk_height * 0.18  # C7 is approximately 18% from the top of the trunk
+                t10_offset = trunk_height * 0.50  # T10 is approximately 50% from the top of the trunk
+
+                # C7 and T10 coordinates based on the midpoint positions and offsets
+                c7_position = shoulder_mid - np.array([0, c7_offset])
+                t10_position = shoulder_mid - np.array([0, t10_offset])
+                thorax_vector = c7_position - hip_mid
+                lumbar_vector = t10_position - hip_mid
+
+                trunk_vector = shoulder_mid - hip_mid
+
+                # Upward vertical in image coordinates
+                vertical_vector = np.array([0, -1])  
+                left_trunk_vector = left_shoulder - left_hip
+                right_trunk_vector = right_shoulder - right_hip
                 left_thigh_vector = left_hip - left_knee
                 left_shank_vector = left_knee - left_ankle
                 right_thigh_vector = right_hip - right_knee
@@ -143,10 +170,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 left_foot_vector = left_ankle - left_foot
                 right_foot_vector = right_ankle - right_foot
 
+                thorax_angles.append(calculate_angle(thorax_vector, vertical_vector))
+                lumbar_angles.append(calculate_angle(lumbar_vector, vertical_vector))
+
+                spine_flexion_angles.append(calculate_angle(trunk_vector, vertical_vector))                
+                left_hip_angles.append(calculate_angle(left_trunk_vector, left_thigh_vector))
+                right_hip_angles.append(calculate_angle(right_trunk_vector, right_thigh_vector))
                 left_knee_angles.append(calculate_angle(left_thigh_vector, left_shank_vector))
                 right_knee_angles.append(calculate_angle(right_thigh_vector, right_shank_vector))
-                left_hip_angles.append(calculate_angle(left_thigh_vector, right_thigh_vector))
-                right_hip_angles.append(calculate_angle(right_thigh_vector, left_thigh_vector))
                 left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
                 right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
     
@@ -154,6 +185,21 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     cap.release()
 
     st.write('Check the boxes below to plot the joint angles.')
+
+    plot_thorax_angles = st.checkbox('Thorax Angles', value=False, key=f'thorax_angles_{video_index}')
+    if plot_thorax_angles:
+        st.write('### Thorax Angles')
+        plot_joint_angles(time, thorax_angles, 'Thorax', frame_time)
+
+    plot_lumbar_angles = st.checkbox('Lumbar Angles', value=False, key=f'lumbar_angles_{video_index}')
+    if plot_lumbar_angles:
+        st.write('### Lumbar Angles')
+        plot_joint_angles(time, lumbar_angles, 'Lumbar', frame_time)
+
+    plot_spine_flexion_angles = st.checkbox('Spine Flexion', value=False, key=f'spine_flexion_{video_index}')
+    if plot_spine_flexion_angles:
+        st.write('### Spine Flexion')
+        plot_joint_angles(time, spine_flexion_angles, 'Spine Flexion', frame_time)
 
     hip_angles = st.checkbox('Hip Angles', value=False, key=f'hip_angles_{video_index}')
     if hip_angles:
@@ -174,29 +220,29 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         plot_joint_angles(time, right_ankle_angles, 'Right Ankle', frame_time)
 
   # show tables
-    df = pd.DataFrame({'Time': time, 'Left Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
+    df = pd.DataFrame({'Time': time, 'Spine': spine_flexion_angles, 'Left Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
     st.write('### Joint Angles (deg)')
     st.dataframe(df)
 
     st.write('### Range of Motion')
     # create dataframe of range of motion
-    df_rom = pd.DataFrame({'Joint': ['Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
+    df_rom = pd.DataFrame({'Joint': ['Spine', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
     # add columns for the min and max angles for each joint
-    df_rom['Min Angle (degrees)'] = [np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
-    df_rom['Max Angle (degrees)'] = [np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
+    df_rom['Min Angle (degrees)'] = [np.min(spine_flexion_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
+    df_rom['Max Angle (degrees)'] = [np.max(spine_flexion_angles), np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
     df_rom.columns = ['Joint', 'Min Angle (deg)', 'Max Angle (deg)', 'Range of Motion (deg)',]
     st.dataframe(df_rom)
 
     # show the range of motion as a spider plot
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
-        r=[np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
-        theta=['Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'],
+        r=[np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
+        theta=['Right Knee', 'Right Hip', 'Spine Flexion', 'Left Hip', 'Left Knee', 'Left Ankle', 'Right Ankle'],
         fill='toself',
         name='Range of Motion'
     ))
 
-    max_all_joint_angles = np.max([np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)])
+    max_all_joint_angles = np.max([np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)])
 
     fig.update_layout(
         title="Range of Motion",
