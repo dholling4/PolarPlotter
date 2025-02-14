@@ -148,7 +148,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 
                 trunk_height = np.linalg.norm(shoulder_mid - hip_mid)  # Euclidean distance between shoulder and hip midpoints
                 # Estimate C7 and T10 positions as percentages of trunk height
-                c7_offset = trunk_height *0.18  # C7 is approximately 18% from the top of the trunk
+                c7_offset = trunk_height * 0.18  # C7 is approximately 18% from the top of the trunk
                 t10_offset = trunk_height * 0.50  # T10 is approximately 50% from the top of the trunk
 
                 # C7 and T10 coordinates based on the midpoint positions and offsets
@@ -173,6 +173,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 thorax_angles.append(calculate_angle(thorax_vector, lumbar_vector))
                 lumbar_angles.append(calculate_angle(lumbar_vector, vertical_vector))
 
+                # spine segment angle
                 spine_flexion_angles.append(calculate_angle(trunk_vector, vertical_vector))                
                 left_hip_angles.append(calculate_angle(left_trunk_vector, left_thigh_vector))
                 right_hip_angles.append(calculate_angle(right_trunk_vector, right_thigh_vector))
@@ -186,15 +187,15 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
     st.write('Check the boxes below to plot the joint angles.')
 
-    plot_spine_flexion_angles = st.checkbox('Spine Flexion', value=False, key=f'spine_flexion_{video_index}')
+    plot_spine_flexion_angles = st.checkbox('Spine Segment Angle', value=False, key=f'spine_flexion_{video_index}')
     if plot_spine_flexion_angles:
-        st.write('### Thorax, Lumbar, and Spine Flexion Angles')
+        st.write('### Thorax, Lumbar, and Spine Segment Angles')
         fig = go.Figure()
 
         # Combine thorax, lumbar, and spine flexion angles on a single plot
-        fig.add_trace(go.Scatter(x=time, y=thorax_angles, mode='lines', name='Thorax'))
-        fig.add_trace(go.Scatter(x=time, y=lumbar_angles, mode='lines', name='Lumbar'))
-        fig.add_trace(go.Scatter(x=time, y=spine_flexion_angles, mode='lines', name='Spine Flexion'))
+        # fig.add_trace(go.Scatter(x=time, y=thorax_angles, mode='lines', name='Thorax'))
+        # fig.add_trace(go.Scatter(x=time, y=lumbar_angles, mode='lines', name='Lumbar'))
+        fig.add_trace(go.Scatter(x=time, y=spine_flexion_angles, mode='lines', name='Spine Segment Angle'))
         
         fig.update_layout(
             xaxis_title="Time (s)",
@@ -203,26 +204,26 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         
         st.plotly_chart(fig)
 
-    hip_angles = st.checkbox('Hip Angles', value=False, key=f'hip_angles_{video_index}')
+    hip_angles = st.checkbox('Hip Joint Angles', value=False, key=f'hip_angles_{video_index}')
     if hip_angles:
         st.write('### Hip Angles')
         plot_joint_angles(time, left_hip_angles, 'Left Hip', frame_time)
         plot_joint_angles(time, right_hip_angles, 'Right Hip', frame_time)
 
-    knee_angles = st.checkbox('Knee Angles', value=False, key=f'knee_angles_{video_index}')
+    knee_angles = st.checkbox('Knee Joint Angles', value=False, key=f'knee_angles_{video_index}')
     if knee_angles:
-        st.write('### Knee Angles')
+        st.write('### Knee Joint Angles')
         plot_joint_angles(time, left_knee_angles, 'Left Knee', frame_time)
         plot_joint_angles(time, right_knee_angles, 'Right Knee', frame_time)
 
-    ankle_angles = st.checkbox('Ankle Angles', value=False, key=f'ankle_angles_{video_index}')
+    ankle_angles = st.checkbox('Ankle Joint Angles', value=False, key=f'ankle_angles_{video_index}')
     if ankle_angles:
-        st.write('### Ankle Angles')
-        plot_joint_angles(time, left_ankle_angles, 'Left Ankle', frame_time)
-        plot_joint_angles(time, right_ankle_angles, 'Right Ankle', frame_time)
+        st.write('### Ankle Joint Angles')
+        plot_joint_angles(time, left_ankle_angles, 'Left Joint Ankle', frame_time)
+        plot_joint_angles(time, right_ankle_angles, 'Right Joint Ankle', frame_time)
 
   # show tables
-    df = pd.DataFrame({'Time': time, 'Spine': spine_flexion_angles, 'Left Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
+    df = pd.DataFrame({'Time': time, 'Spine': spine_flexion_angles, 'Left Joint Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
     st.write('### Joint Angles (deg)')
 
     st.dataframe(df)
@@ -230,7 +231,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     st.write('### Range of Motion')
     # create dataframe of range of motion
     
-    df_rom = pd.DataFrame({'Joint': ['Spine', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
+    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
     # add columns for the min and max angles for each joint
     df_rom['Min Angle (degrees)'] = [np.min(spine_flexion_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
     df_rom['Max Angle (degrees)'] = [np.max(spine_flexion_angles), np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
@@ -250,7 +251,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     np.ptp(right_ankle_angles)
         ]
     
-    joint_labels = ['Right Knee', 'Right Hip', 'Spine Flexion', 'Left Hip', 'Left Knee', 'Left Ankle', 'Right Ankle']
+    joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
 
     fig.add_trace(go.Scatterpolar(
         r=[np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_flexion_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
