@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 import pandas as pd
 from scipy.signal import butter, lfilter
+from sklearn.decomposition import NMF
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -386,6 +387,125 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         showlegend=False
     )
     st.plotly_chart(fig)
+
+    synergy = st.checkbox("Perform Synergy Analysis", value=False, key=f"synergy_{video_index}")
+
+    if synergy:
+        # Simulated kinematic data (timepoints x joints)
+        np.random.seed(42)
+
+        # Select number of synergies
+        n_synergies = st.slider("Select the Number of Synergies", 1, 10, 4, key=f"synergy_slider_{video_index}")
+
+        # Combine all joint angles into a single matrix (timepoints x joints)
+        kinematic_data = np.column_stack([
+            filtered_spine_segment_angles,
+            filtered_left_hip_angles,
+            filtered_left_knee_angles,
+            filtered_left_ankle_angles
+        ])
+
+        # Apply NMF to the full kinematic dataset
+        nmf = NMF(n_components=n_synergies, init='random', random_state=42)
+        W = nmf.fit_transform(kinematic_data)  # Synergy activations over time
+        H = nmf.components_  # Feature contributions per synergy
+
+        # Plot extracted movement synergies for all joints
+        joint_names = ["Spine", "Hip", "Knee", "Ankle"]
+        
+        # for j, joint in enumerate(joint_names):
+        fig = go.Figure()
+        for i in range(n_synergies):
+            fig.add_trace(go.Scatter(
+                x=filtered_time, 
+                y=W[:, i], 
+                mode='lines', 
+                name=f'Synergy {i+1}'
+            ))
+        fig.update_layout(title=f'Extracted Joint Synergies', xaxis_title='Time', yaxis_title='Activation')
+        st.plotly_chart(fig)
+
+        df_synergy = pd.DataFrame(H, columns=joint_names, index=[f'Synergy {i+1}' for i in range(n_synergies)])
+        # st.write('### Synergy Feature Contributions')
+        st.dataframe(df_synergy)
+        # download button
+        synergy_csv = df_synergy.to_csv(index=True).encode('utf-8')
+        st.download_button(
+            label="Download Synergy Feature Contributions",
+            data=synergy_csv,
+            file_name="synergy_feature_contributions.csv",
+            mime="text/csv")
+
+        # Plot H as a heatmap
+        fig = go.Figure()
+        fig.add_trace(go.Heatmap(
+            z=H, 
+            x=joint_names, 
+            y=[f'Synergy {i+1}' for i in range(n_synergies)], 
+            colorscale='Viridis'
+        ))
+        fig.update_layout(title='Feature Contributions in Each Synergy (H Matrix)', xaxis_title='Joint Angles', yaxis_title='Synergies')
+
+        st.plotly_chart(fig)
+        # download heatmap
+        synergy_heatmap_csv = pd.DataFrame(H, columns=joint_names, index=[f'Synergy {i+1}' for i in range(n_synergies)]).to_csv(index=True).encode('utf-8')
+        st.download_button(
+            label="Download Synergy Heatmap",
+            data=synergy_heatmap_csv,
+            file_name="synergy_heatmap.csv",
+            mime="text/csv")
+
+    ## finish code here
+    # synergy = st.checkbox("Perform Synergy Analysis", value=False, key=f"synergy_{video_index}")
+    # if synergy:
+    #     # Simulated kinematic data (timepoints x joints)
+    #     np.random.seed(42)
+
+    #     # Apply NMF
+    #     n_synergies = st.slider("Select the Number of Synergies", 1, 10, 4, key=f"synergy_slider_{video_index}")
+        
+    #     nmf = NMF(n_components=n_synergies, init='random', random_state=42)
+    #     W = nmf.fit_transform(filtered_spine_segment_angles.reshape(-1,1))  # Synergy patterns
+    #     W_hip = nmf.fit_transform(filtered_left_hip_angles.reshape(-1,1))
+    #     W_knee = nmf.fit_transform(filtered_left_knee_angles.reshape(-1,1))
+    #     W_ankle = nmf.fit_transform(filtered_left_ankle_angles.reshape(-1,1))
+        
+    #     H = nmf.components_  # Activation patterns
+
+    #     # Plot the extracted movement synergies
+    #     fig = go.Figure()
+    #     for i in range(n_synergies):
+    #         fig.add_trace(go.Scatter(x=filtered_time, y=W[:, i], mode='lines', name=f'Synergy {i+1}'))
+    #     fig.update_layout(title='Extracted Synergies (Spine Segment Angle)', xaxis_title='Time', yaxis_title='Activation')
+    #     st.plotly_chart(fig)
+
+    #     fig = go.Figure()
+    #     for i in range(n_synergies):
+    #         fig.add_trace(go.Scatter(x=filtered_time, y=W_hip[:, i], mode='lines', name=f'Synergy {i+1}'))
+    #     fig.update_layout(title='Extracted Hip Synergies', xaxis_title='Time', yaxis_title='Activation')
+    #     st.plotly_chart(fig)
+
+    #     fig = go.Figure()
+    #     for i in range(n_synergies):
+    #         fig.add_trace(go.Scatter
+    #         (x=filtered_time, y=W_knee[:, i], mode='lines', name=f'Synergy {i+1}'))
+    #     fig.update_layout(title='Extracted Knee Synergies', xaxis_title='Time', yaxis_title='Activation')
+    #     st.plotly_chart(fig)
+
+    #     fig = go.Figure()
+    #     for i in range(n_synergies):
+    #         fig.add_trace(go.Scatter
+    #         (x=filtered_time, y=W_ankle[:, i], mode='lines', name=f'Synergy {i+1}'))
+    #     fig.update_layout(title='Extracted Ankle Synergies', xaxis_title='Time', yaxis_title='Activation')
+    #     st.plotly_chart(fig)
+
+    #     # plot H as the heatmap 
+    #     fig = go.Figure()
+    #     fig.add_trace(go.Heatmap(z=H, x=['Spine', 'Hip', 'Knee', 'Ankle'], y=[f'Synergy {i+1}' for i in range(n_synergies)], colorscale='Viridis'))
+    #     fig.update_layout(title='Feature Contributions in Each Synergy (H Matrix)', xaxis_title='Joint Angles', yaxis_title='Synergies')
+
+    #     st.plotly_chart(fig)
+               
        
 
 def main():
