@@ -390,7 +390,22 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         "Left Knee": filtered_left_knee_angles, "Right Knee": filtered_right_knee_angles,
         "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
     })
-
+'''
+TO DO:
+- Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
+- Neural Network to predict gait
+- Add more joints
+- Add more videos
+- Add more data
+- Add more analysis
+- Add more visualizations
+- Add more interactivity
+- Add more features
+- Add more machine learning
+- Add more deep learning
+- Add more statistics
+- Add more physics (OpenSim)
+'''
     pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
     if pca_checkbox:
         perform_pca(joint_angle_df)
