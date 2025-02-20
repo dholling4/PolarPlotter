@@ -402,7 +402,7 @@ def perform_pca(df):
     X = df.iloc[:, 1:].values
     
     # User selects number of principal components
-    pcs = st.slider('Select the number of Principal Components:', 1, min(30, X.shape[1]), 2)
+    pcs = st.slider('Select the number of Principal Components:', 1, min(30, X.shape[1]), 3)
     st.write(f"Number of Principal Components Selected: {pcs}")
     
     # Perform PCA
