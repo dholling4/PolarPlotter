@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 import pandas as pd
 from scipy.signal import butter, lfilter
-from sklearn.decomposition import NMF
+from sklearn.decomposition import PCA
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -40,7 +40,7 @@ def process_first_frame(video_path, video_index):
 
     st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
 
-    frame_number = st.slider(f"Select frame ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}")
+    frame_number = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}")
 
     time = frame_number / fps
 
@@ -103,16 +103,11 @@ def plot_joint_angles(time, angles, label, frame_time):
     st.plotly_chart(fig)
 
 # Butterworth lowpass filter functions
-def butter_lowpass(cutoff, fs, order=5):
+def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
-
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-    b, a = butter_lowpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
+    return lfilter(b, a, data)
 
 def process_video(video_path, output_txt_path, frame_time, video_index):
     cap = cv2.VideoCapture(video_path)
@@ -316,8 +311,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         file_name="ankle_angles.csv",
         mime="text/csv"
     )     
-
-
     ### END CROP ###
 
   # show tables
@@ -386,127 +379,175 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         # annotations=annotations,
         showlegend=False
     )
+
     st.plotly_chart(fig)
 
-    synergy = st.checkbox("Perform Synergy Analysis", value=False, key=f"synergy_{video_index}")
+        # Store data in DataFrame
+    joint_angle_df = pd.DataFrame({
+        "Time": filtered_time,
+        "Spine": filtered_spine_segment_angles,
+        "Left Hip": filtered_left_hip_angles, "Right Hip": filtered_right_hip_angles,
+        "Left Knee": filtered_left_knee_angles, "Right Knee": filtered_right_knee_angles,
+        "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
+    })
 
-    if synergy:
-        # Simulated kinematic data (timepoints x joints)
-        np.random.seed(42)
+    pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
+    if pca_checkbox:
+        perform_pca(joint_angle_df)
 
-        # Select number of synergies
-        n_synergies = st.slider("Select the Number of Synergies", 1, 10, 4, key=f"synergy_slider_{video_index}")
+def perform_pca(df):
+    st.write("### Principal Component Analysis (PCA)")
 
-        # Combine all joint angles into a single matrix (timepoints x joints)
-        kinematic_data = np.column_stack([
-            filtered_spine_segment_angles,
-            filtered_left_hip_angles,
-            filtered_left_knee_angles,
-            filtered_left_ankle_angles
-        ])
+    # Extract numerical joint angle data
+    X = df.iloc[:, 1:].values
+    
+    # User selects number of principal components
+    pcs = st.slider('Select the number of Principal Components:', 1, min(30, X.shape[1]), 2)
+    st.write(f"Number of Principal Components Selected: {pcs}")
+    
+    # Perform PCA
+    pca = PCA(n_components=pcs)
+    principal_components = pca.fit_transform(X)
 
-        # Apply NMF to the full kinematic dataset
-        nmf = NMF(n_components=n_synergies, init='random', random_state=42)
-        W = nmf.fit_transform(kinematic_data)  # Synergy activations over time
-        H = nmf.components_  # Feature contributions per synergy
+    # Explained variance
+    explained_variance = pca.explained_variance_ratio_ 
+    cumulative_variance = np.cumsum(explained_variance) 
 
-        # Plot extracted movement synergies for all joints
-        joint_names = ["Spine", "Hip", "Knee", "Ankle"]
+    # dataframe for explained variance
+    pca_df = pd.DataFrame({
+        "Principal Component": [f"PC{i+1}" for i in range(len(explained_variance))],
+        "Explained Variance (%)": explained_variance * 100,
+        "Cumulative Variance (%)": cumulative_variance * 100
+    })
+
+    # Get absolute loadings (importance of each feature in each PC)
+    loadings = np.abs(pca.components_)
+
+    # Get top contributing features for each PC
+    feature_labels = ["Left Hip", "Right Hip", "Left Knee", "Right Knee", "Left Ankle", "Right Ankle", "Spine Angle"]
+
+    top_features_per_pc = []
+    for i in range(pcs):
+        top_feature_idx = np.argsort(-loadings[i])  # Sort in descending order
+        top_features_per_pc.append([feature_labels[j] for j in top_feature_idx])
+
+    # Create DataFrame
+    pca_feature_df = pd.DataFrame(top_features_per_pc, index=[f"PC{i+1}" for i in range(pcs)])
+    pca_feature_df.columns = [f"Rank {i+1}" for i in range(len(feature_labels))]  # Rank features
+
         
-        # for j, joint in enumerate(joint_names):
-        fig = go.Figure()
-        for i in range(n_synergies):
-            fig.add_trace(go.Scatter(
-                x=filtered_time, 
-                y=W[:, i], 
-                mode='lines', 
-                name=f'Synergy {i+1}'
-            ))
-        fig.update_layout(title=f'Extracted Joint Synergies', xaxis_title='Time', yaxis_title='Activation')
-        st.plotly_chart(fig)
+    top_features_per_pc = []
+    for i in range(pcs):
+        top_feature_idx = np.argsort(-loadings[i])  # Sort in descending order
+        top_features_per_pc.append([feature_labels[j] for j in top_feature_idx])
 
-        df_synergy = pd.DataFrame(H, columns=joint_names, index=[f'Synergy {i+1}' for i in range(n_synergies)])
-        # st.write('### Synergy Feature Contributions')
-        st.dataframe(df_synergy)
-        # download button
-        synergy_csv = df_synergy.to_csv(index=True).encode('utf-8')
-        st.download_button(
-            label="Download Synergy Feature Contributions",
-            data=synergy_csv,
-            file_name="synergy_feature_contributions.csv",
-            mime="text/csv")
+    # Create DataFrame
+    pca_feature_df = pd.DataFrame(top_features_per_pc, 
+                                index=[f"PC{i+1}" for i in range(pcs)])
+    pca_feature_df.columns = [f"Rank {i+1}" for i in range(len(feature_labels))]  # Rank features
+    top_features = pca_feature_df
 
-        # Plot H as a heatmap
-        fig = go.Figure()
-        fig.add_trace(go.Heatmap(
-            z=H, 
-            x=joint_names, 
-            y=[f'Synergy {i+1}' for i in range(n_synergies)], 
-            colorscale='Viridis'
+    fig = go.Figure()
+    for i, feature in enumerate(top_features.iloc[:, 0]):  # Use only the top contributing feature
+        fig.add_trace(go.Bar(
+            x=[f"PC{i+1} ({feature})"],  # Label PC with the top feature
+            y=[explained_variance[i] * 100],
+            name=f"PC{i+1} ({feature})"
         ))
-        fig.update_layout(title='Feature Contributions in Each Synergy (H Matrix)', xaxis_title='Joint Angles', yaxis_title='Synergies')
 
-        st.plotly_chart(fig)
-        # download heatmap
-        synergy_heatmap_csv = pd.DataFrame(H, columns=joint_names, index=[f'Synergy {i+1}' for i in range(n_synergies)]).to_csv(index=True).encode('utf-8')
+    explained_variance = pca.explained_variance_ratio_ 
+    cumulative_variance = np.cumsum(explained_variance) 
+    feature_labels = ["Left Hip", "Right Hip", "Left Knee", "Right Knee", "Left Ankle", "Right Ankle", "Spine Angle"]
+    loadings = np.abs(pca.components_)
+    top_features_ = [feature_labels[np.argmax(loadings[i])] for i in range(pcs)]
+
+    pca_df = pd.DataFrame({
+        "Principal Component": [f"PC{i+1} ({top_features_[i]})" for i in range(len(explained_variance))],
+        "Explained Variance (%)": explained_variance * 100,
+        "Cumulative Variance (%)": cumulative_variance * 100,
+    })
+
+   
+    fig.add_trace(go.Scatter(
+        x=[f"PC{i+1} ({feature})" for i, feature in enumerate(top_features.iloc[:, 0])],
+        y=cumulative_variance * 100,
+        mode="lines+markers",
+        name="Cumulative Variance (%)",
+        line=dict(color='red', dash="dash")
+    ))
+
+    fig.update_layout(
+        title="Explained Variance with Top Contributing Feature",
+        xaxis_title="Principal Components",
+        yaxis_title="Explained Variance (%)",
+        legend_title="Legend"
+    )
+    st.plotly_chart(fig)
+    # download plot data 
+    pca_plot_csv = pca_df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Download PCA Plot Data",
+        data=pca_plot_csv,
+        file_name="pca_plot_data.csv",
+        mime="text/csv"
+    )
+
+    # st.dataframe(top_features)
+
+    st.dataframe(pca_df)
+
+    # combine the two dataframes and download
+    pca_data = pd.concat([pca_df, top_features], axis=1)
+    pca_feature_csv = pca_data.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Download PCA Data",
+        data=pca_feature_csv,
+        file_name="pca_data.csv",
+        mime="text/csv"
+    )
+  
+    # 2D PCA Scatter Plot (Only if at least 2 PCs are selected)
+    if pcs >= 2:
+        fig_2d = go.Figure()
+        fig_2d.add_trace(go.Scatter(
+            x=principal_components[:, 0],
+            y=principal_components[:, 1],
+            mode='markers',
+            marker=dict(size=6, color=df["Time"], colorscale='Viridis'),
+            text=df["Time"]
+        ))
+        fig_2d.update_layout(title="PCA Projection (2D)", xaxis_title="PC1", yaxis_title="PC2")
+        st.plotly_chart(fig_2d)
+        # download plot button
+        pca_2d_csv = pd.DataFrame(principal_components[:, :2], columns=[f"PC{i+1}" for i in range(2)]).to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="Download Synergy Heatmap",
-            data=synergy_heatmap_csv,
-            file_name="synergy_heatmap.csv",
-            mime="text/csv")
+            label="Download 2D PCA Data",
+            data=pca_2d_csv,
+            file_name="pca_2d_data.csv",
+            mime="text/csv"
+        )
 
-    ## finish code here
-    # synergy = st.checkbox("Perform Synergy Analysis", value=False, key=f"synergy_{video_index}")
-    # if synergy:
-    #     # Simulated kinematic data (timepoints x joints)
-    #     np.random.seed(42)
+    # 3D PCA Scatter Plot (Only if at least 3 PCs are selected)
+    if pcs >= 3:
+        fig_3d = go.Figure(data=[go.Scatter3d(
+            x=principal_components[:, 0], 
+            y=principal_components[:, 1], 
+            z=principal_components[:, 2],
+            mode='markers', 
+            marker=dict(size=4, color=df["Time"], colorscale='Viridis'),
+            text=df["Time"]
+        )])
+        fig_3d.update_layout(title="PCA Projection (3D)")
+        st.plotly_chart(fig_3d)
+        # download plot button
+        pca_3d_csv = pd.DataFrame(principal_components, columns=[f"PC{i+1}" for i in range(pcs)]).to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download 3D PCA Data",
+            data=pca_3d_csv,
+            file_name="pca_3d_data.csv",
+            mime="text/csv"
+        )
 
-    #     # Apply NMF
-    #     n_synergies = st.slider("Select the Number of Synergies", 1, 10, 4, key=f"synergy_slider_{video_index}")
-        
-    #     nmf = NMF(n_components=n_synergies, init='random', random_state=42)
-    #     W = nmf.fit_transform(filtered_spine_segment_angles.reshape(-1,1))  # Synergy patterns
-    #     W_hip = nmf.fit_transform(filtered_left_hip_angles.reshape(-1,1))
-    #     W_knee = nmf.fit_transform(filtered_left_knee_angles.reshape(-1,1))
-    #     W_ankle = nmf.fit_transform(filtered_left_ankle_angles.reshape(-1,1))
-        
-    #     H = nmf.components_  # Activation patterns
-
-    #     # Plot the extracted movement synergies
-    #     fig = go.Figure()
-    #     for i in range(n_synergies):
-    #         fig.add_trace(go.Scatter(x=filtered_time, y=W[:, i], mode='lines', name=f'Synergy {i+1}'))
-    #     fig.update_layout(title='Extracted Synergies (Spine Segment Angle)', xaxis_title='Time', yaxis_title='Activation')
-    #     st.plotly_chart(fig)
-
-    #     fig = go.Figure()
-    #     for i in range(n_synergies):
-    #         fig.add_trace(go.Scatter(x=filtered_time, y=W_hip[:, i], mode='lines', name=f'Synergy {i+1}'))
-    #     fig.update_layout(title='Extracted Hip Synergies', xaxis_title='Time', yaxis_title='Activation')
-    #     st.plotly_chart(fig)
-
-    #     fig = go.Figure()
-    #     for i in range(n_synergies):
-    #         fig.add_trace(go.Scatter
-    #         (x=filtered_time, y=W_knee[:, i], mode='lines', name=f'Synergy {i+1}'))
-    #     fig.update_layout(title='Extracted Knee Synergies', xaxis_title='Time', yaxis_title='Activation')
-    #     st.plotly_chart(fig)
-
-    #     fig = go.Figure()
-    #     for i in range(n_synergies):
-    #         fig.add_trace(go.Scatter
-    #         (x=filtered_time, y=W_ankle[:, i], mode='lines', name=f'Synergy {i+1}'))
-    #     fig.update_layout(title='Extracted Ankle Synergies', xaxis_title='Time', yaxis_title='Activation')
-    #     st.plotly_chart(fig)
-
-    #     # plot H as the heatmap 
-    #     fig = go.Figure()
-    #     fig.add_trace(go.Heatmap(z=H, x=['Spine', 'Hip', 'Knee', 'Ankle'], y=[f'Synergy {i+1}' for i in range(n_synergies)], colorscale='Viridis'))
-    #     fig.update_layout(title='Feature Contributions in Each Synergy (H Matrix)', xaxis_title='Joint Angles', yaxis_title='Synergies')
-
-    #     st.plotly_chart(fig)
-               
-       
 
 def main():
     st.title("Joint Angle Analysis from Video")
