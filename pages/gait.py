@@ -390,25 +390,28 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         "Left Knee": filtered_left_knee_angles, "Right Knee": filtered_right_knee_angles,
         "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
     })
-'''
-TO DO:
-- Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
-- Neural Network to predict gait
-- Add more joints
-- Add more videos
-- Add more data
-- Add more analysis
-- Add more visualizations
-- Add more interactivity
-- Add more features
-- Add more machine learning
-- Add more deep learning
-- Add more statistics
-- Add more physics (OpenSim)
-'''
+
     pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
     if pca_checkbox:
         perform_pca(joint_angle_df)
+
+
+# TO DO:
+# - Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
+# - Neural Network to predict gait
+# - Add more joints
+# - Add more videos
+# - Add more data
+# - Add more analysis
+# - Add more visualizations
+# - Add more interactivity
+# - Add more features
+# - Add more machine learning
+# - Add more deep learning
+# - Add more statistics
+# - Add more physics (OpenSim)
+
+
 
 def perform_pca(df):
     st.write("### Principal Component Analysis (PCA)")
@@ -528,13 +531,16 @@ def perform_pca(df):
             x=principal_components[:, 0],
             y=principal_components[:, 1],
             mode='markers',
-            marker=dict(size=6, color=df["Time"], colorscale='Viridis'),
+            marker=dict(size=6, color=df["Time"], colorscale='Blues', showscale=True, colorbar=dict(title="Time", tickmode="array", tickvals=[df["Time"].min(), df["Time"].max()], ticktext=["Start", "End"])),
             text=df["Time"]
         ))
+
         fig_2d.update_layout(title="PCA Projection (2D)", xaxis_title="PC1", yaxis_title="PC2")
         st.plotly_chart(fig_2d)
+
         # download plot button
         pca_2d_csv = pd.DataFrame(principal_components[:, :2], columns=[f"PC{i+1}" for i in range(2)]).to_csv(index=False).encode('utf-8')
+        
         st.download_button(
             label="Download 2D PCA Data",
             data=pca_2d_csv,
@@ -549,10 +555,13 @@ def perform_pca(df):
             y=principal_components[:, 1], 
             z=principal_components[:, 2],
             mode='markers', 
-            marker=dict(size=4, color=df["Time"], colorscale='Viridis'),
+            marker=dict(size=4, color=df["Time"], colorscale='Blues', showscale=True, colorbar=dict(title="Time", tickmode="array", tickvals=[df["Time"].min(), df["Time"].max()], ticktext=["Start", "End"])),
             text=df["Time"]
         )])
-        fig_3d.update_layout(title="PCA Projection (3D)")
+        fig_3d.update_layout(title="PCA Projection (3D)",
+                             scene_xaxis_title="PC1",
+                             scene_yaxis_title="PC2",
+                             scene_zaxis_title="PC3")
         st.plotly_chart(fig_3d)
         # download plot button
         pca_3d_csv = pd.DataFrame(principal_components, columns=[f"PC{i+1}" for i in range(pcs)]).to_csv(index=False).encode('utf-8')
