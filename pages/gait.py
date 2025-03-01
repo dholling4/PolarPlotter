@@ -700,5 +700,52 @@ def main():
                 frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
 
+
+
+def display_github_image(image_url):
+    raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+    st.image(raw_url, caption='Image from GitHub', use_column_width=True)
+
+github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+
+st.sidebar.markdown("#")
+persons = [
+    # {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/blue stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
+    {"image_url": github_url + "photos/spine segmanet angle description.png", "name": "Spine Segment Angle", "description": " "},
+    {"image_url": github_url+ "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
+    {"image_url": github_url + "photos/ankle flexion angle.png", "name": "Ankle Plantarflexion Angle", "description": " "},
+    {"image_url": github_url+ "photos/knee flexion angle.png", "name": "Knee Flexion Angle", "Motion Analysis from Video": " "}, 
+    {"image_url": github_url+ "photos/hip flexion angle.png", "name": "Hip Flexion Angle", "Motion Analysis from Video": " "}, 
+
+    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
+
+
+]  
+
+col1, col2 = st.columns(2)
+with col1:
+    st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", width=285)
+
+with col2:
+    st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
+
+
+cols1, cols2, cols3 = st.columns(3)
+with cols1:
+    st.image(persons[2]["image_url"], caption=f"{persons[2]['name']}", width=200)
+
+with cols2:
+    st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", width=200)
+
+with cols3:
+    st.image(persons[4]["image_url"], caption=f"{persons[4]['name']}", width=200)
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     main()
