@@ -470,6 +470,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     mime="text/csv",
     key=f"spine_segment_angles_{video_index}"
 )
+    github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+    with st.expander("Click here to learn more"):
+        st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
+    
 
     filtered_left_hip_angles = np.array(left_hip_angles)[mask]
     filtered_right_hip_angles = np.array(right_hip_angles)[mask]
@@ -500,6 +504,9 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         mime="text/csv",
         key=f"hip_angles_{video_index}"
     )
+    with st.expander("Click here to learn more"):
+        st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
+    
     
     filtered_left_knee_angles = np.array(left_knee_angles)[mask]
     filtered_right_knee_angles = np.array(right_knee_angles)[mask]
@@ -531,6 +538,9 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         key=f"knee_angles_{video_index}"
     )
 
+    with st.expander("Click here to learn more"):
+        st.image(github_url + "photos/knee flexion angle.png", use_container_width =True)
+    
     filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
     filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
     fig = go.Figure()
@@ -539,6 +549,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)), max(np.max(filtered_left_ankle_angles), np.max(filtered_left_ankle_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
     fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
     st.plotly_chart(fig)
+
+    # show ankle plantarflexion angle figure
+    with st.expander("Click here to learn more"):
+        st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
     
     ankle_data = {
         "Time (s)": filtered_time,
@@ -702,13 +716,8 @@ def main():
 
 
 
-def display_github_image(image_url):
-    raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
-    st.image(raw_url, caption='Image from GitHub', use_column_width=True)
-
 github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
-st.sidebar.markdown("#")
 persons = [
     # {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/blue stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
     {"image_url": github_url + "photos/spine segmanet angle description.png", "name": "Spine Segment Angle", "description": " "},
@@ -722,29 +731,7 @@ persons = [
 
 ]  
 
-col1, col2 = st.columns(2)
-with col1:
-    st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}", width=285)
-
-with col2:
-    st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}", width=285)
-
-
-cols1, cols2, cols3 = st.columns(3)
-with cols1:
-    st.image(persons[2]["image_url"], caption=f"{persons[2]['name']}", width=200)
-
-with cols2:
-    st.image(persons[3]["image_url"], caption=f"{persons[3]['name']}", width=200)
-
-with cols3:
-    st.image(persons[4]["image_url"], caption=f"{persons[4]['name']}", width=200)
-
-
-
-
-
-
+st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}")
 
 
 if __name__ == "__main__":
