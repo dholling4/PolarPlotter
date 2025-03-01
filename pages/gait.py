@@ -691,6 +691,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
 def main():
     st.title("Biomechanics Analysis from Video")
+
+    github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+
+    persons = [
+        {"image_url": github_url+ "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
+    ]  
+    st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}")
+
     video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         for idx, video_file in enumerate(video_files):
@@ -713,25 +721,6 @@ def main():
                 output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
-
-
-
-github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
-
-persons = [
-    # {"image_url":"https://raw.githubusercontent.com/dholling4/PolarPlotter/main/logo/blue stacked combined.png", "name": "Transforming your run using data-driven feedback & AI", "description": " "},
-    {"image_url": github_url + "photos/spine segmanet angle description.png", "name": "Spine Segment Angle", "description": " "},
-    {"image_url": github_url+ "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
-    {"image_url": github_url + "photos/ankle flexion angle.png", "name": "Ankle Plantarflexion Angle", "description": " "},
-    {"image_url": github_url+ "photos/knee flexion angle.png", "name": "Knee Flexion Angle", "Motion Analysis from Video": " "}, 
-    {"image_url": github_url+ "photos/hip flexion angle.png", "name": "Hip Flexion Angle", "Motion Analysis from Video": " "}, 
-
-    {"image_url": "https://raw.githubusercontent.com/dholling4/PolarPlotter/main//footwear_pics/walk_footwear_CV.png", "name": "Assess worn tread of your running shoe", "description": " "},
-
-
-]  
-
-st.image(persons[1]["image_url"], caption=f"{persons[1]['name']}")
 
 
 if __name__ == "__main__":
