@@ -696,16 +696,31 @@ def main():
         {"image_url": github_url + "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
     ]  
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}")
-
-    example_file = st.checkbox("Use example video files")
-    if example_file:
-        # Video URL from GitHub
-        video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
-        st.video(video_url)
-        for idx, video_file in enumerate([video_url]):
-            output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-            frame_number, frame_time = process_first_frame(video_file, video_index=idx)
-            process_video(video_file, output_txt_path, frame_time, video_index=idx)
+    
+    example_video_checkbox = st.checkbox("Try Example Videos", value=False)
+    if example_video_checkbox:
+        example_video = st.radio("Select an example video", 
+                ["Running video", "Pickup pen video"],
+                index=0)
+        
+        if example_video == "Running video":
+            video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
+            st.image(github_url + "photos/side run 30-34.png", caption="Example Running Video", width=125)
+            st.video(video_url)
+            for idx, video_file in enumerate([video_url]):
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+                frame_number, frame_time = process_first_frame(video_file, video_index=idx)
+                
+                process_video(video_file, output_txt_path, frame_time, video_index=idx)
+        if example_video == "Pickup pen video":
+            video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
+            st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
+            st.video(video_url)
+            # Video URL from GitHub
+            for idx, video_file in enumerate([video_url]):
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+                frame_number, frame_time = process_first_frame(video_file, video_index=idx)
+                process_video(video_file, output_txt_path, frame_time, video_index=idx)   
 
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
