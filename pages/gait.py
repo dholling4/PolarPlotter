@@ -11,8 +11,6 @@ import pandas as pd
 from scipy.signal import butter, lfilter
 from sklearn.decomposition import PCA
 
-# TO DO:
-# Have example video files people can use (sit2stand, pickup, squat, etc.)
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -273,15 +271,15 @@ def perform_pca(df, video_index):
 
 def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle):
     # Calculate the range of motion differences (right - left)
-    hip_asymmetry = left_hip - right_hip
-    knee_asymmetry = left_knee - right_knee
-    ankle_asymmetry = left_ankle - right_ankle
+    hip_asymmetry = right_hip - left_hip
+    knee_asymmetry = right_knee - left_knee
+    ankle_asymmetry = right_ankle - left_ankle
     
     # Create a dictionary to hold the values for each joint
     asymmetry_data = {
-        "Ankle": hip_asymmetry,
+        "Ankle": ankle_asymmetry,
         "Knee": knee_asymmetry,
-        "Hip": ankle_asymmetry
+        "Hip": hip_asymmetry
     }
 
     # Set thresholds for excessive asymmetry
@@ -544,10 +542,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
     st.plotly_chart(fig)
 
-    # show ankle plantarflexion angle figure
-    with st.expander("Click here to learn more"):
-        st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
-    
     ankle_data = {
         "Time (s)": filtered_time,
         "Left Ankle Angle (degrees)": filtered_left_ankle_angles,
@@ -568,6 +562,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         mime="text/csv",
         key=f"ankle_angles_{video_index}"
     )     
+    # show ankle plantarflexion angle figure
+    with st.expander("Click here to learn more"):
+        st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
+    
     ### END CROP ###
 
   # show tables
@@ -666,7 +664,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         perform_pca(joint_angle_df, video_index)
 
 # TO DO:
-# - Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
+# - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
 # - Neural Network to predict gait
 # - Add more joints
 # - Add more videos
@@ -681,6 +679,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 # - Add more physics (OpenSim)
 # - Add more synthetic data
 # - Add animations / rendering
+# - Add step by step variation analysis
 
 import streamlit as st
 import tempfile
@@ -693,7 +692,7 @@ def main():
     github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
     persons = [
-        {"image_url": github_url + "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
+        {"image_url": github_url + "photos/runner treadmill figure.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
     ]  
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}")
     
@@ -705,23 +704,24 @@ def main():
         
         if example_video == "Running video":
             video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
-            st.image(github_url + "photos/side run 30-34.png", caption="Example Running Video", width=125)
+            # st.image(github_url + "photos/side run 30-34.png", caption="Example Running Video", width=125)
             st.video(video_url)
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(video_file, video_index=idx)
                 
                 process_video(video_file, output_txt_path, frame_time, video_index=idx)
+
         if example_video == "Pickup pen video":
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
-            st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
+            # st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
             st.video(video_url)
             # Video URL from GitHub
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(video_file, video_index=idx)
                 process_video(video_file, output_txt_path, frame_time, video_index=idx)   
-
+        
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
@@ -745,6 +745,7 @@ def main():
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
+    
 
 if __name__ == "__main__":
     main()
