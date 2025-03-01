@@ -671,6 +671,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 # - Add more deep learning
 # - Add more statistics
 # - Add more physics (OpenSim)
+# - Add more synthetic data
 # - Add animations / rendering
 
 
