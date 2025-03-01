@@ -682,6 +682,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 # - Add more synthetic data
 # - Add animations / rendering
 
+import streamlit as st
+import tempfile
+import requests
+from io import BytesIO
 
 def main():
     st.title("Biomechanics Analysis from Video")
@@ -689,10 +693,21 @@ def main():
     github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
 
     persons = [
-        {"image_url": github_url+ "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
+        {"image_url": github_url + "photos/spine segment angle-1.png", "name": "Joint Center Detection", "Motion Analysis from Video": " "}, 
     ]  
     st.image(persons[0]["image_url"], caption=f"{persons[0]['name']}")
 
+    example_file = st.checkbox("Use example video files")
+    if example_file:
+        # Video URL from GitHub
+        video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
+        st.video(video_url)
+        for idx, video_file in enumerate([video_url]):
+            output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+            frame_number, frame_time = process_first_frame(video_file, video_index=idx)
+            process_video(video_file, output_txt_path, frame_time, video_index=idx)
+
+    # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         for idx, video_file in enumerate(video_files):
@@ -700,22 +715,21 @@ def main():
                 temp_video_file.write(video_file.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
-                output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
 
-
+    # File uploader for back video(s)
     video_files_back = st.file_uploader("Upload back video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
-    if video_files:
+    if video_files_back:
         for idx, video_file_back in enumerate(video_files_back):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
-                output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
                 process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
-
 
 if __name__ == "__main__":
     main()
