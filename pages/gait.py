@@ -11,6 +11,9 @@ import pandas as pd
 from scipy.signal import butter, lfilter
 from sklearn.decomposition import PCA
 
+# TO DO:
+# Have example video files people can use (sit2stand, pickup, squat, etc.)
+
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
@@ -38,9 +41,17 @@ def process_first_frame(video_path, video_index):
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
+    # if the length is greater than 10 seconds, only capture the middle 5 seconds
+    if duration > 10:
+        start_frame = total_frames // 2 - (5 * fps)
+        end_frame = total_frames // 2 + (5 * fps)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+        total_frames = int(end_frame - start_frame)
+        duration = total_frames / fps
+
     st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
 
-    frame_number = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}")
+    frame_number = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}_{video_path}")
 
     time = frame_number / fps
 
@@ -102,318 +113,8 @@ def plot_joint_angles(time, angles, label, frame_time):
     
     st.plotly_chart(fig)
 
-# Butterworth lowpass filter functions
-def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return lfilter(b, a, data)
 
-def process_video(video_path, output_txt_path, frame_time, video_index):
-    cap = cv2.VideoCapture(video_path)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    duration = total_frames / fps  
-    
-    start_frame = 0
-    end_frame = total_frames
-    
-    left_knee_angles, right_knee_angles = [], []
-    left_hip_angles, right_hip_angles = [], []
-    left_ankle_angles, right_ankle_angles = [], []
-    spine_segment_angles = []
-    thorax_angles, lumbar_angles = [], []
-
-
-    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        for _ in range(start_frame, end_frame):
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            results = pose.process(frame_rgb)
-            
-            if results.pose_landmarks:
-                landmarks = results.pose_landmarks.landmark
-                def get_coords(landmark):
-                    return np.array([landmark.x, landmark.y])
-                
-                left_shoulder = get_coords(landmarks[11])
-                right_shoulder = get_coords(landmarks[12])                 
-                
-                left_hip = get_coords(landmarks[23])
-                right_hip = get_coords(landmarks[24])
-                left_knee = get_coords(landmarks[25])
-                right_knee = get_coords(landmarks[26])
-                left_ankle = get_coords(landmarks[27])
-                right_ankle = get_coords(landmarks[28])
-                left_foot = get_coords(landmarks[31])
-                right_foot = get_coords(landmarks[32])
-
-                # midpoint of trunk vector
-                shoulder_mid = (left_shoulder + right_shoulder) / 2
-                hip_mid = (left_hip + right_hip) / 2
-                
-                trunk_vector = shoulder_mid - hip_mid
-
-                # Upward vertical in image coordinates
-                vertical_vector = np.array([0, -1])  
-                left_trunk_vector = left_shoulder - left_hip
-                right_trunk_vector = right_shoulder - right_hip
-                left_thigh_vector = left_hip - left_knee
-                left_shank_vector = left_knee - left_ankle
-                right_thigh_vector = right_hip - right_knee
-                right_shank_vector = right_knee - right_ankle
-                left_foot_vector = left_ankle - left_foot
-                right_foot_vector = right_ankle - right_foot
-
-                # spine segment angle
-                spine_segment_angles.append(calculate_angle(trunk_vector, vertical_vector))                
-                left_hip_angles.append(calculate_angle(left_trunk_vector, left_thigh_vector))
-                right_hip_angles.append(calculate_angle(right_trunk_vector, right_thigh_vector))
-                left_knee_angles.append(calculate_angle(left_thigh_vector, left_shank_vector))
-                right_knee_angles.append(calculate_angle(right_thigh_vector, right_shank_vector))
-                left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
-                right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
-
-    
-    time = np.arange(0, len(left_hip_angles)) / fps  
-    cap.release()
-
-    # Apply lowpass filter to smooth angles
-    cutoff_frequency = 6  # Adjust cutoff frequency based on signal characteristics
-    left_hip_angles = butter_lowpass_filter(left_hip_angles, cutoff_frequency, fps)
-    right_hip_angles = butter_lowpass_filter(right_hip_angles, cutoff_frequency, fps)
-    left_knee_angles = butter_lowpass_filter(left_knee_angles, cutoff_frequency, fps)
-    right_knee_angles = butter_lowpass_filter(right_knee_angles, cutoff_frequency, fps)
-    left_ankle_angles = butter_lowpass_filter(left_ankle_angles, cutoff_frequency, fps)
-    right_ankle_angles = butter_lowpass_filter(right_ankle_angles, cutoff_frequency, fps)
-    spine_segment_angles = butter_lowpass_filter(spine_segment_angles, cutoff_frequency, fps) 
-
-        ### CROP HERE ###
-    start_time, end_time = st.slider("Select time range", min_value=float(0), max_value=float(time[-1]), value=(float(0), float(time[-1])))
-    st.write(f"Selected frame range: {start_frame} to {end_frame}")
-    st.write(f"Selected time range: {start_time:.2f}s to {end_time:.2f}s")
-    mask = (time >= start_time) & (time <= end_time)
-    filtered_time = time[mask]
-
-    filtered_spine_segment_angles = np.array(spine_segment_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(filtered_spine_segment_angles), max(filtered_spine_segment_angles)], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Spine Segment Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-
-    # Assuming filtered_time and filtered_spine_segment_angles are lists or numpy arrays
-    spine_data = {
-        "Time (s)": filtered_time,
-        "Spine Segment Angles (degrees)": filtered_spine_segment_angles
-    }
-
-    # Create a DataFrame
-    spine_df = pd.DataFrame(spine_data)
-
-    # Convert DataFrame to CSV
-    spine_csv = spine_df.to_csv(index=False).encode('utf-8')
-
-                # Add download csv button
-    st.download_button(
-    label="Download Spine Segment Angle Data",
-    data=spine_csv,
-    file_name="spine_segment_angles.csv",
-    mime="text/csv"
-)
-
-    filtered_left_hip_angles = np.array(left_hip_angles)[mask]
-    filtered_right_hip_angles = np.array(right_hip_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_hip_angles, mode='lines', name="Left Hip"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_hip_angles, mode='lines', name="Right Hip"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles)), max(np.max(filtered_left_hip_angles), np.max(filtered_left_hip_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Hip Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-
-    hip_data = {
-        "Time (s)": filtered_time,
-        "Left Hip Angle (degrees)": filtered_left_hip_angles,
-        "Right Hip Angle (degrees)": filtered_right_hip_angles
-    }
-
-    # Create a DataFrame
-    hip_df = pd.DataFrame(hip_data)
-
-    # Convert DataFrame to CSV
-    hip_csv = hip_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Hip Angle Data",
-        data=hip_csv,
-        file_name="hip_angles.csv",
-        mime="text/csv"
-    )
-    
-    filtered_left_knee_angles = np.array(left_knee_angles)[mask]
-    filtered_right_knee_angles = np.array(right_knee_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_knee_angles, mode='lines', name="Left Knee"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_knee_angles, mode='lines', name="Right Knee"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles)), max(np.max(filtered_left_knee_angles), np.max(filtered_left_knee_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Knee Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-
-    knee_data = {
-        "Time (s)": filtered_time,
-        "Left Knee Angle (degrees)": filtered_left_knee_angles,
-        "Right Knee Angle (degrees)": filtered_right_knee_angles
-    }
-
-    # Create a DataFrame
-    knee_df = pd.DataFrame(knee_data)
-
-    # Convert DataFrame to CSV
-    knee_csv = knee_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Knee Angle Data",
-        data=knee_csv,
-        file_name="knee_angles.csv",
-        mime="text/csv"
-    )
-
-    filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
-    filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_ankle_angles, mode='lines', name="Left Ankle"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_ankle_angles, mode='lines', name="Right Ankle"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)), max(np.max(filtered_left_ankle_angles), np.max(filtered_left_ankle_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-    
-    ankle_data = {
-        "Time (s)": filtered_time,
-        "Left Ankle Angle (degrees)": filtered_left_ankle_angles,
-        "Right Ankle Angle (degrees)": filtered_right_ankle_angles
-    }
-
-    # Create a DataFrame
-    ankle_df = pd.DataFrame(ankle_data)
-
-    # Convert DataFrame to CSV
-    ankle_csv = ankle_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Ankle Angle Data",
-        data=ankle_csv,
-        file_name="ankle_angles.csv",
-        mime="text/csv"
-    )     
-    ### END CROP ###
-
-  # show tables
-    df = pd.DataFrame({'Time': time, 'Spine Segment Angles': spine_segment_angles, 'Left Joint Hip': left_hip_angles, 'Right Hip': right_hip_angles, 'Left Knee': left_knee_angles, 'Right Knee': right_knee_angles, 'Left Ankle': left_ankle_angles, 'Right Ankle': right_ankle_angles})
-    st.write('### Joint Angles (deg)')
-
-    st.dataframe(df)
-
-    st.write('### Range of Motion')
-    # create dataframe of range of motion
-    
-    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 'Range of Motion (degrees)': [np.ptp(spine_segment_angles), np.ptp(left_hip_angles), np.ptp(right_hip_angles), np.ptp(left_knee_angles), np.ptp(right_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)]})
-    # add columns for the min and max angles for each joint
-    df_rom['Min Angle (degrees)'] = [np.min(spine_segment_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
-    df_rom['Max Angle (degrees)'] = [np.max(spine_segment_angles), np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
-    df_rom.columns = ['Joint', 'Min Angle (deg)', 'Max Angle (deg)', 'Range of Motion (deg)',]
-    st.dataframe(df_rom)
-
-    # show the range of motion as a spider plot
-    fig = go.Figure()
-    
-    rom_values = [
-    np.ptp(right_knee_angles),
-    np.ptp(right_hip_angles),
-    np.ptp(spine_segment_angles),
-    np.ptp(left_hip_angles),
-    np.ptp(left_knee_angles),
-    np.ptp(left_ankle_angles),
-    np.ptp(right_ankle_angles)
-        ]
-    
-    joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
-
-    fig.add_trace(go.Scatterpolar(
-        r=[np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_segment_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)],
-        theta=joint_labels,
-        fill='toself',
-        name='Range of Motion'
-    ))
-
-    max_all_joint_angles = np.max([np.ptp(right_knee_angles), np.ptp(right_hip_angles), np.ptp(spine_segment_angles), np.ptp(left_hip_angles), np.ptp(left_knee_angles), np.ptp(left_ankle_angles), np.ptp(right_ankle_angles)])
-    
-    # Add annotations for each data point (ROM value)
-    annotations = []
-    for i, value in enumerate(rom_values):
-        annotations.append(
-            dict(
-                r=value + 1,  # Slightly offset for visibility
-                theta=joint_labels[i],
-                text=f"{value:.1f}°",  # Display ROM value with 1 decimal places
-                showarrow=True,
-                arrowhead=2,
-                ax=0,
-                ay=-20,
-                font=dict(size=12, color="black")
-            )
-        )
-    fig.update_layout(
-        title="Range of Motion",
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[0, max_all_joint_angles + 5],
-                tickfont=dict(color='black')  # Set black font for tick values
-            )),
-        # annotations=annotations,
-        showlegend=False
-    )
-
-    st.plotly_chart(fig)
-
-        # Store data in DataFrame
-    joint_angle_df = pd.DataFrame({
-        "Time": filtered_time,
-        "Spine": filtered_spine_segment_angles,
-        "Left Hip": filtered_left_hip_angles, "Right Hip": filtered_right_hip_angles,
-        "Left Knee": filtered_left_knee_angles, "Right Knee": filtered_right_knee_angles,
-        "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
-    })
-
-    pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
-    if pca_checkbox:
-        perform_pca(joint_angle_df)
-
-
-# TO DO:
-# - Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
-# - Neural Network to predict gait
-# - Add more joints
-# - Add more videos
-# - Add more data
-# - Add more analysis
-# - Add more visualizations
-# - Add more interactivity
-# - Add more features
-# - Add more machine learning
-# - Add more deep learning
-# - Add more statistics
-# - Add more physics (OpenSim)
-
-
-
-def perform_pca(df):
+def perform_pca(df, video_index):
     st.write("### Principal Component Analysis (PCA)")
 
     # Extract numerical joint angle data
@@ -507,7 +208,8 @@ def perform_pca(df):
         label="Download PCA Plot Data",
         data=pca_plot_csv,
         file_name="pca_plot_data.csv",
-        mime="text/csv"
+        mime="text/csv",
+        key=f"pca_plot_{video_index}"
     )
 
     # st.dataframe(top_features)
@@ -521,7 +223,8 @@ def perform_pca(df):
         label="Download PCA Data",
         data=pca_feature_csv,
         file_name="pca_data.csv",
-        mime="text/csv"
+        mime="text/csv",
+        key=f"pca_{video_index}"
     )
   
     # 2D PCA Scatter Plot (Only if at least 2 PCs are selected)
@@ -545,7 +248,8 @@ def perform_pca(df):
             label="Download 2D PCA Data",
             data=pca_2d_csv,
             file_name="pca_2d_data.csv",
-            mime="text/csv"
+            mime="text/csv",
+            key=f"pca_2d_{video_index}"
         )
 
     # 3D PCA Scatter Plot (Only if at least 3 PCs are selected)
@@ -569,17 +273,426 @@ def perform_pca(df):
             label="Download 3D PCA Data",
             data=pca_3d_csv,
             file_name="pca_3d_data.csv",
-            mime="text/csv"
+            mime="text/csv",
+            key=f"pca_3d_{video_index}"
         )
+
+def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle):
+    # Calculate the range of motion differences (right - left)
+    hip_asymmetry = left_hip - right_hip
+    knee_asymmetry = left_knee - right_knee
+    ankle_asymmetry = left_ankle - right_ankle
+    
+    # Create a dictionary to hold the values for each joint
+    asymmetry_data = {
+        "Ankle": hip_asymmetry,
+        "Knee": knee_asymmetry,
+        "Hip": ankle_asymmetry
+    }
+
+    # Set thresholds for excessive asymmetry
+    threshold = 10  # degrees
+
+    # Create a color scale based on the absolute difference
+    colors = []
+    for value in asymmetry_data.values():
+        abs_value = abs(value)  # Use absolute value to determine the color
+        if abs_value > threshold:
+            colors.append('red')  # If the absolute difference is larger than threshold, color red
+        else:
+            colors.append('green')  # If the difference is smaller, color green
+    
+    # Create the plot
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        y=list(asymmetry_data.keys()),
+        x=list(asymmetry_data.values()),
+        orientation='h',
+        marker=dict(
+            color=[abs(value) for value in asymmetry_data.values()],  # Color by absolute difference
+            colorscale='RdYlGn',  # Red to Green color scale, but will reverse it to make higher values red
+            colorbar=dict(title="Asymmetry (degrees)"),  # Add colorbar
+            cmin=0,  # Minimum value for color scale
+            cmax=40,  # Maximum value for color scale
+            reversescale=True  # Reverse the color scale
+        ),
+        name="Left vs Right Asymmetry"
+    ))
+
+    fig.update_layout(
+        title="Left vs Right Range of Motion Asymmetry",
+        xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
+        yaxis_title="Joints",
+        showlegend=False,
+        xaxis=dict(
+            zeroline=True,
+            zerolinecolor="white",
+            zerolinewidth=2,
+            range=[-30, 30],  # Fixed range from -30 to 30 for the x-axis
+            tickvals=[-30, -20, -10, 0, 10, 20, 30],  # Tick labels for the fixed range
+            ticktext=["-30", "-20", "-10", "0", "10", "20", "30"]  # Custom tick labels
+        ),
+        yaxis=dict(tickvals=[0, 1, 2], ticktext=["Ankle", "Knee", "Hip"]),
+        height=310,  # Shorten the graph height
+        bargap=0.1  # Reduce the gap between bars to make them thinner
+    )
+
+    st.plotly_chart(fig)
+
+# Butterworth lowpass filter functions
+def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return lfilter(b, a, data)
+
+def process_video(video_path, output_txt_path, frame_time, video_index):
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = total_frames / fps  
+    
+    start_frame = 0
+    end_frame = total_frames
+    
+    left_knee_angles, right_knee_angles = [], []
+    left_hip_angles, right_hip_angles = [], []
+    left_ankle_angles, right_ankle_angles = [], []
+    spine_segment_angles = []
+    thorax_angles, lumbar_angles = [], []
+
+    # if the length is greater than 10 seconds, only capture the middle 5 seconds
+    if duration > 10:
+        start_frame = int(total_frames // 2 - (5 * fps))
+        end_frame = int(total_frames // 2 + (5 * fps))
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+        total_frames = int(end_frame - start_frame)
+        duration = total_frames / fps
+
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+        for _ in range(start_frame, end_frame):
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(frame_rgb)
+            
+            if results.pose_landmarks:
+                landmarks = results.pose_landmarks.landmark
+                def get_coords(landmark):
+                    return np.array([landmark.x, landmark.y])
+                
+                left_shoulder = get_coords(landmarks[11])
+                right_shoulder = get_coords(landmarks[12])                 
+                
+                left_hip = get_coords(landmarks[23])
+                right_hip = get_coords(landmarks[24])
+                left_knee = get_coords(landmarks[25])
+                right_knee = get_coords(landmarks[26])
+                left_ankle = get_coords(landmarks[27])
+                right_ankle = get_coords(landmarks[28])
+                left_foot = get_coords(landmarks[31])
+                right_foot = get_coords(landmarks[32])
+
+                # midpoint of trunk vector
+                shoulder_mid = (left_shoulder + right_shoulder) / 2
+                hip_mid = (left_hip + right_hip) / 2
+                
+                trunk_vector = shoulder_mid - hip_mid
+
+                # Upward vertical in image coordinates
+                vertical_vector = np.array([0, -1])  
+                left_trunk_vector = left_shoulder - left_hip
+                right_trunk_vector = right_shoulder - right_hip
+                left_thigh_vector = left_hip - left_knee
+                left_shank_vector = left_knee - left_ankle
+                right_thigh_vector = right_hip - right_knee
+                right_shank_vector = right_knee - right_ankle
+                left_foot_vector = left_ankle - left_foot
+                right_foot_vector = right_ankle - right_foot
+
+                # spine segment angle
+                spine_segment_angles.append(calculate_angle(trunk_vector, vertical_vector))                
+                left_hip_angles.append(calculate_angle(left_trunk_vector, left_thigh_vector))
+                right_hip_angles.append(calculate_angle(right_trunk_vector, right_thigh_vector))
+                left_knee_angles.append(calculate_angle(left_thigh_vector, left_shank_vector))
+                right_knee_angles.append(calculate_angle(right_thigh_vector, right_shank_vector))
+                left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
+                right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
+
+    
+    time = np.arange(0, len(left_hip_angles)) / fps  
+    cap.release()
+
+    # Apply lowpass filter to smooth angles
+    cutoff_frequency = 6  # Adjust cutoff frequency based on signal characteristics
+    left_hip_angles = butter_lowpass_filter(left_hip_angles, cutoff_frequency, fps)
+    right_hip_angles = butter_lowpass_filter(right_hip_angles, cutoff_frequency, fps)
+    left_knee_angles = butter_lowpass_filter(left_knee_angles, cutoff_frequency, fps)
+    right_knee_angles = butter_lowpass_filter(right_knee_angles, cutoff_frequency, fps)
+    left_ankle_angles = butter_lowpass_filter(left_ankle_angles, cutoff_frequency, fps)
+    right_ankle_angles = butter_lowpass_filter(right_ankle_angles, cutoff_frequency, fps)
+    spine_segment_angles = butter_lowpass_filter(spine_segment_angles, cutoff_frequency, fps) 
+
+    ### CROP HERE ###
+    start_time, end_time = st.slider("Select time range", min_value=float(0), max_value=float(time[-1]), value=(float(0), float(time[-1])), key=f"time_range_{video_index}")
+    st.write(f"Selected frame range: {start_frame} to {end_frame}")
+    st.write(f"Selected time range: {start_time:.2f}s to {end_time:.2f}s")
+    mask = (time >= start_time) & (time <= end_time)
+    filtered_time = time[mask]
+
+    filtered_spine_segment_angles = np.array(spine_segment_angles)[mask]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
+    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(filtered_spine_segment_angles), max(filtered_spine_segment_angles)], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+    fig.update_layout(title=f"Spine Segment Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+    st.plotly_chart(fig)
+
+    # Assuming filtered_time and filtered_spine_segment_angles are lists or numpy arrays
+    spine_data = {
+        "Time (s)": filtered_time,
+        "Spine Segment Angles (degrees)": filtered_spine_segment_angles
+    }
+
+    # Create a DataFrame
+    spine_df = pd.DataFrame(spine_data)
+
+    # Convert DataFrame to CSV
+    spine_csv = spine_df.to_csv(index=False).encode('utf-8')
+
+    # Add download csv button
+    st.download_button(
+    label="Download Spine Segment Angle Data",
+    data=spine_csv,
+    file_name="spine_segment_angles.csv",
+    mime="text/csv",
+    key=f"spine_segment_angles_{video_index}"
+)
+
+    filtered_left_hip_angles = np.array(left_hip_angles)[mask]
+    filtered_right_hip_angles = np.array(right_hip_angles)[mask]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_hip_angles, mode='lines', name="Left Hip"))
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_hip_angles, mode='lines', name="Right Hip"))
+    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles)), max(np.max(filtered_left_hip_angles), np.max(filtered_left_hip_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+    fig.update_layout(title=f"Hip Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+    st.plotly_chart(fig)
+
+    hip_data = {
+        "Time (s)": filtered_time,
+        "Left Hip Angle (degrees)": filtered_left_hip_angles,
+        "Right Hip Angle (degrees)": filtered_right_hip_angles
+    }
+
+    # Create a DataFrame
+    hip_df = pd.DataFrame(hip_data)
+
+    # Convert DataFrame to CSV
+    hip_csv = hip_df.to_csv(index=False).encode('utf-8')
+
+    # Add download csv button
+    st.download_button(
+        label="Download Hip Angle Data",
+        data=hip_csv,
+        file_name="hip_angles.csv",
+        mime="text/csv",
+        key=f"hip_angles_{video_index}"
+    )
+    
+    filtered_left_knee_angles = np.array(left_knee_angles)[mask]
+    filtered_right_knee_angles = np.array(right_knee_angles)[mask]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_knee_angles, mode='lines', name="Left Knee"))
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_knee_angles, mode='lines', name="Right Knee"))
+    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles)), max(np.max(filtered_left_knee_angles), np.max(filtered_left_knee_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+    fig.update_layout(title=f"Knee Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+    st.plotly_chart(fig)
+
+    knee_data = {
+        "Time (s)": filtered_time,
+        "Left Knee Angle (degrees)": filtered_left_knee_angles,
+        "Right Knee Angle (degrees)": filtered_right_knee_angles
+    }
+
+    # Create a DataFrame
+    knee_df = pd.DataFrame(knee_data)
+
+    # Convert DataFrame to CSV
+    knee_csv = knee_df.to_csv(index=False).encode('utf-8')
+
+    # Add download csv button
+    st.download_button(
+        label="Download Knee Angle Data",
+        data=knee_csv,
+        file_name="knee_angles.csv",
+        mime="text/csv",
+        key=f"knee_angles_{video_index}"
+    )
+
+    filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
+    filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_ankle_angles, mode='lines', name="Left Ankle"))
+    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_ankle_angles, mode='lines', name="Right Ankle"))
+    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)), max(np.max(filtered_left_ankle_angles), np.max(filtered_left_ankle_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+    fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+    st.plotly_chart(fig)
+    
+    ankle_data = {
+        "Time (s)": filtered_time,
+        "Left Ankle Angle (degrees)": filtered_left_ankle_angles,
+        "Right Ankle Angle (degrees)": filtered_right_ankle_angles
+    }
+
+    # Create a DataFrame
+    ankle_df = pd.DataFrame(ankle_data)
+
+    # Convert DataFrame to CSV
+    ankle_csv = ankle_df.to_csv(index=False).encode('utf-8')
+
+    # Add download csv button
+    st.download_button(
+        label="Download Ankle Angle Data",
+        data=ankle_csv,
+        file_name="ankle_angles.csv",
+        mime="text/csv",
+        key=f"ankle_angles_{video_index}"
+    )     
+    ### END CROP ###
+
+  # show tables
+    df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
+    st.write('### Joint Angles (deg)')
+
+    st.dataframe(df)
+
+    st.write('### Range of Motion')
+    # create dataframe of range of motion
+    
+    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
+    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles), np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles), np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)],
+    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), np.max(filtered_left_hip_angles), np.max(filtered_right_hip_angles), np.max(filtered_left_knee_angles), np.max(filtered_right_knee_angles), np.max(filtered_left_ankle_angles), np.max(filtered_right_ankle_angles)],
+    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_right_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)]})
+    # add columns for the min and max angles for each joint
+    # df_rom['Min Angle (degrees)'] = [np.min(spine_segment_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
+    # df_rom['Max Angle (degrees)'] = [np.max(spine_segment_angles), np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
+    # df_rom.columns = ['Joint', 'Min Angle (deg)', 'Max Angle (deg)', 'Range of Motion (deg)',]
+    st.dataframe(df_rom)
+
+    # show the range of motion as a spider plot
+    fig = go.Figure()
+    
+    rom_values = [
+    np.ptp(filtered_right_knee_angles),
+    np.ptp(filtered_right_hip_angles),
+    np.ptp(filtered_spine_segment_angles),
+    np.ptp(filtered_left_hip_angles),
+    np.ptp(filtered_left_knee_angles),
+    np.ptp(filtered_left_ankle_angles),
+    np.ptp(filtered_right_ankle_angles)
+        ]
+    
+    joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
+
+    fig.add_trace(go.Scatterpolar(
+        r=[np.ptp(filtered_right_knee_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)],
+        theta=joint_labels,
+        fill='toself',
+        name='Range of Motion'
+    ))
+
+    max_all_joint_angles = np.max([np.ptp(filtered_right_knee_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)])
+    
+    # Add annotations for each data point (ROM value)
+    annotations = []
+    for i, value in enumerate(rom_values):
+        annotations.append(
+            dict(
+                r=value + 1,  # Slightly offset for visibility
+                theta=joint_labels[i],
+                text=f"{value:.1f}°",  # Display ROM value with 1 decimal places
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=-20,
+                font=dict(size=12, color="black")
+            )
+        )
+    fig.update_layout(
+        title="Range of Motion",
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, max_all_joint_angles + 5],
+                tickfont=dict(color='black')  # Set black font for tick values
+            )),
+        # annotations=annotations,
+        showlegend=False
+    )
+
+    st.plotly_chart(fig)
+
+    # Store data in DataFrame
+    joint_angle_df = pd.DataFrame({
+        "Time": filtered_time,
+        "Spine": filtered_spine_segment_angles,
+        "Left Hip": filtered_left_hip_angles, "Right Hip": filtered_right_hip_angles,
+        "Left Knee": filtered_left_knee_angles, "Right Knee": filtered_right_knee_angles,
+        "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
+    })
+
+    # Example call to this function in your `process_video` or similar function:
+    left_hip = np.ptp(filtered_left_hip_angles)
+    right_hip = np.ptp(filtered_right_hip_angles)
+    left_knee = np.ptp(filtered_left_knee_angles)
+    right_knee = np.ptp(filtered_right_knee_angles)
+    left_ankle = np.ptp(filtered_left_ankle_angles)
+    right_ankle = np.ptp(filtered_right_ankle_angles)
+
+    plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
+
+    pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
+    if pca_checkbox:
+        perform_pca(joint_angle_df, video_index)
+
+# TO DO:
+# - Try to apply something like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
+# - Neural Network to predict gait
+# - Add more joints
+# - Add more videos
+# - Add more data sources (IMUs, wearables, heart rate)
+# - Add more analysis
+# - Add more visualizations
+# - Add more interactivity
+# - Add more features
+# - Add more machine learning
+# - Add more deep learning
+# - Add more statistics
+# - Add more physics (OpenSim)
+# - Add animations / rendering
 
 
 def main():
-    st.title("Joint Angle Analysis from Video")
-    video_files = st.file_uploader("Upload video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    st.title("Biomechanics Analysis from Video")
+    video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         for idx, video_file in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file.read())
+                temp_video_path = temp_video_file.name
+                temp_video_file.close()
+                output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
+                frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
+                process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
+
+
+    video_files_back = st.file_uploader("Upload back video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    if video_files:
+        for idx, video_file_back in enumerate(video_files_back):
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+                temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = r'/workspaces/PolarPlotter/results/joint_angles.txt'
