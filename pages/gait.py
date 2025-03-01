@@ -219,13 +219,7 @@ def perform_pca(df, video_index):
     # combine the two dataframes and download
     pca_data = pd.concat([pca_df, top_features], axis=1)
     pca_feature_csv = pca_data.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Download PCA Data",
-        data=pca_feature_csv,
-        file_name="pca_data.csv",
-        mime="text/csv",
-        key=f"pca_{video_index}"
-    )
+
   
     # 2D PCA Scatter Plot (Only if at least 2 PCs are selected)
     if pcs >= 2:
