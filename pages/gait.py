@@ -602,15 +602,20 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         
         peaks_left = detect_peaks(hip_df, column_left, prominence, distance)
         mins_left = detect_mins(hip_df, column_left, prominence, distance)
-        
-        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Hip")
+        hip_left_mins_mean = np.mean(hip_df[column_left].iloc[mins_left])
+        hip_left_mins_std = np.std(hip_df[column_left].iloc[mins_left])
+        hip_left_peaks_mean = np.mean(hip_df[column_left].iloc[peaks_left])
+        hip_left_peaks_std = np.std(hip_df[column_left].iloc[peaks_left])
         
         column_right = "Right Hip Angle (degrees)"
+
         peaks_right = detect_peaks(hip_df, column_right, prominence, distance)
         mins_right = detect_mins(hip_df, column_right, prominence, distance)
-        
-        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Hip")
-        
+        hip_right_mins_mean = np.mean(hip_df[column_right].iloc[mins_right])
+        hip_right_mins_std = np.std(hip_df[column_right].iloc[mins_right])
+        hip_right_peaks_mean = np.mean(hip_df[column_right].iloc[peaks_right])
+        hip_right_peaks_std = np.std(hip_df[column_right].iloc[peaks_right])
+       
         strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
         
         # Plotly bar plot showing peaks and minima side by side with thinner bars
@@ -665,15 +670,19 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
         peaks_left = detect_peaks(knee_df, column_left, prominence, distance)
         mins_left = detect_mins(knee_df, column_left, prominence, distance)
-
-        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Knee")
+        knee_left_mins_mean = np.mean(knee_df[column_left].iloc[mins_left])
+        knee_left_mins_std = np.std(knee_df[column_left].iloc[mins_left])
+        knee_left_peaks_mean = np.mean(knee_df[column_left].iloc[peaks_left])
+        knee_left_peaks_std = np.std(knee_df[column_left].iloc[peaks_left])
 
         column_right = "Right Knee Angle (degrees)"
         peaks_right = detect_peaks(knee_df, column_right, prominence, distance)
         mins_right = detect_mins(knee_df, column_right, prominence, distance)
-
-        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Knee")
-
+        knee_right_mins_mean = np.mean(knee_df[column_right].iloc[mins_right])
+        knee_right_mins_std = np.std(knee_df[column_right].iloc[mins_right])
+        knee_right_peaks_mean = np.mean(knee_df[column_right].iloc[peaks_right])
+        knee_right_peaks_std = np.std(knee_df[column_right].iloc[peaks_right])
+        
         strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
 
         # Plotly bar plot showing peaks and minima side by side with thinner bars
@@ -728,16 +737,20 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
         peaks_left = detect_peaks(ankle_df, column_left, prominence, distance)
         mins_left = detect_mins(ankle_df, column_left, prominence, distance)
-
-        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Ankle")
+        ankle_left_mins_mean = np.mean(ankle_df[column_left].iloc[mins_left])
+        ankle_left_mins_std = np.std(ankle_df[column_left].iloc[mins_left])
+        ankle_left_peaks_mean = np.mean(ankle_df[column_left].iloc[peaks_left])
+        ankle_left_peaks_std = np.std(ankle_df[column_left].iloc[peaks_left])
 
         column_right = "Right Ankle Angle (degrees)"
 
         peaks_right = detect_peaks(ankle_df, column_right, prominence, distance)
 
         mins_right = detect_mins(ankle_df, column_right, prominence, distance)
-
-        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Ankle")
+        ankle_right_mins_mean = np.mean(ankle_df[column_right].iloc[mins_right])
+        ankle_right_mins_std = np.std(ankle_df[column_right].iloc[mins_right])
+        ankle_right_peaks_mean = np.mean(ankle_df[column_right].iloc[peaks_right])
+        ankle_right_peaks_std = np.std(ankle_df[column_right].iloc[peaks_right])
 
         strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
 
@@ -785,15 +798,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
         st.plotly_chart(fig)
 
-    # STRIDE CYCLE ANALYSIS
-    # Calculate the mean and standard deviation of the flexion angles for each joint
-    #                 
-
-
-        
-
-
-
     ### END CROP ###
   # show tables
     df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
@@ -805,13 +809,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     # create dataframe of range of motion
     
     df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
-    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles), np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles), np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)],
-    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), np.max(filtered_left_hip_angles), np.max(filtered_right_hip_angles), np.max(filtered_left_knee_angles), np.max(filtered_right_knee_angles), np.max(filtered_left_ankle_angles), np.max(filtered_right_ankle_angles)],
-    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_right_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)]})
-    # add columns for the min and max angles for each joint
-    # df_rom['Min Angle (degrees)'] = [np.min(spine_segment_angles), np.min(left_hip_angles), np.min(right_hip_angles), np.min(left_knee_angles), np.min(right_knee_angles), np.min(left_ankle_angles), np.min(right_ankle_angles)]
-    # df_rom['Max Angle (degrees)'] = [np.max(spine_segment_angles), np.max(left_hip_angles), np.max(right_hip_angles), np.max(left_knee_angles), np.max(right_knee_angles), np.max(left_ankle_angles), np.max(right_ankle_angles)]
-    # df_rom.columns = ['Joint', 'Min Angle (deg)', 'Max Angle (deg)', 'Range of Motion (deg)',]
+    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), hip_left_mins_mean, hip_right_mins_mean, knee_left_mins_mean, knee_right_mins_mean, ankle_left_mins_mean, ankle_right_mins_mean],
+    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
+    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
+    
     st.dataframe(df_rom)
 
     # show the range of motion as a spider plot
@@ -830,7 +831,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
 
     fig.add_trace(go.Scatterpolar(
-        r=[np.ptp(filtered_right_knee_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)],
+        r=[knee_right_peaks_mean - knee_right_mins_mean, 
+           hip_right_peaks_mean - hip_right_mins_mean, 
+           np.ptp(filtered_spine_segment_angles), 
+           hip_left_peaks_mean - hip_left_mins_mean,
+           knee_left_peaks_mean - knee_left_mins_mean,
+           ankle_left_peaks_mean - ankle_left_mins_mean, 
+           ankle_right_peaks_mean - ankle_right_mins_mean],
+           
         theta=joint_labels,
         fill='toself',
         name='Range of Motion'
@@ -877,13 +885,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     })
 
     # Example call to this function in your `process_video` or similar function:
-    left_hip = np.ptp(filtered_left_hip_angles)
-    right_hip = np.ptp(filtered_right_hip_angles)
-    left_knee = np.ptp(filtered_left_knee_angles)
-    right_knee = np.ptp(filtered_right_knee_angles)
-    left_ankle = np.ptp(filtered_left_ankle_angles)
-    right_ankle = np.ptp(filtered_right_ankle_angles)
+    left_hip = hip_left_peaks_mean - hip_left_mins_mean
+    right_hip = hip_right_peaks_mean - hip_right_mins_mean
+    left_knee = knee_left_peaks_mean - knee_left_mins_mean
+    right_knee = knee_right_peaks_mean - knee_right_mins_mean
+    left_ankle = ankle_left_peaks_mean - ankle_left_mins_mean
+    right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
 
+   
     plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
 
     pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
