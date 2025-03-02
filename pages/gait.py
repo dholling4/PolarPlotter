@@ -591,7 +591,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
     
     # STRIDE CYCLE DETECTION
-    st.title("Peak Detection and Cycle Analysis")
+    st.title("Stride Cycle Analysis")
 
     # LEFT HIP CYCLES    
     if hip_df is not None:            
