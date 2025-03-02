@@ -3,7 +3,7 @@ st.write("coming soon...")
 
 from openai import OpenAI
 
-YOUR_API_KEY = "INSERT API KEY HERE"
+YOUR_API_KEY = "xai-FS1pD8kWKBbCz68Q02CuzYIykPaIzlyAr0S1rvDnAWG6lk8EDqO6Pl4A9FyFaJ8eS0GhHSdHbaPwZXlz"
 
 messages = [
     {
@@ -39,7 +39,7 @@ response_stream = client.chat.completions.create(
 )
 for response in response_stream:
     print(response)
-    
+
 # # from openai import OpenAI
 # import streamlit as st
 # # import os
