@@ -10,7 +10,31 @@ import plotly.graph_objects as go
 import pandas as pd
 from scipy.signal import butter, lfilter
 from sklearn.decomposition import PCA
+from scipy.signal import find_peaks
+import tempfile
+import requests
+from io import BytesIO
 
+def detect_peaks(data, column, prominence, distance):
+    peaks, _ = find_peaks(data[column], prominence=prominence, distance=distance)
+    return peaks
+
+def detect_mins(data, column, prominence, distance):
+    mins, _ = find_peaks(-data[column], prominence=prominence, distance=distance)
+    return mins
+
+def compute_stats(data, peaks, column):
+    cycle_stats = []
+    for i in range(len(peaks) - 1):
+        cycle_data = data[column][peaks[i]:peaks[i + 1]]
+        cycle_stats.append({
+            "Cycle": i + 1,
+            "Mean": np.mean(cycle_data),
+            "Std Dev": np.std(cycle_data),
+            "Max": np.max(cycle_data),
+            "Min": np.min(cycle_data)
+        })
+    return pd.DataFrame(cycle_stats)
 
 # Setup MediaPipe Pose model
 mp_pose = mp.solutions.pose
@@ -566,8 +590,211 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     with st.expander("Click here to learn more"):
         st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
     
-    ### END CROP ###
+    # STRIDE CYCLE DETECTION
+    st.title("Peak Detection and Cycle Analysis")
 
+    # LEFT HIP CYCLES    
+    if hip_df is not None:            
+       
+        column_left = "Left Hip Angle (degrees)"
+        prominence = 4
+        distance = fps / 2  # Assuming fps/2 equivalent
+        
+        peaks_left = detect_peaks(hip_df, column_left, prominence, distance)
+        mins_left = detect_mins(hip_df, column_left, prominence, distance)
+        
+        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Hip")
+        
+        column_right = "Right Hip Angle (degrees)"
+        peaks_right = detect_peaks(hip_df, column_right, prominence, distance)
+        mins_right = detect_mins(hip_df, column_right, prominence, distance)
+        
+        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Hip")
+        
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+        
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+        
+        fig.add_trace(go.Bar(
+            y=hip_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+        
+        fig.add_trace(go.Bar(
+            y=hip_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=hip_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+        
+        fig.add_trace(go.Bar(
+            y=hip_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+        
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Hip Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+        
+        st.plotly_chart(fig)
+
+    # KNEE CYCLES
+    if knee_df is not None:
+        column_left = "Left Knee Angle (degrees)"
+        prominence = 4
+        distance = fps / 2
+
+        peaks_left = detect_peaks(knee_df, column_left, prominence, distance)
+        mins_left = detect_mins(knee_df, column_left, prominence, distance)
+
+        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Knee")
+
+        column_right = "Right Knee Angle (degrees)"
+        peaks_right = detect_peaks(knee_df, column_right, prominence, distance)
+        mins_right = detect_mins(knee_df, column_right, prominence, distance)
+
+        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Knee")
+
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Knee Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+
+        st.plotly_chart(fig)
+
+    # ANKLE CYCLES
+    if ankle_df is not None:
+        column_left = "Left Ankle Angle (degrees)"
+        prominence = 4
+        distance = fps / 2
+
+        peaks_left = detect_peaks(ankle_df, column_left, prominence, distance)
+        mins_left = detect_mins(ankle_df, column_left, prominence, distance)
+
+        st.write(f"Detected {len(peaks_left)} peaks and {len(mins_left)} minima for Left Ankle")
+
+        column_right = "Right Ankle Angle (degrees)"
+
+        peaks_right = detect_peaks(ankle_df, column_right, prominence, distance)
+
+        mins_right = detect_mins(ankle_df, column_right, prominence, distance)
+
+        st.write(f"Detected {len(peaks_right)} peaks and {len(mins_right)} minima for Right Ankle")
+
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Ankle Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+
+        st.plotly_chart(fig)
+
+    # STRIDE CYCLE ANALYSIS
+    # Calculate the mean and standard deviation of the flexion angles for each joint
+    #                 
+
+
+        
+
+
+
+    ### END CROP ###
   # show tables
     df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
     st.write('### Joint Angles (deg)')
@@ -680,11 +907,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 # - Add more synthetic data
 # - Add animations / rendering
 # - Add step by step variation analysis
-
-import streamlit as st
-import tempfile
-import requests
-from io import BytesIO
 
 def main():
     st.title("Biomechanics Analysis from Video")
