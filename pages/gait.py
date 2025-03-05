@@ -328,7 +328,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
         marker=dict(
             color=[abs(value) for value in asymmetry_data.values()],  # Color by absolute difference
             colorscale='RdYlGn',  # Red to Green color scale, but will reverse it to make higher values red
-            colorbar=dict(title="Asymmetry (degrees)"),  # Add colorbar
+            colorbar=dict(title="Asymmetry (°)"),  # Add colorbar
             cmin=0,  # Minimum value for color scale
             cmax=40,  # Maximum value for color scale
             reversescale=True  # Reverse the color scale
@@ -337,9 +337,9 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
     ))
 
     fig.update_layout(
-        title="Left vs Right Range of Motion Asymmetry",
+        title="Average Joint Range of Motion Asymmetry",
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
-        yaxis_title="Joints",
+        yaxis_title="",
         showlegend=False,
         xaxis=dict(
             zeroline=True,
@@ -862,7 +862,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
             )
         )
     fig.update_layout(
-        title="Range of Motion",
+        title="Range of Motion (°)",
         polar=dict(
             radialaxis=dict(
                 visible=True,
