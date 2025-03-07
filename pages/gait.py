@@ -439,7 +439,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
 
     
-    time = np.arange(0, len(left_hip_angles)) / fps  
+    time = np.arange(0, len(left_hip_angles)) / fps # Time in seconds  
     cap.release()
 
     # Apply lowpass filter to smooth angles
@@ -460,111 +460,24 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     filtered_time = time[mask]
 
     filtered_spine_segment_angles = np.array(spine_segment_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(filtered_spine_segment_angles), max(filtered_spine_segment_angles)], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Spine Segment Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-
-    # Assuming filtered_time and filtered_spine_segment_angles are lists or numpy arrays
-    spine_data = {
-        "Time (s)": filtered_time,
-        "Spine Segment Angles (degrees)": filtered_spine_segment_angles
-    }
-
-    # Create a DataFrame
-    spine_df = pd.DataFrame(spine_data)
-
-    # Convert DataFrame to CSV
-    spine_csv = spine_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-    label="Download Spine Segment Angle Data",
-    data=spine_csv,
-    file_name="spine_segment_angles.csv",
-    mime="text/csv",
-    key=f"spine_segment_angles_{video_index}"
-)
-    github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
-    with st.expander("Click here to learn more"):
-        st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
-    
-
     filtered_left_hip_angles = np.array(left_hip_angles)[mask]
     filtered_right_hip_angles = np.array(right_hip_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_hip_angles, mode='lines', name="Left Hip"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_hip_angles, mode='lines', name="Right Hip"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles)), max(np.max(filtered_left_hip_angles), np.max(filtered_left_hip_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Hip Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
-
-    hip_data = {
-        "Time (s)": filtered_time,
-        "Left Hip Angle (degrees)": filtered_left_hip_angles,
-        "Right Hip Angle (degrees)": filtered_right_hip_angles
-    }
-
-    # Create a DataFrame
-    hip_df = pd.DataFrame(hip_data)
-
-    # Convert DataFrame to CSV
-    hip_csv = hip_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Hip Angle Data",
-        data=hip_csv,
-        file_name="hip_angles.csv",
-        mime="text/csv",
-        key=f"hip_angles_{video_index}"
-    )
-    with st.expander("Click here to learn more"):
-        st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
-    
-    
     filtered_left_knee_angles = np.array(left_knee_angles)[mask]
     filtered_right_knee_angles = np.array(right_knee_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_knee_angles, mode='lines', name="Left Knee"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_knee_angles, mode='lines', name="Right Knee"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles)), max(np.max(filtered_left_knee_angles), np.max(filtered_left_knee_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Knee Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
+    filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
+    filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
+
+    hip_data = {
+    "Time (s)": filtered_time,
+    "Left Hip Angle (degrees)": filtered_left_hip_angles,
+    "Right Hip Angle (degrees)": filtered_right_hip_angles
+    }
 
     knee_data = {
         "Time (s)": filtered_time,
         "Left Knee Angle (degrees)": filtered_left_knee_angles,
         "Right Knee Angle (degrees)": filtered_right_knee_angles
     }
-
-    # Create a DataFrame
-    knee_df = pd.DataFrame(knee_data)
-
-    # Convert DataFrame to CSV
-    knee_csv = knee_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Knee Angle Data",
-        data=knee_csv,
-        file_name="knee_angles.csv",
-        mime="text/csv",
-        key=f"knee_angles_{video_index}"
-    )
-
-    with st.expander("Click here to learn more"):
-        st.image(github_url + "photos/knee flexion angle.png", use_container_width =True)
-    
-    filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
-    filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_ankle_angles, mode='lines', name="Left Ankle"))
-    fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_ankle_angles, mode='lines', name="Right Ankle"))
-    fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)), max(np.max(filtered_left_ankle_angles), np.max(filtered_left_ankle_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
-    fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-    st.plotly_chart(fig)
 
     ankle_data = {
         "Time (s)": filtered_time,
@@ -573,249 +486,74 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     }
 
     # Create a DataFrame
+    hip_df = pd.DataFrame(hip_data)
+    knee_df = pd.DataFrame(knee_data)
     ankle_df = pd.DataFrame(ankle_data)
 
-    # Convert DataFrame to CSV
-    ankle_csv = ankle_df.to_csv(index=False).encode('utf-8')
-
-    # Add download csv button
-    st.download_button(
-        label="Download Ankle Angle Data",
-        data=ankle_csv,
-        file_name="ankle_angles.csv",
-        mime="text/csv",
-        key=f"ankle_angles_{video_index}"
-    )     
-    # show ankle plantarflexion angle figure
-    with st.expander("Click here to learn more"):
-        st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
+     # HIP RANGES
+    column_left = "Left Hip Angle (degrees)"
+    prominence = 4
+    distance = fps / 2  # Assuming fps/2 equivalent
     
-    # STRIDE CYCLE DETECTION
-    st.title("Stride Cycle Analysis")
+    peaks_left = detect_peaks(hip_df, column_left, prominence, distance)
+    mins_left = detect_mins(hip_df, column_left, prominence, distance)
+    hip_left_mins_mean = np.mean(hip_df[column_left].iloc[mins_left])
+    hip_left_mins_std = np.std(hip_df[column_left].iloc[mins_left])
+    hip_left_peaks_mean = np.mean(hip_df[column_left].iloc[peaks_left])
+    hip_left_peaks_std = np.std(hip_df[column_left].iloc[peaks_left])
+    
+    column_right = "Right Hip Angle (degrees)"
 
-    # LEFT HIP CYCLES    
-    if hip_df is not None:            
-       
-        column_left = "Left Hip Angle (degrees)"
-        prominence = 4
-        distance = fps / 2  # Assuming fps/2 equivalent
+    peaks_right = detect_peaks(hip_df, column_right, prominence, distance)
+    mins_right = detect_mins(hip_df, column_right, prominence, distance)
+    hip_right_mins_mean = np.mean(hip_df[column_right].iloc[mins_right])
+    hip_right_mins_std = np.std(hip_df[column_right].iloc[mins_right])
+    hip_right_peaks_mean = np.mean(hip_df[column_right].iloc[peaks_right])
+    hip_right_peaks_std = np.std(hip_df[column_right].iloc[peaks_right])
         
-        peaks_left = detect_peaks(hip_df, column_left, prominence, distance)
-        mins_left = detect_mins(hip_df, column_left, prominence, distance)
-        hip_left_mins_mean = np.mean(hip_df[column_left].iloc[mins_left])
-        hip_left_mins_std = np.std(hip_df[column_left].iloc[mins_left])
-        hip_left_peaks_mean = np.mean(hip_df[column_left].iloc[peaks_left])
-        hip_left_peaks_std = np.std(hip_df[column_left].iloc[peaks_left])
-        
-        column_right = "Right Hip Angle (degrees)"
-
-        peaks_right = detect_peaks(hip_df, column_right, prominence, distance)
-        mins_right = detect_mins(hip_df, column_right, prominence, distance)
-        hip_right_mins_mean = np.mean(hip_df[column_right].iloc[mins_right])
-        hip_right_mins_std = np.std(hip_df[column_right].iloc[mins_right])
-        hip_right_peaks_mean = np.mean(hip_df[column_right].iloc[peaks_right])
-        hip_right_peaks_std = np.std(hip_df[column_right].iloc[peaks_right])
-       
-        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
-        
-        # Plotly bar plot showing peaks and minima side by side with thinner bars
-        fig = go.Figure()
-        
-        fig.add_trace(go.Bar(
-            y=hip_df[column_left].iloc[peaks_left][:len(strides)],
-            x=strides,
-            name="Left Peak Flexion",
-            marker_color='lightblue',
-            width=0.2
-        ))
-        
-        fig.add_trace(go.Bar(
-            y=hip_df[column_right].iloc[peaks_right][:len(strides)],
-            x=strides,
-            name="Right Peak Flexion",
-            marker_color='lightgreen',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=hip_df[column_left].iloc[mins_left][:len(strides)],
-            x=strides,
-            name="Left Min Flexion",
-            marker_color='blue',
-            width=0.2
-        ))
-        
-        fig.add_trace(go.Bar(
-            y=hip_df[column_right].iloc[mins_right][:len(strides)],
-            x=strides,
-            name="Right Min Flexion",
-            marker_color='green',
-            width=0.2
-        ))
-        
-        fig.update_layout(
-            title="Joint Flexion Angles Per Stride",
-            yaxis_title="Hip Angle (degrees)",
-            barmode='group',  # Ensures bars are side by side
-            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
-        )
-        
-        st.plotly_chart(fig)
-
     # KNEE CYCLES
-    if knee_df is not None:
-        column_left = "Left Knee Angle (degrees)"
-        prominence = 4
-        distance = fps / 2
+    column_left = "Left Knee Angle (degrees)"
+    prominence = 4
+    distance = fps / 2
 
-        peaks_left = detect_peaks(knee_df, column_left, prominence, distance)
-        mins_left = detect_mins(knee_df, column_left, prominence, distance)
-        knee_left_mins_mean = np.mean(knee_df[column_left].iloc[mins_left])
-        knee_left_mins_std = np.std(knee_df[column_left].iloc[mins_left])
-        knee_left_peaks_mean = np.mean(knee_df[column_left].iloc[peaks_left])
-        knee_left_peaks_std = np.std(knee_df[column_left].iloc[peaks_left])
+    peaks_left = detect_peaks(knee_df, column_left, prominence, distance)
+    mins_left = detect_mins(knee_df, column_left, prominence, distance)
+    knee_left_mins_mean = np.mean(knee_df[column_left].iloc[mins_left])
+    knee_left_mins_std = np.std(knee_df[column_left].iloc[mins_left])
+    knee_left_peaks_mean = np.mean(knee_df[column_left].iloc[peaks_left])
+    knee_left_peaks_std = np.std(knee_df[column_left].iloc[peaks_left])
 
-        column_right = "Right Knee Angle (degrees)"
-        peaks_right = detect_peaks(knee_df, column_right, prominence, distance)
-        mins_right = detect_mins(knee_df, column_right, prominence, distance)
-        knee_right_mins_mean = np.mean(knee_df[column_right].iloc[mins_right])
-        knee_right_mins_std = np.std(knee_df[column_right].iloc[mins_right])
-        knee_right_peaks_mean = np.mean(knee_df[column_right].iloc[peaks_right])
-        knee_right_peaks_std = np.std(knee_df[column_right].iloc[peaks_right])
+    column_right = "Right Knee Angle (degrees)"
+    peaks_right = detect_peaks(knee_df, column_right, prominence, distance)
+    mins_right = detect_mins(knee_df, column_right, prominence, distance)
+    knee_right_mins_mean = np.mean(knee_df[column_right].iloc[mins_right])
+    knee_right_mins_std = np.std(knee_df[column_right].iloc[mins_right])
+    knee_right_peaks_mean = np.mean(knee_df[column_right].iloc[peaks_right])
+    knee_right_peaks_std = np.std(knee_df[column_right].iloc[peaks_right])
         
-        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
-
-        # Plotly bar plot showing peaks and minima side by side with thinner bars
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
-            y=knee_df[column_left].iloc[peaks_left][:len(strides)],
-            x=strides,
-            name="Left Peak Flexion",
-            marker_color='lightblue',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=knee_df[column_right].iloc[peaks_right][:len(strides)],
-            x=strides,
-            name="Right Peak Flexion",
-            marker_color='lightgreen',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=knee_df[column_left].iloc[mins_left][:len(strides)],
-            x=strides,
-            name="Left Min Flexion",
-            marker_color='blue',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=knee_df[column_right].iloc[mins_right][:len(strides)],
-            x=strides,
-            name="Right Min Flexion",
-            marker_color='green',
-            width=0.2
-        ))
-
-        fig.update_layout(
-            title="Joint Flexion Angles Per Stride",
-            yaxis_title="Knee Angle (degrees)",
-            barmode='group',  # Ensures bars are side by side
-            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
-        )
-
-        st.plotly_chart(fig)
-
+    
     # ANKLE CYCLES
-    if ankle_df is not None:
-        column_left = "Left Ankle Angle (degrees)"
-        prominence = 4
-        distance = fps / 2
+    column_left = "Left Ankle Angle (degrees)"
+    prominence = 4
+    distance = fps / 2
 
-        peaks_left = detect_peaks(ankle_df, column_left, prominence, distance)
-        mins_left = detect_mins(ankle_df, column_left, prominence, distance)
-        ankle_left_mins_mean = np.mean(ankle_df[column_left].iloc[mins_left])
-        ankle_left_mins_std = np.std(ankle_df[column_left].iloc[mins_left])
-        ankle_left_peaks_mean = np.mean(ankle_df[column_left].iloc[peaks_left])
-        ankle_left_peaks_std = np.std(ankle_df[column_left].iloc[peaks_left])
+    peaks_left = detect_peaks(ankle_df, column_left, prominence, distance)
+    mins_left = detect_mins(ankle_df, column_left, prominence, distance)
+    ankle_left_mins_mean = np.mean(ankle_df[column_left].iloc[mins_left])
+    ankle_left_mins_std = np.std(ankle_df[column_left].iloc[mins_left])
+    ankle_left_peaks_mean = np.mean(ankle_df[column_left].iloc[peaks_left])
+    ankle_left_peaks_std = np.std(ankle_df[column_left].iloc[peaks_left])
 
-        column_right = "Right Ankle Angle (degrees)"
+    column_right = "Right Ankle Angle (degrees)"
 
-        peaks_right = detect_peaks(ankle_df, column_right, prominence, distance)
+    peaks_right = detect_peaks(ankle_df, column_right, prominence, distance)
 
-        mins_right = detect_mins(ankle_df, column_right, prominence, distance)
-        ankle_right_mins_mean = np.mean(ankle_df[column_right].iloc[mins_right])
-        ankle_right_mins_std = np.std(ankle_df[column_right].iloc[mins_right])
-        ankle_right_peaks_mean = np.mean(ankle_df[column_right].iloc[peaks_right])
-        ankle_right_peaks_std = np.std(ankle_df[column_right].iloc[peaks_right])
+    mins_right = detect_mins(ankle_df, column_right, prominence, distance)
+    ankle_right_mins_mean = np.mean(ankle_df[column_right].iloc[mins_right])
+    ankle_right_mins_std = np.std(ankle_df[column_right].iloc[mins_right])
+    ankle_right_peaks_mean = np.mean(ankle_df[column_right].iloc[peaks_right])
+    ankle_right_peaks_std = np.std(ankle_df[column_right].iloc[peaks_right])
 
-        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
-
-        # Plotly bar plot showing peaks and minima side by side with thinner bars
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
-            y=ankle_df[column_left].iloc[peaks_left][:len(strides)],
-            x=strides,
-            name="Left Peak Flexion",
-            marker_color='lightblue',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=ankle_df[column_right].iloc[peaks_right][:len(strides)],
-            x=strides,
-            name="Right Peak Flexion",
-            marker_color='lightgreen',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=ankle_df[column_left].iloc[mins_left][:len(strides)],
-            x=strides,
-            name="Left Min Flexion",
-            marker_color='blue',
-            width=0.2
-        ))
-
-        fig.add_trace(go.Bar(
-            y=ankle_df[column_right].iloc[mins_right][:len(strides)],
-            x=strides,
-            name="Right Min Flexion",
-            marker_color='green',
-            width=0.2
-        ))
-
-        fig.update_layout(
-            title="Joint Flexion Angles Per Stride",
-            yaxis_title="Ankle Angle (degrees)",
-            barmode='group',  # Ensures bars are side by side
-            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
-        )
-
-        st.plotly_chart(fig)
-
-    ### END CROP ###
-  # show tables
-    df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
-    st.write('### Joint Angles (deg)')
-
-    st.dataframe(df)
-
-    st.write('### Range of Motion')
-    # create dataframe of range of motion
-    
-    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
-    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), hip_left_mins_mean, hip_right_mins_mean, knee_left_mins_mean, knee_right_mins_mean, ankle_left_mins_mean, ankle_right_mins_mean],
-    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
-    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
-    
-    st.dataframe(df_rom)
-
-    # show the range of motion as a spider plot
     fig = go.Figure()
     
     rom_values = [
@@ -875,6 +613,141 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
     st.plotly_chart(fig)
 
+    # Mean ROM for the assymetry bar plot
+    left_hip = hip_left_peaks_mean - hip_left_mins_mean
+    right_hip = hip_right_peaks_mean - hip_right_mins_mean
+    left_knee = knee_left_peaks_mean - knee_left_mins_mean
+    right_knee = knee_right_peaks_mean - knee_right_mins_mean
+    left_ankle = ankle_left_peaks_mean - ankle_left_mins_mean
+    right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
+
+    plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
+
+    with st.expander("Click here to see your spine segment angle data"):
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
+        fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(filtered_spine_segment_angles), max(filtered_spine_segment_angles)], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+        fig.update_layout(title=f"Spine Segment Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+        st.plotly_chart(fig)
+
+        # Assuming filtered_time and filtered_spine_segment_angles are lists or numpy arrays
+        spine_data = {
+            "Time (s)": filtered_time,
+            "Spine Segment Angles (degrees)": filtered_spine_segment_angles
+        }
+
+        # Create a DataFrame
+        spine_df = pd.DataFrame(spine_data)
+
+        # Convert DataFrame to CSV
+        spine_csv = spine_df.to_csv(index=False).encode('utf-8')
+
+        # Add download csv button
+        st.download_button(
+        label="Download Spine Segment Angle Data",
+        data=spine_csv,
+        file_name="spine_segment_angles.csv",
+        mime="text/csv",
+        key=f"spine_segment_angles_{video_index}"
+    )
+        github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+        st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
+        
+    
+
+    filtered_left_hip_angles = np.array(left_hip_angles)[mask]
+    filtered_right_hip_angles = np.array(right_hip_angles)[mask]
+
+    with st.expander("Click here to see your hip angle data"):
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_hip_angles, mode='lines', name="Left Hip"))
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_hip_angles, mode='lines', name="Right Hip"))
+        fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_hip_angles), np.min(filtered_right_hip_angles)), max(np.max(filtered_left_hip_angles), np.max(filtered_left_hip_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+        fig.update_layout(title=f"Hip Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+        st.plotly_chart(fig)
+
+        # Convert DataFrame to CSV
+        hip_csv = hip_df.to_csv(index=False).encode('utf-8')
+
+        # Add download csv button
+        st.download_button(
+            label="Download Hip Angle Data",
+            data=hip_csv,
+            file_name="hip_angles.csv",
+            mime="text/csv",
+            key=f"hip_angles_{video_index}"
+        )
+        st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
+        
+    
+    filtered_left_knee_angles = np.array(left_knee_angles)[mask]
+    filtered_right_knee_angles = np.array(right_knee_angles)[mask]
+
+    with st.expander("Click here to see your knee angle data"):
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_knee_angles, mode='lines', name="Left Knee"))
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_knee_angles, mode='lines', name="Right Knee"))
+        fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_knee_angles), np.min(filtered_right_knee_angles)), max(np.max(filtered_left_knee_angles), np.max(filtered_left_knee_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+        fig.update_layout(title=f"Knee Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+        st.plotly_chart(fig)
+
+        knee_data = {
+            "Time (s)": filtered_time,
+            "Left Knee Angle (degrees)": filtered_left_knee_angles,
+            "Right Knee Angle (degrees)": filtered_right_knee_angles
+        }
+
+        # Create a DataFrame
+        knee_df = pd.DataFrame(knee_data)
+
+        # Convert DataFrame to CSV
+        knee_csv = knee_df.to_csv(index=False).encode('utf-8')
+
+        # Add download csv button
+        st.download_button(
+            label="Download Knee Angle Data",
+            data=knee_csv,
+            file_name="knee_angles.csv",
+            mime="text/csv",
+            key=f"knee_angles_{video_index}"
+        )
+
+        st.image(github_url + "photos/knee flexion angle.png", use_container_width =True)
+    
+    filtered_left_ankle_angles = np.array(left_ankle_angles)[mask]
+    filtered_right_ankle_angles = np.array(right_ankle_angles)[mask]
+
+    with st.expander("Click here to see your ankle angle data"):
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_left_ankle_angles, mode='lines', name="Left Ankle"))
+        fig.add_trace(go.Scatter(x=filtered_time, y=filtered_right_ankle_angles, mode='lines', name="Right Ankle"))
+        fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(np.min(filtered_left_ankle_angles), np.min(filtered_right_ankle_angles)), max(np.max(filtered_left_ankle_angles), np.max(filtered_left_ankle_angles))], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
+        fig.update_layout(title=f"Ankle Joint Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
+        st.plotly_chart(fig)
+
+        ankle_data = {
+            "Time (s)": filtered_time,
+            "Left Ankle Angle (degrees)": filtered_left_ankle_angles,
+            "Right Ankle Angle (degrees)": filtered_right_ankle_angles
+        }
+
+        # Create a DataFrame
+        ankle_df = pd.DataFrame(ankle_data)
+
+        # Convert DataFrame to CSV
+        ankle_csv = ankle_df.to_csv(index=False).encode('utf-8')
+
+        # Add download csv button
+        st.download_button(
+            label="Download Ankle Angle Data",
+            data=ankle_csv,
+            file_name="ankle_angles.csv",
+            mime="text/csv",
+            key=f"ankle_angles_{video_index}"
+        )     
+        # show ankle plantarflexion angle figure
+        st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
+
     # Store data in DataFrame
     joint_angle_df = pd.DataFrame({
         "Time": filtered_time,
@@ -884,16 +757,170 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         "Left Ankle": filtered_left_ankle_angles, "Right Ankle": filtered_right_ankle_angles
     })
 
-    # Example call to this function in your `process_video` or similar function:
-    left_hip = hip_left_peaks_mean - hip_left_mins_mean
-    right_hip = hip_right_peaks_mean - hip_right_mins_mean
-    left_knee = knee_left_peaks_mean - knee_left_mins_mean
-    right_knee = knee_right_peaks_mean - knee_right_mins_mean
-    left_ankle = ankle_left_peaks_mean - ankle_left_mins_mean
-    right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
+    # STRIDE CYCLE DETECTION
+    with st.expander("Stride Cycle Analysis"):
 
-   
-    plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+        
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+        column_left = "Left Hip Angle (degrees)"
+        column_right = "Right Hip Angle (degrees)"
+        fig.add_trace(go.Bar(
+            y=hip_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+        
+        fig.add_trace(go.Bar(
+            y=hip_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=hip_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+        
+        fig.add_trace(go.Bar(
+            y=hip_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+        
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Hip Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+        
+        st.plotly_chart(fig)
+
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+        column_left = "Left Knee Angle (degrees)"
+        column_right = "Right Knee Angle (degrees)"
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=knee_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Knee Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+
+        st.plotly_chart(fig)
+
+        # ANKLE CYCLES
+
+        strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
+
+        # Plotly bar plot showing peaks and minima side by side with thinner bars
+        fig = go.Figure()
+        column_left = "Left Ankle Angle (degrees)"
+        column_right = "Right Ankle Angle (degrees)"
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_left].iloc[peaks_left][:len(strides)],
+            x=strides,
+            name="Left Peak Flexion",
+            marker_color='lightblue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_right].iloc[peaks_right][:len(strides)],
+            x=strides,
+            name="Right Peak Flexion",
+            marker_color='lightgreen',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_left].iloc[mins_left][:len(strides)],
+            x=strides,
+            name="Left Min Flexion",
+            marker_color='blue',
+            width=0.2
+        ))
+
+        fig.add_trace(go.Bar(
+            y=ankle_df[column_right].iloc[mins_right][:len(strides)],
+            x=strides,
+            name="Right Min Flexion",
+            marker_color='green',
+            width=0.2
+        ))
+
+        fig.update_layout(
+            title="Joint Flexion Angles Per Stride",
+            yaxis_title="Ankle Angle (degrees)",
+            barmode='group',  # Ensures bars are side by side
+            xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
+        )
+
+        st.plotly_chart(fig)
+
+    ### END CROP ###
+  # show tables
+    df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
+    st.write('### Joint Angles (deg)')
+
+    st.dataframe(df)
+
+    st.write('### Range of Motion')
+    # create dataframe of range of motion
+    
+    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
+    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), hip_left_mins_mean, hip_right_mins_mean, knee_left_mins_mean, knee_right_mins_mean, ankle_left_mins_mean, ankle_right_mins_mean],
+    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
+    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
+    
+    st.dataframe(df_rom)
 
     pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
     if pca_checkbox:
