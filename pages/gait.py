@@ -14,6 +14,7 @@ from scipy.signal import find_peaks
 import tempfile
 import requests
 from io import BytesIO
+import matplotlib.colors as mcolors
 
 def detect_peaks(data, column, prominence, distance):
     peaks, _ = find_peaks(data[column], prominence=prominence, distance=distance)
@@ -493,17 +494,14 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
      # HIP RANGES
     column_left = "Left Hip Angle (degrees)"
     prominence = 4
-    distance = fps / 2  # Assuming fps/2 equivalent
-    
+    distance = fps / 2  # Assuming fps/2 equivalent    
     peaks_left = detect_peaks(hip_df, column_left, prominence, distance)
     mins_left = detect_mins(hip_df, column_left, prominence, distance)
     hip_left_mins_mean = np.mean(hip_df[column_left].iloc[mins_left])
     hip_left_mins_std = np.std(hip_df[column_left].iloc[mins_left])
     hip_left_peaks_mean = np.mean(hip_df[column_left].iloc[peaks_left])
-    hip_left_peaks_std = np.std(hip_df[column_left].iloc[peaks_left])
-    
+    hip_left_peaks_std = np.std(hip_df[column_left].iloc[peaks_left])    
     column_right = "Right Hip Angle (degrees)"
-
     peaks_right = detect_peaks(hip_df, column_right, prominence, distance)
     mins_right = detect_mins(hip_df, column_right, prominence, distance)
     hip_right_mins_mean = np.mean(hip_df[column_right].iloc[mins_right])
@@ -515,14 +513,12 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     column_left = "Left Knee Angle (degrees)"
     prominence = 4
     distance = fps / 2
-
     peaks_left = detect_peaks(knee_df, column_left, prominence, distance)
     mins_left = detect_mins(knee_df, column_left, prominence, distance)
     knee_left_mins_mean = np.mean(knee_df[column_left].iloc[mins_left])
     knee_left_mins_std = np.std(knee_df[column_left].iloc[mins_left])
     knee_left_peaks_mean = np.mean(knee_df[column_left].iloc[peaks_left])
     knee_left_peaks_std = np.std(knee_df[column_left].iloc[peaks_left])
-
     column_right = "Right Knee Angle (degrees)"
     peaks_right = detect_peaks(knee_df, column_right, prominence, distance)
     mins_right = detect_mins(knee_df, column_right, prominence, distance)
@@ -530,32 +526,25 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     knee_right_mins_std = np.std(knee_df[column_right].iloc[mins_right])
     knee_right_peaks_mean = np.mean(knee_df[column_right].iloc[peaks_right])
     knee_right_peaks_std = np.std(knee_df[column_right].iloc[peaks_right])
-        
     
     # ANKLE CYCLES
     column_left = "Left Ankle Angle (degrees)"
     prominence = 4
     distance = fps / 2
-
     peaks_left = detect_peaks(ankle_df, column_left, prominence, distance)
     mins_left = detect_mins(ankle_df, column_left, prominence, distance)
     ankle_left_mins_mean = np.mean(ankle_df[column_left].iloc[mins_left])
     ankle_left_mins_std = np.std(ankle_df[column_left].iloc[mins_left])
     ankle_left_peaks_mean = np.mean(ankle_df[column_left].iloc[peaks_left])
     ankle_left_peaks_std = np.std(ankle_df[column_left].iloc[peaks_left])
-
     column_right = "Right Ankle Angle (degrees)"
-
     peaks_right = detect_peaks(ankle_df, column_right, prominence, distance)
-
     mins_right = detect_mins(ankle_df, column_right, prominence, distance)
     ankle_right_mins_mean = np.mean(ankle_df[column_right].iloc[mins_right])
     ankle_right_mins_std = np.std(ankle_df[column_right].iloc[mins_right])
     ankle_right_peaks_mean = np.mean(ankle_df[column_right].iloc[peaks_right])
     ankle_right_peaks_std = np.std(ankle_df[column_right].iloc[peaks_right])
-
-    fig = go.Figure()
-    
+   
     rom_values = [
     np.ptp(filtered_right_knee_angles),
     np.ptp(filtered_right_hip_angles),
@@ -567,51 +556,203 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         ]
     
     joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
+    knee_right_rom_mean = knee_right_peaks_mean - knee_right_mins_mean
+    knee_left_rom_mean = knee_left_peaks_mean - knee_left_mins_mean
+    hip_right_rom_mean = hip_right_peaks_mean - hip_right_mins_mean
+    hip_left_rom_mean = hip_left_peaks_mean - hip_left_mins_mean
+    ankle_right_rom_mean = ankle_right_peaks_mean - ankle_right_mins_mean
+    ankle_left_rom_mean = ankle_left_peaks_mean - ankle_left_mins_mean
+    spine_segment_rom_mean = np.ptp(filtered_spine_segment_angles)
+# HIP JOINT: 
+    # 1. https://pmc.ncbi.nlm.nih.gov/articles/PMC9325808/ 
+    # 2. https://puresportsmed.com/blog/posts/what-long-distance-runners-can-do-to-avoid-overuse-injuries
+    # Hip adduction: 
+        # Increased peak hip adduction during stance is associated with tibial stress fractures and other overuse injuries (1).
+        # Excessive pelvic drop (linked to weak hip abductors) further compounds this risk (1)
+    # Hip Flexion/extension:
+        # Limited hip ROM (<60° total flexion-extension) can lead to compensatory mechanics, increasing the likelihood of injuries such as hamstring strains or lower back pain (2)
 
+# KNEE JOINT: https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0288814
+# Frontal Plane KNEE Motion:
+    # Excessive valgus or varus motion during stance increases patellofemoral stress and risk of overuse injuries like patellofemoral pain syndrome (PFPS)3.
+    # Greater knee valgus-varus excursion (i.e., instability) during stance is linked to increased odds of injury.
+# Sagittal Plane KNEE Motion:
+    # Reduced knee flexion during initial contact and stance compromises shock absorption, potentially increasing injury risk. However, there is no direct association between sagittal knee flexion angles and general running-related injuries (RRIs) https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0288814 
+
+    # source for rom values: https://pmc.ncbi.nlm.nih.gov/articles/PMC4994968/
+    # ankle, knee, and hip ROM values: https://www.physio-pedia.com/Running_Biomechanics
+    # spine: https://pmc.ncbi.nlm.nih.gov/articles/PMC1896074/
+        # Excessive forward lean (>15° relative to the vertical axis) may increase strain on the lumbar spine and reduce efficiency. https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0288814
+        # However, no specific sagittal plane thresholds for spine angle are directly linked to running injuries in the results
+        # While no injury-specific ROM is quantified, excessive forward lean or reduced lumbar mobility may impair shock absorption:
+        # Sagittal lumbar ROM increases during downhill running, potentially straining passive spinal structures6.
+        # Maintaining a 5–15° forward lean (relative to vertical) optimizes balance and force distribution https://pmc.ncbi.nlm.nih.gov/articles/PMC1896074/
+    spine_rom_good = 10 # 5 to 15 
+    ankle_plantar_good = 55 # 40 to 55
+    ankle_dorsi_good = 20 # 15 to 25 (<15 is moderate (https://www.runnersworld.com/uk/health/injury/a41329624/dorsiflexion/) <10 is bad)
+    # Excessive eversion during stance, or prolonged time spent in an everted position, is associated with medial tibial stress syndrome (MTSS) and tibial stress fractures https://pmc.ncbi.nlm.nih.gov/articles/PMC9325808/.
+    # Increased peak inversion at initial contact is a biomechanical risk factor for Achilles tendinopathy https://pmc.ncbi.nlm.nih.gov/articles/PMC9325808/
+    ankle_inv_good = 23
+    ankle_evert_good = 12
+    ankle_rom_good = 70 # 65 to 75; another study said 86
+    ankle_rom_walk_good = 30
+
+    # No direct ROM thresholds are established, but restricted motion during loading phases increases joint stress:
+    # Reduced knee flexion during stance phase elevates patellofemoral pain risk (https://pubmed.ncbi.nlm.nih.gov/36150753/).
+    # Soft landing strategies (reducing peak knee forces) lower injury risk by ~67% (https://pubmed.ncbi.nlm.nih.gov/36150753/).
+    knee_flex_good = 125
+    knee_ext_good = 0
+    knee_rom_good = 125
+
+    # Injured runners averaged 59.4° hip ROM vs. 68.1° in non-injured runners
+    # Restricted hip mobility correlates with compensatory knee and pelvic motion, increasing injury likelihood
+    # https://pubmed.ncbi.nlm.nih.gov/1487346/
+
+    hip_flex_good = 55
+    hip_ext_good = 10
+    hip_rom_good = 65 # <60 deg total flexion-extension ROM is bad
+
+    def get_color(value, good_range, moderate_range):
+        """Assigns a gradient color based on the ROM classification."""
+        norm = mcolors.Normalize(vmin=good_range[0] - 20, vmax=good_range[1] + 20)  # Normalize scale
+        cmap = plt.cm.RdYlGn  # Red-Yellow-Green colormap
+        return mcolors.to_hex(cmap(norm(value)))
+
+    # Define ranges for color classification
+    ankle_good = (65, 75)
+    ankle_moderate = (55, 85)
+    ankle_bad = (40, 95)
+
+    knee_good = (120, 130)
+    knee_moderate = (110, 165)
+    knee_bad = (90, 175)
+
+    hip_good = (60, 70)
+    hip_moderate = (50, 80)
+    hip_bad = (40, 90)
+
+    spine_good = (5, 15)
+    spine_moderate = (2, 20)
+    spine_bad = (0, 30)
+
+    # Example ROM values (replace with actual calculations)
+    rom_values = [knee_right_rom_mean, hip_right_rom_mean, spine_segment_rom_mean, 
+                hip_left_rom_mean, knee_left_rom_mean, ankle_left_rom_mean, ankle_right_rom_mean]
+
+    joint_labels = ["Knee Right", "Hip Right", "Spine", "Hip Left", "Knee Left", "Ankle Left", "Ankle Right"]
+
+    # Assign colors based on ROM value classifications using a gradient
+    colors = [
+        get_color(rom_values[0], knee_good, knee_moderate),  # Knee Right
+        get_color(rom_values[1], hip_good, hip_moderate),    # Hip Right
+        get_color(rom_values[2], spine_good, spine_moderate), # Spine
+        get_color(rom_values[3], hip_good, hip_moderate),    # Hip Left
+        get_color(rom_values[4], knee_good, knee_moderate),  # Knee Left
+        get_color(rom_values[5], (40, 50), (30, 40, 50, 60)),  # Ankle Left (Custom range)
+        get_color(rom_values[6], (40, 50), (30, 40, 50, 60))   # Ankle Right (Custom range)
+    ]
+
+    # Define ideal ROM values (midpoint of the good range)
+    ideal_rom_outer = [knee_good[1], hip_good[1], spine_good[1], hip_good[1], knee_good[1], ankle_good[1], ankle_good[1]]
+    ideal_rom_inner = [knee_good[0], hip_good[0], spine_good[0], hip_good[0], knee_good[0], ankle_good[0], ankle_good[0]]
+    moderate_rom_outer = [knee_moderate[1], hip_moderate[1], spine_moderate[1], hip_moderate[1], knee_moderate[1], ankle_moderate[1], ankle_moderate[1]]
+    moderate_rom_inner = [knee_moderate[0], hip_moderate[0], spine_moderate[0], hip_moderate[0], knee_moderate[0], ankle_moderate[0], ankle_moderate[0]]
+    bad_rom_outer = [knee_bad[1], hip_bad[1], spine_bad[1], hip_bad[1], knee_bad[1], ankle_bad[1], ankle_bad[1]]
+    bad_rom_inner = [knee_bad[0], hip_bad[0], spine_bad[0], hip_bad[0], knee_bad[0], ankle_bad[0], ankle_bad[0]]
+      
+    # Create polar scatter plot with color-coded points
+    fig = go.Figure()
+
+
+    # Plot ideal target ROM values
     fig.add_trace(go.Scatterpolar(
-        r=[knee_right_peaks_mean - knee_right_mins_mean, 
-           hip_right_peaks_mean - hip_right_mins_mean, 
-           np.ptp(filtered_spine_segment_angles), 
-           hip_left_peaks_mean - hip_left_mins_mean,
-           knee_left_peaks_mean - knee_left_mins_mean,
-           ankle_left_peaks_mean - ankle_left_mins_mean, 
-           ankle_right_peaks_mean - ankle_right_mins_mean],
-           
+        r=moderate_rom_outer,
         theta=joint_labels,
         fill='toself',
-        name='Range of Motion'
+        name='Moderate Outer Range of Motion',
+        marker=dict(color='yellow', size=0.1),
+        line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
     ))
 
-    max_all_joint_angles = np.max([np.ptp(filtered_right_knee_angles), np.ptp(filtered_right_hip_angles), np.ptp(filtered_spine_segment_angles), np.ptp(filtered_left_hip_angles), np.ptp(filtered_left_knee_angles), np.ptp(filtered_left_ankle_angles), np.ptp(filtered_right_ankle_angles)])
-    
-    # Add annotations for each data point (ROM value)
-    annotations = []
-    for i, value in enumerate(rom_values):
-        annotations.append(
-            dict(
-                r=value + 1,  # Slightly offset for visibility
-                theta=joint_labels[i],
-                text=f"{value:.1f}°",  # Display ROM value with 1 decimal places
-                showarrow=True,
-                arrowhead=2,
-                ax=0,
-                ay=-20,
-                font=dict(size=12, color="black")
-            )
-        )
+    fig.add_trace(go.Scatterpolar(
+        r=bad_rom_outer,
+        theta=joint_labels,
+        fill='tonext',
+        name='Poor Range of Motion',
+        marker=dict(color='red', size=0.1),
+        line=dict(color='red', width=2)  # Dashed green outline for ideal ROM
+    ))
+
+    # Plot ideal target ROM values
+    fig.add_trace(go.Scatterpolar(
+        r=ideal_rom_outer,
+        theta=joint_labels,
+        fill='toself',
+        name='Ideal Range of Motion',
+        marker=dict(color='green', size=0.1),
+        line=dict(color='green', width=2)  # Dashed green outline for ideal ROM
+    ))
+
+    # Plot ideal target ROM values
+    # fig.add_trace(go.Scatterpolar(
+    #     r=moderate_rom_inner,
+    #     theta=joint_labels,
+    #     fill='toself',
+    #     name='Moderate Inner Range of Motion',
+    #     marker=dict(color='yellow', size=0.1),
+    #     line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
+    # ))
+
+
+
+    # Plot actual ROM values
+    fig.add_trace(go.Scatterpolar(
+        r=rom_values,
+        theta=joint_labels,
+        fill='toself',
+        name='Your Range of Motion',
+        marker=dict(color=colors, size=10),
+        line=dict(color='blue', width=2)
+    ))
+
+    fig.add_trace(go.Scatterpolar(
+        r=bad_rom_inner,
+        theta=joint_labels,
+        fill='toself',
+        name='',  # Empty name to hide from legend
+        marker=dict(color='red', size=0.1),
+        line=dict(color='red', width=0.1)  # Dashed green outline for ideal ROM
+    ))
+
+    # Get max range of motion value
+    max_all_joint_angles = max(max(rom_values), max(bad_rom_outer)) + 15
+
+    # Update layout
     fig.update_layout(
-        title="Range of Motion (°)",
+        title="Range of Motion (°) vs Ideal Target",
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, max_all_joint_angles + 5],
-                tickfont=dict(color='black')  # Set black font for tick values
-            )),
-        # annotations=annotations,
-        showlegend=False
+                range=[0, max_all_joint_angles],
+                tickfont=dict(color='black')
+            )
+        ),
+        showlegend=True
     )
 
     st.plotly_chart(fig)
+
+    st.write('💡 Insights to improve your range of motion:')
+    st.write('1. **Knees**: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.')
+    st.write('2. **Hips**: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.')
+    st.write('3. **Spine**: Increase range of motion by doing exercises that target the lower back, core, and obliques.')
+    
+    # KEY INSIGHT: Frontal and transverse plane motions (e.g., eversion, adduction) often play a more critical role in injury risk than sagittal plane mechanics
+
+    # Asymmetries in ROM (e.g., >10–15% difference between limbs) are significant predictors of injury across joints (https://pmc.ncbi.nlm.nih.gov/articles/PMC11144664/)
+    # Asymmetry ≥6.5° between ankles raises musculoskeletal injury risk by 4–5× in athletes (https://www.ejgm.co.uk/download/role-of-ankle-dorsiflexion-in-sports-performance-and-injury-risk-a-narrative-review-13412.pdf)
+    # Asymmetry matters more than absolute values: ≥6.5° ankle dorsiflexion asymmetry quadruples injury risk (https://www.ejgm.co.uk/download/role-of-ankle-dorsiflexion-in-sports-performance-and-injury-risk-a-narrative-review-13412.pdf).
+    # Muscle flexibility: Gastrocnemius-soleus tightness limits ankle ROM, altering proximal joint mechanics: https://pmc.ncbi.nlm.nih.gov/articles/PMC9865943/
 
     # Mean ROM for the assymetry bar plot
     left_hip = hip_left_peaks_mean - hip_left_mins_mean
