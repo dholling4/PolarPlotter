@@ -663,7 +663,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     # Create polar scatter plot with color-coded points
     fig = go.Figure()
 
-
     # Plot ideal target ROM values
     fig.add_trace(go.Scatterpolar(
         r=moderate_rom_outer,
@@ -730,11 +729,18 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     # Update layout
     fig.update_layout(
         title="Range of Motion (°) vs Ideal Target",
+        #update title fontsize
+        title_font=dict(size=36),
         polar=dict(
+            angularaxis=dict(
+            tickfont=dict(size=26)  # Increase font size for theta labels
+        ),
             radialaxis=dict(
                 visible=True,
                 range=[0, max_all_joint_angles],
-                tickfont=dict(color='black')
+                # only show every other tickfont value
+                tickvals=[0,30, 60, 90, 120, 150, 180],
+                tickfont=dict(size=16, color='black')
             )
         ),
         showlegend=True
