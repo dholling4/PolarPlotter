@@ -676,7 +676,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         r=moderate_rom_outer,
         theta=joint_labels,
         fill='toself',
-        name='Moderate Outer Range of Motion',
+        name='Moderate',
         marker=dict(color='yellow', size=0.1),
         line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
     ))
@@ -685,7 +685,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         r=bad_rom_outer,
         theta=joint_labels,
         fill='tonext',
-        name='Poor Range of Motion',
+        name='Poor',
         marker=dict(color='red', size=0.1),
         line=dict(color='red', width=2)  # Dashed green outline for ideal ROM
     ))
@@ -695,7 +695,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         r=ideal_rom_outer,
         theta=joint_labels,
         fill='toself',
-        name='Ideal Range of Motion',
+        name='Ideal Target',
         marker=dict(color='green', size=0.1),
         line=dict(color='green', width=2)  # Dashed green outline for ideal ROM
     ))
@@ -717,7 +717,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         r=rom_values,
         theta=joint_labels,
         fill='toself',
-        name='Your Range of Motion',
+        name='Yours',
         marker=dict(color=colors, size=0.01),
         line=dict(color='blue', width=2)
     ))
@@ -751,7 +751,12 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 tickfont=dict(size=16, color='black')
             )
         ),
-        showlegend=True
+        showlegend=True,
+        #increase legend fontsize
+        legend=dict(
+            font=dict(
+                size=16
+            ))
     )
 
     st.plotly_chart(fig)
