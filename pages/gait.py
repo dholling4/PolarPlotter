@@ -340,7 +340,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
     ))
 
     fig.update_layout(
-        title="Average Joint Range of Motion Asymmetry",
+        title="Range of Motion Asymmetry",
         # increaes title fontsize
         title_font_size=42,
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
