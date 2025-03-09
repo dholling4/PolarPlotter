@@ -340,7 +340,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
     fig.update_layout(
         title="Average Joint Range of Motion Asymmetry",
         # increaes title fontsize
-        title_font_size=36,
+        title_font_size=40,
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
         yaxis_title="",
         showlegend=False,
@@ -733,7 +733,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     fig.update_layout(
         title="Range of Motion (°) vs Ideal Target",
         #update title fontsize
-        title_font=dict(size=36),
+        title_font=dict(size=40),
         polar=dict(
             angularaxis=dict(
             tickfont=dict(size=26)  # Increase font size for theta labels
