@@ -339,6 +339,8 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
 
     fig.update_layout(
         title="Average Joint Range of Motion Asymmetry",
+        # increaes title fontsize
+        title_font_size=36,
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
         yaxis_title="",
         showlegend=False,
@@ -349,6 +351,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             range=[-30, 30],  # Fixed range from -30 to 30 for the x-axis
             tickvals=[-30, -20, -10, 0, 10, 20, 30],  # Tick labels for the fixed range
             ticktext=["-30", "-20", "-10", "0", "10", "20", "30"]  # Custom tick labels
+
         ),
         yaxis=dict(tickvals=[0, 1, 2], ticktext=["Ankle", "Knee", "Hip"]),
         height=310,  # Shorten the graph height
@@ -748,10 +751,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 
     st.plotly_chart(fig)
 
-    st.write('💡 Insights to improve your range of motion:')
-    st.write('1. **Knees**: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.')
-    st.write('2. **Hips**: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.')
-    st.write('3. **Spine**: Increase range of motion by doing exercises that target the lower back, core, and obliques.')
+    # st.markdown('### title')
     
     # KEY INSIGHT: Frontal and transverse plane motions (e.g., eversion, adduction) often play a more critical role in injury risk than sagittal plane mechanics
 
@@ -769,7 +769,12 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
 
     plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
-
+    
+    st.title('💡 How to improve your range of motion:')
+    st.write('1. **Knees**: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.')
+    st.write('2. **Hips**: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.')
+    st.write('3. **Spine**: Increase range of motion by doing exercises that target the lower back, core, and obliques.')
+    st.write('\n')
     with st.expander("Click here to see your spine segment angle data"):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
