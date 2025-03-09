@@ -332,7 +332,9 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             colorbar=dict(title="Asymmetry (°)"),  # Add colorbar
             cmin=0,  # Minimum value for color scale
             cmax=40,  # Maximum value for color scale
-            reversescale=True  # Reverse the color scale
+            reversescale=True,  # Reverse the color scale
+            # increase font size
+            colorbar_tickfont=dict(size=16)
         ),
         name="Left vs Right Asymmetry"
     ))
@@ -340,8 +342,9 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
     fig.update_layout(
         title="Average Joint Range of Motion Asymmetry",
         # increaes title fontsize
-        title_font_size=40,
+        title_font_size=42,
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
+        xaxis_title_font_size=22,
         yaxis_title="",
         showlegend=False,
         xaxis=dict(
@@ -350,10 +353,12 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             zerolinewidth=2,
             range=[-30, 30],  # Fixed range from -30 to 30 for the x-axis
             tickvals=[-30, -20, -10, 0, 10, 20, 30],  # Tick labels for the fixed range
-            ticktext=["-30", "-20", "-10", "0", "10", "20", "30"]  # Custom tick labels
+            ticktext=["-30", "-20", "-10", "0", "10", "20", "30"],  # Custom tick labels
+            tickfont=dict(size=22)  # Increase tick font size
+
 
         ),
-        yaxis=dict(tickvals=[0, 1, 2], ticktext=["Ankle", "Knee", "Hip"]),
+        yaxis=dict(tickvals=[0, 1, 2], ticktext=["Ankle", "Knee", "Hip"], tickfont=dict(size=22)),
         height=310,  # Shorten the graph height
         bargap=0.1  # Reduce the gap between bars to make them thinner
     )
@@ -713,7 +718,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         theta=joint_labels,
         fill='toself',
         name='Your Range of Motion',
-        marker=dict(color=colors, size=10),
+        marker=dict(color=colors, size=0.01),
         line=dict(color='blue', width=2)
     ))
 
@@ -733,7 +738,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     fig.update_layout(
         title="Range of Motion (°) vs Ideal Target",
         #update title fontsize
-        title_font=dict(size=40),
+        title_font=dict(size=42),
         polar=dict(
             angularaxis=dict(
             tickfont=dict(size=26)  # Increase font size for theta labels
