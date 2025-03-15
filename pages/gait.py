@@ -14,7 +14,120 @@ from scipy.signal import find_peaks
 import tempfile
 import requests
 from io import BytesIO
+from fpdf import FPDF
 import matplotlib.colors as mcolors
+from PIL import Image, ImageOps
+from datetime import datetime
+
+def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info):
+    """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+
+    # Set Background to Black
+    pdf.set_fill_color(0, 0, 0)  # Black background
+    pdf.rect(0, 0, 210, 297, 'F')  # Fill entire A4 page
+
+    # ✅ Add Date and Location (Top Left)
+    pdf.set_text_color(255, 255, 255)  # White text
+    pdf.set_font("Arial", size=10)  # Small font
+    current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
+    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile"
+    pdf.multi_cell(0, 5, location_text)  # Multi-line cell to properly format text
+
+    # ✅ Report Title (Centered)
+    pdf.set_xy(10, 10)  # Reset cursor
+    pdf.set_font("Arial", style='B', size=20)
+    pdf.cell(190, 10, "Your Stride Sync Report", ln=True, align='C')
+
+    pdf.ln(10)  # Spacing before the next section
+
+    # Add padding to the image
+    if pose_image_path:
+
+        # 🔹 Load image and add white padding
+        pose_img = Image.open(pose_image_path)
+        width, height = pose_img.size
+
+        # Define padding (e.g., 20% padding around)
+        # padding_x = int(width * 0.01)  # 20% of the width
+        # padding_y = int(height * 0.01)  # 20% of the height
+
+        # Create a new image with padding
+        padded_img = ImageOps.expand(pose_img, border=(0, 1, 0, 1), fill=(0, 0, 0))  # Add black padding
+        padded_pose_path = tempfile.mktemp(suffix=".png")
+        padded_img.save(padded_pose_path)
+
+        # 🔹 Reduce image size in the PDF
+        pdf.image(padded_pose_path, x=10, y=25, h=96, w=54)  # Make it smaller (1/8 of the page)
+        pdf.ln(10)
+
+    # ✅ Spider Plot (Top Right)
+    spider_plot_path = tempfile.mktemp(suffix=".png")
+    spider_plot.update_layout(paper_bgcolor="black", font_color="white")  # Adjust plot style
+    spider_plot.write_image(spider_plot_path)
+    pdf.image(spider_plot_path, x=75, y=30, w=125)  # Adjusted placement
+
+    pdf.ln(45)  # Increase spacing before middle section
+
+    # ✅ Asymmetry Plot (Middle Left)
+    asymmetry_plot_path = tempfile.mktemp(suffix=".png")
+    asymmetry_plot.update_layout(paper_bgcolor="black", plot_bgcolor="black", font_color="white")
+    asymmetry_plot.write_image(asymmetry_plot_path)
+    pdf.image(asymmetry_plot_path, x=35, y=135, w=150)  # Placed on the left
+
+    pdf.ln(10)  # Extra spacing before next plot
+
+    # ✅ Generate Styled ROM Table (Middle Right)
+    rom_chart_path = tempfile.mktemp(suffix=".png")
+    fig, ax = plt.subplots(figsize=(4, 2.2))  # Adjust size
+    ax.axis('tight')
+    ax.axis('off')
+    table = ax.table(cellText=df_rom.values, colLabels=df_rom.columns, cellLoc='center', loc='center')
+
+    # Style table
+    table.auto_set_font_size(True)
+    table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
+    plt.savefig(rom_chart_path, bbox_inches='tight', dpi=300, facecolor='black') 
+    plt.close(fig)
+
+    # Place ROM Table (Middle Right)
+    pdf.image(rom_chart_path, x=35, y=205, w=140)  # Adjusted placement
+
+    pdf.ln(160)  # Spacing before bottom text section
+
+    pdf.set_text_color(255, 215, 0)  # Gold Text for Highlights
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, "Key Insights from Your Gait", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 7, text_info)
+    pdf.ln(20)
+    
+    pdf.rect(0, 0, 210, 297, 'F')  # Fill entire A4 page
+
+    example_next_steps = '''To improve your range of motion, consider stretching, strength training, and mobility drills.\n"
+    - Knees: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.\n"
+    - Hips: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.\n"
+    - Spine: Increase range of motion by doing exercises that target the lower back, core, and obliques.\n"
+    \nAdditional Training Tips:\n"
+    - Foam Rolling & Recovery: Incorporate myofascial release techniques to improve tissue mobility.\n"
+    - Balance & Coordination Training: Work on single-leg stability to improve neuromuscular control.\n"
+    - Progressive Overload: Gradually increase intensity and volume while monitoring discomfort.\n"
+    \nFor further assistance, contact Dr. David Hollinger at dh25587@essex.ac.uk'''
+
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, "Next Steps", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 7, example_next_steps)
+    pdf.ln(20)
+
+    # ✅ Save PDF
+    pdf_file_path = tempfile.mktemp(suffix=".pdf")
+    pdf.output(pdf_file_path)
+    
+    return pdf_file_path
+
 
 def detect_peaks(data, column, prominence, distance):
     peaks, _ = find_peaks(data[column], prominence=prominence, distance=distance)
@@ -54,7 +167,65 @@ KEYPOINTS_OF_INTEREST = {
     32: "Right Foot"
 }
 
+def process_first_frame_report(video_path, video_index):
+    """Use pose estimation overlay for generate pdf report."""
+    neon_green = (57, 255, 20)
+    cool_blue = (0, 91, 255)
+
+    cap = cv2.VideoCapture(video_path)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    duration = total_frames / fps
+
+    # If the video is longer than 10 seconds, capture only the middle 5 seconds
+    if duration > 10:
+        start_frame = total_frames // 2 - (5 * fps)
+        end_frame = total_frames // 2 + (5 * fps)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+        total_frames = int(end_frame - start_frame)
+        duration = total_frames / fps
+
+    else:
+        start_frame = total_frames // 2 
+
+    frame_number = start_frame
+
+    time = frame_number / fps
+
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    
+    ret, frame = cap.read()
+    if not ret:
+        st.error("Failed to read the selected frame.")
+        cap.release()
+        return None, None, None  # Return None if no valid frame
+
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+        results = pose.process(frame_rgb)
+        if results.pose_landmarks:
+            annotated_frame = frame.copy()
+            mp_drawing.draw_landmarks(
+                annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=10, circle_radius=7),
+                connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
+            )
+
+            # Save the processed frame as an image
+            image_path = tempfile.mktemp(suffix=".png")
+            cv2.imwrite(image_path, annotated_frame)
+            
+            # st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number}")
+            
+            cap.release()
+            return frame_number, time, image_path  # Return image path
+
+    cap.release()
+    return None, None, None
+
 def process_first_frame(video_path, video_index):
+    """Processes the first frame and returns the frame number, time, and saved image path."""
 
     neon_green = (57, 255, 20)
     cool_blue = (0, 91, 255)
@@ -64,7 +235,7 @@ def process_first_frame(video_path, video_index):
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
-    # if the length is greater than 10 seconds, only capture the middle 5 seconds
+    # If the video is longer than 10 seconds, capture only the middle 5 seconds
     if duration > 10:
         start_frame = total_frames // 2 - (5 * fps)
         end_frame = total_frames // 2 + (5 * fps)
@@ -78,16 +249,17 @@ def process_first_frame(video_path, video_index):
 
     time = frame_number / fps
 
-    st.write(f'Frame Number:  {frame_number} | Time :  {time:.2f} sec')
+    st.write(f'Frame Number: {frame_number} | Time: {time:.2f} sec')
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
     ret, frame = cap.read()
     if not ret:
         st.error("Failed to read the selected frame.")
         cap.release()
-        return
-    
+        return None, None, None  # Return None if no valid frame
+
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         results = pose.process(frame_rgb)
         if results.pose_landmarks:
@@ -95,11 +267,21 @@ def process_first_frame(video_path, video_index):
             mp_drawing.draw_landmarks(
                 annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=10, circle_radius=7),
-            connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
+                connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
             )
+            
+            # Save the processed frame as an image
+            image_path = tempfile.mktemp(suffix=".png")
+            cv2.imwrite(image_path, annotated_frame)
+            
             st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number}")
+            
+            cap.release()
+            return frame_number, time, image_path  # Return image path
+
     cap.release()
-    return frame_number, time
+    return None, None, None
+
 
 def calculate_angle(v1, v2):
     """
@@ -363,7 +545,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
         bargap=0.1  # Reduce the gap between bars to make them thinner
     )
 
-    st.plotly_chart(fig)
+    return fig
 
 # Butterworth lowpass filter functions
 def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
@@ -372,7 +554,7 @@ def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     return lfilter(b, a, data)
 
-def process_video(video_path, output_txt_path, frame_time, video_index):
+def process_video(camera_side, video_path, output_txt_path, frame_time, video_index):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -563,7 +745,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     np.ptp(filtered_right_ankle_angles)
         ]
     
-    joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment Angle', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
+    joint_labels = ['Right Joint Knee', 'Right Joint Hip', 'Spine Segment', 'Left Joint Hip', 'Left Joint Knee', 'Left Joint Ankle', 'Right Joint Ankle']
     knee_right_rom_mean = knee_right_peaks_mean - knee_right_mins_mean
     knee_left_rom_mean = knee_left_peaks_mean - knee_left_mins_mean
     hip_right_rom_mean = hip_right_peaks_mean - hip_right_mins_mean
@@ -627,23 +809,40 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         return mcolors.to_hex(cmap(norm(value)))
 
     # Define ranges for color classification
-    ankle_good = (65, 75)
-    ankle_moderate = (55, 85)
-    ankle_bad = (40, 95)
+    if camera_side == "side": 
+        ankle_good = (65, 75)
+        ankle_moderate = (55, 85)
+        ankle_bad = (40, 95)
 
-    knee_good = (120, 130)
-    knee_moderate = (110, 165)
-    knee_bad = (90, 175)
+        knee_good = (120, 130)
+        knee_moderate = (110, 165)
+        knee_bad = (90, 175)
 
-    hip_good = (60, 70)
-    hip_moderate = (50, 80)
-    hip_bad = (40, 90)
+        hip_good = (60, 70)
+        hip_moderate = (50, 80)
+        hip_bad = (40, 90)
 
-    spine_good = (5, 15)
-    spine_moderate = (2, 20)
-    spine_bad = (0, 30)
+        spine_good = (5, 15)
+        spine_moderate = (2, 20)
+        spine_bad = (0, 30)
 
-    # Example ROM values (replace with actual calculations)
+    elif camera_side == "back":
+        ankle_good = (20, 60)
+        ankle_moderate = (15, 20)
+        ankle_bad = (0, 15)
+
+        knee_good = (0, 5)
+        knee_moderate = (5, 12)
+        knee_bad = (12, 30)
+
+        hip_good = (0, 10)
+        hip_moderate = (10, 20)
+        hip_bad = (20, 40)
+
+        spine_good = (1, 10)
+        spine_moderate = (10, 20)
+        spine_bad = (20, 30)
+
     rom_values = [knee_right_rom_mean, hip_right_rom_mean, spine_segment_rom_mean, 
                 hip_left_rom_mean, knee_left_rom_mean, ankle_left_rom_mean, ankle_right_rom_mean]
 
@@ -669,10 +868,10 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     bad_rom_inner = [knee_bad[0], hip_bad[0], spine_bad[0], hip_bad[0], knee_bad[0], ankle_bad[0], ankle_bad[0]]
       
     # Create polar scatter plot with color-coded points
-    fig = go.Figure()
+    spider_plot = go.Figure()
 
     # Plot ideal target ROM values
-    fig.add_trace(go.Scatterpolar(
+    spider_plot.add_trace(go.Scatterpolar(
         r=moderate_rom_outer,
         theta=joint_labels,
         fill='toself',
@@ -681,7 +880,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
     ))
 
-    fig.add_trace(go.Scatterpolar(
+    spider_plot.add_trace(go.Scatterpolar(
         r=bad_rom_outer,
         theta=joint_labels,
         fill='tonext',
@@ -691,7 +890,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     ))
 
     # Plot ideal target ROM values
-    fig.add_trace(go.Scatterpolar(
+    spider_plot.add_trace(go.Scatterpolar(
         r=ideal_rom_outer,
         theta=joint_labels,
         fill='toself',
@@ -700,20 +899,8 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         line=dict(color='green', width=2)  # Dashed green outline for ideal ROM
     ))
 
-    # Plot ideal target ROM values
-    # fig.add_trace(go.Scatterpolar(
-    #     r=moderate_rom_inner,
-    #     theta=joint_labels,
-    #     fill='toself',
-    #     name='Moderate Inner Range of Motion',
-    #     marker=dict(color='yellow', size=0.1),
-    #     line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
-    # ))
-
-
-
     # Plot actual ROM values
-    fig.add_trace(go.Scatterpolar(
+    spider_plot.add_trace(go.Scatterpolar(
         r=rom_values,
         theta=joint_labels,
         fill='toself',
@@ -722,7 +909,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         line=dict(color='blue', width=2)
     ))
 
-    fig.add_trace(go.Scatterpolar(
+    spider_plot.add_trace(go.Scatterpolar(
         r=bad_rom_inner,
         theta=joint_labels,
         fill='toself',
@@ -732,13 +919,13 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     ))
 
     # Get max range of motion value
-    max_all_joint_angles = max(max(rom_values), max(bad_rom_outer)) + 15
+    max_all_joint_angles = max(max(rom_values), max(bad_rom_outer)) + 10
 
     # Update layout
-    fig.update_layout(
+    spider_plot.update_layout(
         title="Range of Motion (°) vs Ideal Target",
         #update title fontsize
-        title_font=dict(size=42),
+        title_font=dict(size=36),
         polar=dict(
             angularaxis=dict(
             tickfont=dict(size=26)  # Increase font size for theta labels
@@ -747,7 +934,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
                 visible=True,
                 range=[0, max_all_joint_angles],
                 # only show every other tickfont value
-                tickvals=[0,30, 60, 90, 120, 150, 180],
+                tickvals=[0, 30, 60, 90, 120, 150, 180],
                 tickfont=dict(size=16, color='black')
             )
         ),
@@ -759,7 +946,7 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
             ))
     )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(spider_plot)
 
     # st.markdown('### title')
     
@@ -778,13 +965,16 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     left_ankle = ankle_left_peaks_mean - ankle_left_mins_mean
     right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
 
-    plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
-    
+    asymmetry_bar_plot = plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
+    st.plotly_chart(asymmetry_bar_plot)
+
+    # update with decision trees (if elif, for each category)
     st.title('💡 How to improve your range of motion:')
     st.write('1. **Knees**: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.')
     st.write('2. **Hips**: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.')
     st.write('3. **Spine**: Increase range of motion by doing exercises that target the lower back, core, and obliques.')
     st.write('\n')
+
     with st.expander("Click here to see your spine segment angle data"):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
@@ -814,8 +1004,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     )
         github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
         st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
-        
-    
 
     filtered_left_hip_angles = np.array(left_hip_angles)[mask]
     filtered_right_hip_angles = np.array(right_hip_angles)[mask]
@@ -841,7 +1029,6 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
         )
         st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
         
-    
     filtered_left_knee_angles = np.array(left_knee_angles)[mask]
     filtered_right_knee_angles = np.array(right_knee_angles)[mask]
 
@@ -1070,23 +1257,33 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
     ### END CROP ###
   # show tables
     df = pd.DataFrame({'Time': filtered_time, 'Spine Segment Angles': filtered_spine_segment_angles, 'Left Joint Hip': filtered_left_hip_angles, 'Right Hip': filtered_right_hip_angles, 'Left Knee': filtered_left_knee_angles, 'Right Knee': filtered_right_knee_angles, 'Left Ankle': filtered_left_ankle_angles, 'Right Ankle': filtered_right_ankle_angles})
-    st.write('### Joint Angles (deg)')
+    st.write('### Joint Angles (°)')
 
     st.dataframe(df)
 
     st.write('### Range of Motion')
     # create dataframe of range of motion
     
-    df_rom = pd.DataFrame({'Joint': ['Spine Segment Angle', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
-    'Min Angle (deg)' : [np.min(filtered_spine_segment_angles), hip_left_mins_mean, hip_right_mins_mean, knee_left_mins_mean, knee_right_mins_mean, ankle_left_mins_mean, ankle_right_mins_mean],
-    'Max Angle (deg)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
-    'Range of Motion (degr)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
+    df_rom = pd.DataFrame({'Joint': ['Spine Segment', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee', 'Left Ankle', 'Right Ankle'], 
+    'Min Angle (°)' : [np.min(filtered_spine_segment_angles), hip_left_mins_mean, hip_right_mins_mean, knee_left_mins_mean, knee_right_mins_mean, ankle_left_mins_mean, ankle_right_mins_mean],
+    'Max Angle (°)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
+    'Range of Motion (°)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
     
+    # round df_rom to 1 decimal place
+    df_rom = df_rom.round(1)
     st.dataframe(df_rom)
 
     pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
     if pca_checkbox:
         perform_pca(joint_angle_df, video_index)
+
+    _, __, pose_image_path = process_first_frame_report(video_path, video_index)
+    text_info =  "To improve your range of motion, consider stretching, strength training, & mobility drills.\
+        \n   1. Knees: Increase range of motion by doing exercises that target the quads, hamstrings, & calves.\
+        \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
+    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info)
+    with open(pdf_path, "rb") as file:
+        st.download_button("Download Stride Sync Report", file, "ROM_Analysis_Report.pdf", "application/pdf")
 
 # TO DO:
 # - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
@@ -1106,6 +1303,8 @@ def process_video(video_path, output_txt_path, frame_time, video_index):
 # - Add animations / rendering
 # - Add step by step variation analysis
 
+   
+
 def main():
     st.title("Biomechanics Analysis from Video")
 
@@ -1123,14 +1322,15 @@ def main():
                 index=0)
         
         if example_video == "Running video":
+            camera_side = "side"
             video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
             # st.image(github_url + "photos/side run 30-34.png", caption="Example Running Video", width=125)
             st.video(video_url)
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-                frame_number, frame_time = process_first_frame(video_file, video_index=idx)
+                frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
                 
-                process_video(video_file, output_txt_path, frame_time, video_index=idx)
+                process_video(camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
         if example_video == "Pickup pen video":
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
@@ -1139,33 +1339,34 @@ def main():
             # Video URL from GitHub
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-                frame_number, frame_time = process_first_frame(video_file, video_index=idx)
+                frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
                 process_video(video_file, output_txt_path, frame_time, video_index=idx)   
         
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
+        camera_side = "side"
         for idx, video_file in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-                frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
-                process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
+                frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+                process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
     video_files_back = st.file_uploader("Upload back video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files_back:
+        camera_side = "back"
         for idx, video_file_back in enumerate(video_files_back):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-                frame_number, frame_time = process_first_frame(temp_video_path, video_index=idx)
-                process_video(temp_video_path, output_txt_path, frame_time, video_index=idx)
-    
+                frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+                process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
     main()
