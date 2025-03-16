@@ -20,8 +20,20 @@ from PIL import Image, ImageOps
 from datetime import datetime
 import qrcode
 
+# TO DO
+# WALKING
+# - Add an upload side and back walking video
+# - Update the spider plot ranges for walking
+# - Update the asymmetry plot for walking
+# - Update the text insights for walking
+# - Update the joint target analysis for walking
+# 
+# GENERAL
+# - Fix when video is uploaded 90 deg sideways (gives wrong results, uh oh!)
+# - Try to merge the side and back videos into one report (if feasible)
+# - Add more personliazed insights based on the data (text and exercise recommendations as decision trees)
 
-def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info):
+def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -82,15 +94,96 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     table = ax.table(cellText=df_rom.values, colLabels=df_rom.columns, cellLoc='center', loc='center')
     table.auto_set_font_size(True)
     table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
+
+    # Define ranges for color classification
+    if camera_side == "side": 
+        ankle_good = (65, 75)
+        ankle_moderate = (55, 85)
+        ankle_bad = (40, 95)
+
+        knee_good = (120, 130)
+        knee_moderate = (110, 165)
+        knee_bad = (90, 175)
+
+        hip_good = (60, 70)
+        hip_moderate = (50, 80)
+        hip_bad = (40, 90)
+
+        spine_good = (5, 15)
+        spine_moderate = (2, 20)
+        spine_bad = (0, 30)
+
+    elif camera_side == "back":
+        ankle_good = (20, 60)
+        ankle_moderate = (15, 20)
+        ankle_bad = (0, 15)
+
+        knee_good = (0, 5)
+        knee_moderate = (5, 12)
+        knee_bad = (12, 30)
+
+        hip_good = (0, 10)
+        hip_moderate = (10, 20)
+        hip_bad = (20, 40)
+
+        spine_good = (1, 10)
+        spine_moderate = (10, 20)
+        spine_bad = (20, 30)
+
+    def get_color(value, good_range, moderate_range):
+        """Assigns a color based on the ROM classification."""
+        if good_range[0] <= value <= good_range[1]:
+            # return a light green color
+            return "lightgreen"
+        
+        elif moderate_range[0] <= value <= moderate_range[1]:
+            return 'yellow'
+        else:
+            return "lightcoral"
+
+    # Apply colors to the first and last columns
+    for i, joint in enumerate(df_rom['Joint']):
+        if joint == 'Spine Segment':
+            good_range, moderate_range = spine_good, spine_moderate
+        elif 'Hip' in joint:
+            good_range, moderate_range = hip_good, hip_moderate
+        elif 'Knee' in joint:
+            good_range, moderate_range = knee_good, knee_moderate
+        elif 'Ankle' in joint:
+            good_range, moderate_range = ankle_good, ankle_moderate
+
+        rom_value = df_rom['Range of Motion (°)'].iloc[i]
+        color = get_color(rom_value, good_range, moderate_range)
+
+        # Change color of the first column (Joint names)
+        cell = table[(i + 1, 0)]
+        cell.set_text_props(color=color)
+
+        # Change color of the last column (Range of Motion)
+        cell = table[(i + 1, len(df_rom.columns) - 1)]
+        cell.set_text_props(color=color)
+
+        # change color of 2nd, 3rd columns
+        cell = table[(i + 1, 1)]
+        cell.set_text_props(color="white")
+        cell = table[(i + 1, 2)]
+        cell.set_text_props(color="white")
+
+        for i in range(4):
+            cell = table[(0, i)]
+            cell.set_text_props(color="white", weight='bold')     
+
+    # Set the background color of the chart to black
     for key, cell in table._cells.items():
         cell.set_edgecolor("white")
-        cell.set_text_props(color="white", weight='bold')
+        # cell.set_text_props(color=color, weight='bold')
         cell.set_facecolor("black")
+
     plt.savefig(rom_chart_path, bbox_inches='tight', dpi=300, facecolor='black') 
     plt.close(fig)
 
-    # Place ROM Table (Middle Right)
-    pdf.image(rom_chart_path, x=10, y=195, w=130)  # Adjusted placement
+    # Place ROM Table
+    pdf.image(rom_chart_path, x=10, y=195, w=130) 
 
     pdf.ln(170)  # Spacing before bottom text section
 
@@ -185,9 +278,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     qr_code = qrcode.make(qr_code_url)
     qr_code.save(qr_code_path)
     pdf.image(qr_code_path, x=160, y=265, w=30)
-
-
-
 
     # ✅ Save PDF
     pdf_file_path = tempfile.mktemp(suffix=".pdf")
@@ -713,7 +803,7 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
     spine_segment_angles = butter_lowpass_filter(spine_segment_angles, cutoff_frequency, fps) 
 
     ### CROP HERE ###
-    start_time, end_time = st.slider("Select time range", min_value=float(0), max_value=float(time[-1]), value=(float(0), float(time[-1])), key=f"time_range_{video_index}")
+    start_time, end_time = st.slider("Select time range", min_value=float(0), max_value=float(time[-1]), value=(float(0), float(time[-1])), key=f"side_time_range_{video_index}_{camera_side}")
     st.write(f"Selected frame range: {start_frame} to {end_frame}")
     st.write(f"Selected time range: {start_time:.2f}s to {end_time:.2f}s")
     mask = (time >= start_time) & (time <= end_time)
@@ -1067,9 +1157,9 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         st.download_button(
         label="Download Spine Segment Angle Data",
         data=spine_csv,
-        file_name="spine_segment_angles.csv",
+        file_name="spine_segment_angles_{camera_side}.csv",
         mime="text/csv",
-        key=f"spine_segment_angles_{video_index}"
+        key=f"spine_segment_angles_{video_index}_{camera_side}"
     )
         github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
         st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
@@ -1092,9 +1182,9 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         st.download_button(
             label="Download Hip Angle Data",
             data=hip_csv,
-            file_name="hip_angles.csv",
+            file_name="hip_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"hip_angles_{video_index}"
+            key=f"hip_angles_{video_index}_{camera_side}"
         )
         st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
         
@@ -1125,9 +1215,9 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         st.download_button(
             label="Download Knee Angle Data",
             data=knee_csv,
-            file_name="knee_angles.csv",
+            file_name="knee_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"knee_angles_{video_index}"
+            key=f"knee_angles_{video_index}_{camera_side}"
         )
 
         st.image(github_url + "photos/knee flexion angle.png", use_container_width =True)
@@ -1159,9 +1249,9 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         st.download_button(
             label="Download Ankle Angle Data",
             data=ankle_csv,
-            file_name="ankle_angles.csv",
+            file_name="ankle_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"ankle_angles_{video_index}"
+            key=f"ankle_angles_{video_index}_{camera_side}"
         )     
         # show ankle plantarflexion angle figure
         st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
@@ -1342,17 +1432,17 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
     df_rom = df_rom.round(1)
     st.dataframe(df_rom)
 
-    pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}")
-    if pca_checkbox:
-        perform_pca(joint_angle_df, video_index)
+    # pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}_{camera_side}")
+    # if pca_checkbox:
+    #     perform_pca(joint_angle_df, video_index)
 
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
     text_info =  "To improve your range of motion, consider stretching, strength training, & mobility drills.\
         \n   1. Knees: Increase range of motion by doing exercises that target the quads, hamstrings, & calves.\
         \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
-    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info)
+    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side)
     with open(pdf_path, "rb") as file:
-        st.download_button("Download Stride Sync Report", file, "Stride_Sync_Analysis_Report.pdf", "application/pdf")
+        st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
 
 # TO DO:
 # - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
