@@ -18,6 +18,8 @@ from fpdf import FPDF
 import matplotlib.colors as mcolors
 from PIL import Image, ImageOps
 from datetime import datetime
+import qrcode
+
 
 def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
@@ -38,21 +40,15 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     # ✅ Report Title (Centered)
     pdf.set_xy(10, 10)  # Reset cursor
-    pdf.set_font("Arial", style='B', size=20)
+    pdf.set_font("Arial", style='BU', size=20)
     pdf.cell(190, 10, "Your Stride Sync Report", ln=True, align='C')
 
     pdf.ln(10)  # Spacing before the next section
 
     # Add padding to the image
     if pose_image_path:
-
-        # 🔹 Load image and add white padding
         pose_img = Image.open(pose_image_path)
         width, height = pose_img.size
-
-        # Define padding (e.g., 20% padding around)
-        # padding_x = int(width * 0.01)  # 20% of the width
-        # padding_y = int(height * 0.01)  # 20% of the height
 
         # Create a new image with padding
         padded_img = ImageOps.expand(pose_img, border=(0, 1, 0, 1), fill=(0, 0, 0))  # Add black padding
@@ -60,24 +56,23 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         padded_img.save(padded_pose_path)
 
         # 🔹 Reduce image size in the PDF
-        pdf.image(padded_pose_path, x=10, y=25, h=96, w=54)  # Make it smaller (1/8 of the page)
-        pdf.ln(10)
+        pdf.image(padded_pose_path, x=10, y=25, h=88, w=49)  # Make it smaller (1/8 of the page)
 
     # ✅ Spider Plot (Top Right)
     spider_plot_path = tempfile.mktemp(suffix=".png")
-    spider_plot.update_layout(paper_bgcolor="black", font_color="white")  # Adjust plot style
+    spider_plot.update_layout(paper_bgcolor="black", font_color="white") 
     spider_plot.write_image(spider_plot_path)
     pdf.image(spider_plot_path, x=75, y=30, w=125)  # Adjusted placement
 
-    pdf.ln(45)  # Increase spacing before middle section
+    pdf.ln(40)  # Increase spacing before middle section
 
     # ✅ Asymmetry Plot (Middle Left)
     asymmetry_plot_path = tempfile.mktemp(suffix=".png")
     asymmetry_plot.update_layout(paper_bgcolor="black", plot_bgcolor="black", font_color="white")
     asymmetry_plot.write_image(asymmetry_plot_path)
-    pdf.image(asymmetry_plot_path, x=35, y=135, w=150)  # Placed on the left
+    pdf.image(asymmetry_plot_path, x=10, y=130, w=125)  # Placed on the left
 
-    pdf.ln(10)  # Extra spacing before next plot
+    pdf.ln(5)  # Extra spacing before next plot
 
     # ✅ Generate Styled ROM Table (Middle Right)
     rom_chart_path = tempfile.mktemp(suffix=".png")
@@ -85,46 +80,120 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     ax.axis('tight')
     ax.axis('off')
     table = ax.table(cellText=df_rom.values, colLabels=df_rom.columns, cellLoc='center', loc='center')
-
-    # Style table
     table.auto_set_font_size(True)
     table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
+    for key, cell in table._cells.items():
+        cell.set_edgecolor("white")
+        cell.set_text_props(color="white", weight='bold')
+        cell.set_facecolor("black")
     plt.savefig(rom_chart_path, bbox_inches='tight', dpi=300, facecolor='black') 
     plt.close(fig)
 
     # Place ROM Table (Middle Right)
-    pdf.image(rom_chart_path, x=35, y=205, w=140)  # Adjusted placement
+    pdf.image(rom_chart_path, x=10, y=195, w=130)  # Adjusted placement
 
-    pdf.ln(160)  # Spacing before bottom text section
+    pdf.ln(170)  # Spacing before bottom text section
 
     pdf.set_text_color(255, 215, 0)  # Gold Text for Highlights
-    pdf.set_font("Arial", style='B', size=12)
+    pdf.set_font("Arial", style='B', size=14)
     pdf.cell(0, 10, "Key Insights from Your Gait", ln=True)
+    
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(0, 7, text_info)
-    pdf.ln(20)
+    pdf.ln(15)
     
     pdf.rect(0, 0, 210, 297, 'F')  # Fill entire A4 page
+    # # knees blue, hips green, ankles red
+    # pdf.set_fill_color(0, 0, 0)  # Black background
+    # pdf.rect(10, 10, 190, 277, 'F')  # Fill entire A4 page
+        
+    spine_text = '''A key indicator of your posture and alignment. A consistent angle of about 5-15 degrees throughout your stride is ideal, and any significant deviations may indicate potential issues with your core stability or posture.'''
+    hip_text = '''A critical joint for power generation and stability. A consistent angle of about 30-50 degrees throughout your stride is ideal, and any significant deviations may indicate potential issues with your hip flexor or glute strength.'''
+    knee_text = 'A key joint for shock absorption and propulsion. A consistent angle of about 160-180 degrees at heel strike and 120-140 degrees at toe-off is ideal, and any significant deviations may indicate potential issues with your quadriceps or hamstrings.'
+    ankle_text = 'Plays an essential roll for push-off and stability. A consistent angle of about 90-100 degrees at heel strike and 20-30 degrees at toe-off is ideal, and any significant deviations may indicate potential issues with your calf or Achilles tendon.'
 
-    example_next_steps = '''To improve your range of motion, consider stretching, strength training, and mobility drills.\n"
-    - Knees: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.\n"
-    - Hips: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.\n"
-    - Spine: Increase range of motion by doing exercises that target the lower back, core, and obliques.\n"
-    \nAdditional Training Tips:\n"
-    - Foam Rolling & Recovery: Incorporate myofascial release techniques to improve tissue mobility.\n"
-    - Balance & Coordination Training: Work on single-leg stability to improve neuromuscular control.\n"
-    - Progressive Overload: Gradually increase intensity and volume while monitoring discomfort.\n"
-    \nFor further assistance, contact Dr. David Hollinger at dh25587@essex.ac.uk'''
+    pdf.set_text_color(255, 215, 0)  # Gold for Header
+    pdf.set_font("Arial", 'b', size=14)
+    pdf.cell(0, 10, "Joint Target Analysis", ln=True)
 
-    pdf.set_font("Arial", style='B', size=12)
-    pdf.cell(0, 10, "Next Steps", ln=True)
+    pdf.set_text_color(200, 162, 200)  # Purple for Spine
+    pdf.set_font("Arial", style='b', size=12)
+    pdf.multi_cell(0, 7, 'Spine Segment Angle:')    
+    pdf.set_font("Arial", size=12)  
+    pdf.multi_cell(0, 7, spine_text)
+
+    pdf.set_text_color(144, 238, 144)  # Green for Hips
+    pdf.set_font("Arial", style='b', size=12)
+    pdf.multi_cell(0, 7, 'Hips:')   
     pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 7, example_next_steps)
-    pdf.ln(20)
+    pdf.multi_cell(0, 7, hip_text)
+
+    pdf.set_text_color(173, 216, 230)  # Blue for Knees
+    pdf.set_font("Arial", style='b', size=12)
+    pdf.multi_cell(0, 7, 'Knees:')
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 7, knee_text)
+
+    pdf.set_text_color(255, 182, 193)  # Red for Ankles
+    pdf.set_font("Arial", style='b', size=12)
+    pdf.multi_cell(0, 7, 'Ankles:')
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 7, ankle_text)
+
+    pdf.ln(15)
+
+    # ✅ Invitation to Optional Coaching Session
+    coaching_invite = '''
+    Want to Take Your Running to the Next Level? 
+    Consider scheduling an advanced gait analysis or personalized coaching session. 
+    Our expert team can help fine-tune your stride, optimize efficiency, and reduce injury risk. 
+    '''
+
+    pdf.set_text_color(255, 215, 0)  # Gold color for the title
+    pdf.set_font("Arial", style='B', size=14)  # Bold and slightly larger
+    pdf.cell(0, 10, "Optional Coaching & Gait Review", ln=True)
+
+    pdf.set_text_color(255, 255, 255)  # White text for readability
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 7, coaching_invite)
+
+    pdf.ln(5)
+
+    # Highlight Contact Info with Bigger, Bold White Text
+    pdf.set_text_color(0, 255, 0)  # Bright green for attention
+    pdf.set_font("Arial", style='B', size=13)  # Bigger and bold
+    pdf.cell(0, 10, "Contact: Dr. David Hollinger", ln=True)
+
+    pdf.set_text_color(255, 255, 255)  # Bright red for the email
+    pdf.set_font("Arial", style='B', size=13)
+    pdf.cell(0, 10, "Email: dh25587@essex.ac.uk", ln=True)
+    
+    pdf.set_text_color(255, 255, 255)  # Bright red for the email
+    pdf.set_font("Arial", style='B', size=13)
+    pdf.cell(0, 10, "Website: stride-sync.streamlit.app", ln=True)
+    pdf.ln(10)
+
+
+    pdf.set_text_color(255, 255, 255)  # Bright red for the email
+    pdf.set_font("Arial", style='B', size=13)
+    pdf.cell(0, 10, "Scan the QR Code for recommended training videos", ln=True)
+    pdf.ln(10)
+
+    # ✅ Add a QR Code for the Website
+    qr_code_url = "https://stride-sync.streamlit.app"
+    qr_code_path = tempfile.mktemp(suffix=".png")
+    qr_code = qrcode.make(qr_code_url)
+    qr_code.save(qr_code_path)
+    pdf.image(qr_code_path, x=160, y=265, w=30)
+
+
+
 
     # ✅ Save PDF
     pdf_file_path = tempfile.mktemp(suffix=".pdf")
     pdf.output(pdf_file_path)
+
+
     
     return pdf_file_path
 
@@ -522,7 +591,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
     ))
 
     fig.update_layout(
-        title="Range of Motion Asymmetry",
+        title="Range of Motion",
         # increaes title fontsize
         title_font_size=42,
         xaxis_title="← Left Asymmetry (°)           Right Asymmetry (°) →",
@@ -1283,7 +1352,7 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
     pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info)
     with open(pdf_path, "rb") as file:
-        st.download_button("Download Stride Sync Report", file, "ROM_Analysis_Report.pdf", "application/pdf")
+        st.download_button("Download Stride Sync Report", file, "Stride_Sync_Analysis_Report.pdf", "application/pdf")
 
 # TO DO:
 # - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/

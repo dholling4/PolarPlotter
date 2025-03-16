@@ -80,6 +80,7 @@ Pillow==10.1.0
 platformdirs==4.1.0
 kaleido
 plotly
+qrcode==7.3
 # prompt-toolkit==3.0.41
 # protobuf==4.23.4
 # ptyprocess==0.7.0
