@@ -1190,7 +1190,6 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
 
     # update with decision trees (if elif, for each category)
     st.title('💡 How to improve your range of motion:')
-    st.write(camera_side, gait_type)
 
     ankle_text_info = ""
     knee_text_info = ""
