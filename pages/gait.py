@@ -21,6 +21,7 @@ from datetime import datetime
 import qrcode
 
 # TO DO
+
 # WALKING
 # - Add an upload side and back walking video
 # - Update the spider plot ranges for walking
@@ -29,7 +30,7 @@ import qrcode
 # - Update the joint target analysis for walking
 # 
 # GENERAL
-# - Fix when video is uploaded 90 deg sideways (gives wrong results, uh oh!)
+# - Fix when video is uploaded 90 deg sideways (gives wrong results, uh oh!) --> it should be vertical, not landscape recording
 # - Try to merge the side and back videos into one report (if feasible)
 # - Add more personliazed insights based on the data (text and exercise recommendations as decision trees)
 
@@ -1492,6 +1493,7 @@ def main():
                 process_video(camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
         if example_video == "Pickup pen video":
+            camera_side = "side"
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
             # st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
             st.video(video_url)
@@ -1499,7 +1501,7 @@ def main():
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
-                process_video(video_file, output_txt_path, frame_time, video_index=idx)   
+                process_video(camera_side, video_file, output_txt_path, frame_time, video_index=idx)   
         
     # File uploader for user to upload their own video
     # video_files_side_walking = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
