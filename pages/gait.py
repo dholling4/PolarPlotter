@@ -185,21 +185,36 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     # Place ROM Table
     pdf.image(rom_chart_path, x=10, y=195, w=130) 
+    
 
-    pdf.ln(170)  # Spacing before bottom text section
-
+    pdf.ln(200)  # Spacing before bottom text section
+    
     pdf.set_text_color(255, 215, 0)  # Gold Text for Highlights
     pdf.set_font("Arial", style='B', size=14)
     pdf.cell(0, 10, "Key Insights from Your Gait", ln=True)
     
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 7, text_info)
-    pdf.ln(15)
-    
-    pdf.rect(0, 0, 210, 297, 'F')  # Fill entire A4 page
-    # # knees blue, hips green, ankles red
-    # pdf.set_fill_color(0, 0, 0)  # Black background
-    # pdf.rect(10, 10, 190, 277, 'F')  # Fill entire A4 page
+    joint_color_map = {
+        "spine": (200, 162, 200),  # Purple
+        "left hip": (144, 238, 144),    # Green
+        "right hip": (144, 238, 144),    # Green
+        "left knee": (173, 216, 230),   # Blue
+        "right knee": (173, 216, 230),   # Blue
+        "left ankle": (255, 182, 193),   # Red
+        "right ankle": (255, 182, 193)   # Red
+
+    }
+    font_size=11
+    for joint in ["spine", "left hip", "right hip", "left knee", "right knee", "left ankle", "right ankle"]:
+        insight = text_info.get(joint, "")
+        if insight:
+            color = joint_color_map[joint]
+            pdf.set_text_color(*color)
+            pdf.set_font("Arial", style='B', size=font_size)
+            label = joint.title() + ": "
+            pdf.write(font_size / 2, label)
+            pdf.set_font("Arial", size=font_size)
+            pdf.write(font_size / 2, insight + "\n")
+            pdf.ln(2)
         
     spine_text = '''A key indicator of your posture and alignment. A consistent angle of about 5-15 degrees throughout your stride is ideal, and any significant deviations may indicate potential issues with your core stability or posture.'''
     hip_text = '''A critical joint for power generation and stability. A consistent angle of about 30-50 degrees throughout your stride is ideal, and any significant deviations may indicate potential issues with your hip flexor or glute strength.'''
@@ -210,31 +225,36 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_font("Arial", 'b', size=14)
     pdf.cell(0, 10, "Joint Target Analysis", ln=True)
 
-    pdf.set_text_color(200, 162, 200)  # Purple for Spine
-    pdf.set_font("Arial", style='b', size=12)
-    pdf.multi_cell(0, 7, 'Spine Segment Angle:')    
-    pdf.set_font("Arial", size=12)  
-    pdf.multi_cell(0, 7, spine_text)
+    joint_targets = {
+    "Spine Segment Angle": {
+        "text": spine_text,
+        "color": (200, 162, 200)  # Purple
+    },
+    "Hips": {
+        "text": hip_text,
+        "color": (144, 238, 144)  # Green
+    },
+    "Knees": {
+        "text": knee_text,
+        "color": (173, 216, 230)  # Blue
+    },
+    "Ankles": {
+        "text": ankle_text,
+        "color": (255, 182, 193)  # Red
+    }
+}
 
-    pdf.set_text_color(144, 238, 144)  # Green for Hips
-    pdf.set_font("Arial", style='b', size=12)
-    pdf.multi_cell(0, 7, 'Hips:')   
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 7, hip_text)
+    for joint_label, data in joint_targets.items():
+        pdf.set_text_color(*data["color"])
+        pdf.set_font("Arial", style='B', size=font_size)
+        pdf.write(font_size / 2, f"{joint_label}: ")
 
-    pdf.set_text_color(173, 216, 230)  # Blue for Knees
-    pdf.set_font("Arial", style='b', size=12)
-    pdf.multi_cell(0, 7, 'Knees:')
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 7, knee_text)
+        pdf.set_font("Arial", size=font_size)
+        pdf.write(font_size / 2, data["text"] + "\n")
+        pdf.ln(1)
 
-    pdf.set_text_color(255, 182, 193)  # Red for Ankles
-    pdf.set_font("Arial", style='b', size=12)
-    pdf.multi_cell(0, 7, 'Ankles:')
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 7, ankle_text)
+    pdf.ln(2)
 
-    pdf.ln(15)
 
     # ✅ Invitation to Optional Coaching Session
     coaching_invite = '''
@@ -251,8 +271,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(0, 7, coaching_invite)
 
-    pdf.ln(5)
-
     # Highlight Contact Info with Bigger, Bold White Text
     pdf.set_text_color(0, 255, 0)  # Bright green for attention
     pdf.set_font("Arial", style='B', size=13)  # Bigger and bold
@@ -266,7 +284,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_font("Arial", style='B', size=13)
     pdf.cell(0, 10, "Website: stride-sync.streamlit.app", ln=True)
     pdf.ln(10)
-
 
     pdf.set_text_color(255, 255, 255)  # Bright red for the email
     pdf.set_font("Arial", style='B', size=13)
@@ -283,8 +300,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     # ✅ Save PDF
     pdf_file_path = tempfile.mktemp(suffix=".pdf")
     pdf.output(pdf_file_path)
-
-
     
     return pdf_file_path
 
@@ -714,7 +729,7 @@ def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     return lfilter(b, a, data)
 
-def process_video(camera_side, video_path, output_txt_path, frame_time, video_index):
+def process_video(gait_type, camera_side, video_path, output_txt_path, frame_time, video_index):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -969,24 +984,58 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         return mcolors.to_hex(cmap(norm(value)))
 
     # Define ranges for color classification
-    if camera_side == "side": 
+    if camera_side == "side" and gait_type == "walking": 
+        ankle_good = (20, 45)
+        ankle_moderate = (10, 20)
+        ankle_bad = (0, 10)
+
+        knee_good = (50, 70)
+        knee_moderate = (40, 50)
+        knee_bad = (0, 40)
+
+        hip_good = (25, 45)
+        hip_moderate = (15, 25)
+        hip_bad = (0, 15)
+
+        spine_good = (0, 5)
+        spine_moderate = (5, 10)
+        spine_bad = (10, 30)
+
+    if camera_side == "back" and gait_type == "walking": 
+        ankle_good = (20, 49)
+        ankle_moderate = (15, 20)
+        ankle_bad = (0, 15)
+
+        knee_good = (0, 5)
+        knee_moderate = (5, 15)
+        knee_bad = (15, 50)
+
+        hip_good = (0, 10)
+        hip_moderate = (10, 15)
+        hip_bad = (15, 50)
+
+        spine_good = (0, 5)
+        spine_moderate = (5, 10)
+        spine_bad = (10, 30)
+
+    if camera_side == "side" and gait_type == "running": 
         ankle_good = (65, 75)
         ankle_moderate = (55, 85)
-        ankle_bad = (40, 95)
+        ankle_bad = (55, 95)
 
         knee_good = (120, 130)
-        knee_moderate = (110, 165)
+        knee_moderate = (90, 175)
         knee_bad = (90, 175)
 
         hip_good = (60, 70)
-        hip_moderate = (50, 80)
+        hip_moderate = (40, 90)
         hip_bad = (40, 90)
 
         spine_good = (5, 15)
         spine_moderate = (2, 20)
         spine_bad = (0, 30)
 
-    elif camera_side == "back":
+    if camera_side == "back" and gait_type == "running":
         ankle_good = (20, 60)
         ankle_moderate = (15, 20)
         ankle_bad = (0, 15)
@@ -1015,8 +1064,8 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
         get_color(rom_values[2], spine_good, spine_moderate), # Spine
         get_color(rom_values[3], hip_good, hip_moderate),    # Hip Left
         get_color(rom_values[4], knee_good, knee_moderate),  # Knee Left
-        get_color(rom_values[5], (40, 50), (30, 40, 50, 60)),  # Ankle Left (Custom range)
-        get_color(rom_values[6], (40, 50), (30, 40, 50, 60))   # Ankle Right (Custom range)
+        get_color(rom_values[5], ankle_good, ankle_moderate),  # Ankle Left (Custom range)
+        get_color(rom_values[6], ankle_good, ankle_moderate)   # Ankle Right (Custom range)
     ]
 
     # Define ideal ROM values (midpoint of the good range)
@@ -1130,10 +1179,280 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
 
     # update with decision trees (if elif, for each category)
     st.title('💡 How to improve your range of motion:')
-    st.write('1. **Knees**: Increase range of motion by doing exercises that target the quads, hamstrings, and calves.')
-    st.write('2. **Hips**: Increase range of motion by doing exercises that target the hip flexors, glutes, and adductors.')
-    st.write('3. **Spine**: Increase range of motion by doing exercises that target the lower back, core, and obliques.')
-    st.write('\n')
+    st.write('Camera View / Gait Type: ')
+    st.write(camera_side, gait_type)
+
+    ankle_text_info = ""
+    knee_text_info = ""
+    hip_text_info = ""
+    spine_text_info = ""
+
+    # HIP FEEDBACK
+    if hip_good[0] <= hip_right_rom_mean <= hip_good[1]:
+        st.write("Right hip range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_hip_text_info = "Hip flexion at initial contact (~30°) and extension during stance optimize propulsion."
+        if gait_type == "running" and camera_side == "side":
+            right_hip_text_info = "Hip flexion at initial contact (~50°) and extension during stance optimize propulsion"
+        if gait_type == "walking" and camera_side == "back":
+            right_hip_text_info = "Minimal motion maintains coronal alignment and reduces hip abductor fatigue."
+        if gait_type == "running" and camera_side == "back":
+            right_hip_text_info = "Minimal motion maintains coronal alignment and reduces hip abductor fatigue."
+
+    elif hip_moderate[0] <= hip_right_rom_mean <= hip_moderate[1]:
+        st.write("Right hip range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_hip_text_info = "Moderately limited hip range of motion increases lumbar spine compensation and hamstring strain."
+        if gait_type == "running" and camera_side == "side":
+            right_hip_text_info = "Moderately limited range of motion increases lumbar spine compensation and hamstring strain."
+        if gait_type == "walking" and camera_side == "back":
+            right_hip_text_info = "Moderate levels of increased pelvic drop heightens iliotibial band syndrome risk."
+        if gait_type == "running" and camera_side == "back": 
+            right_hip_text_info = "Moderate levels of increased pelvic drop heightens iliotibial band syndrome risk."
+
+    elif hip_bad[0] <= hip_right_rom_mean <= hip_bad[1]:
+        st.write("Right hip range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_hip_text_info = "Bad (<15° flexion-extension): Severe restriction (<10°) alters pelvic tilt and elevates lower back pain risk."
+        if gait_type == "running" and camera_side == "side":
+            right_hip_text_info = "Severe restriction (<40°) or poorly controlled motion (>90°) alters pelvic tilt and elevates lower back pain risk."
+        if gait_type == "walking" and camera_side == "back":
+            right_hip_text_info = "Excessive adduction correlates with tibial stress fractures and labral impingement."
+        if gait_type == "running" and camera_side == "back": 
+            right_hip_text_info = "Excessive adduction correlates with tibial stress fractures and labral impingement."
+
+    if hip_good[0] <= hip_left_rom_mean <= hip_good[1]:
+        st.write("Left hip range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_hip_text_info = "Hip flexion at initial contact (~30°) and extension during stance optimize propulsion"
+        if gait_type == "running" and camera_side == "side":
+            left_hip_text_info = "Hip flexion at initial contact (~50°) and extension during stance optimize propulsion"
+        if gait_type == "walking" and camera_side == "back":
+            left_hip_text_info = "Minimal motion maintains coronal alignment and reduces hip abductor fatigue."
+        if gait_type == "running" and camera_side == "back":
+            left_hip_text_info = "Minimal motion maintains coronal alignment and reduces hip abductor fatigue."
+
+    elif hip_moderate[0] <= hip_left_rom_mean <= hip_moderate[1]:
+        st.write("Left hip range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_hip_text_info = "Moderately limited hip range of motion increases lumbar spine compensation and hamstring strain."
+        if gait_type == "running" and camera_side == "side":
+            left_hip_text_info = "Moderately limited ROM increases lumbar spine compensation and hamstring strain."
+        if gait_type == "walking" and camera_side == "back":
+            left_hip_text_info = "Moderate levels of increased pelvic drop heightens iliotibial band syndrome risk."
+        if gait_type == "running" and camera_side == "back": 
+            left_hip_text_info = "Moderate levels of increased pelvic drop heightens iliotibial band syndrome risk."
+
+    elif hip_bad[0] <= hip_left_rom_mean <= hip_bad[1]:
+        st.write("Left hip range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_hip_text_info = "Bad (<15° flexion-extension): Severe restriction (<10°) alters pelvic tilt and elevates lower back pain risk."
+        if gait_type == "running" and camera_side == "side":
+            left_hip_text_info = "Severe restriction (<40°) or poorly controlled motion (>90°) alters pelvic tilt and elevates lower back pain risk."
+        if gait_type == "walking" and camera_side == "back":
+            left_hip_text_info = "Excessive adduction correlates with tibial stress fractures and labral impingement."
+        if gait_type == "running" and camera_side == "back": 
+            left_hip_text_info = "Excessive adduction correlates with tibial stress fractures and labral impingement."
+
+   # KNEE FEEDBACK
+    if knee_good[0] <= knee_right_rom_mean <= knee_good[1]:
+        st.write("Right knee range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_knee_text_info = "50–70° flexion during stance phase optimizes shock absorption."
+        if gait_type == "running" and camera_side == "side":
+            right_knee_text_info = "Good knee flexion during stance phase optimizes shock absorption."
+        if gait_type == "walking" and camera_side == "back":
+            right_knee_text_info = "Minimal medial knee deviation protects against patellofemoral knee pain."
+        if gait_type == "running" and camera_side == "back":
+            right_knee_text_info = "Minimal medial knee deviation protects against patellofemoral knee pain."
+
+    elif knee_moderate[0] <= knee_right_rom_mean <= knee_moderate[1]:
+        st.write("Right knee range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_knee_text_info = "Moderately reduced flexion increases patellofemoral joint stress."
+        if gait_type == "running" and camera_side == "side":
+            right_knee_text_info = "Reduced flexion increases patellofemoral joint stress."
+        if gait_type == "walking" and camera_side == "back":
+            right_knee_text_info = "Moderate adduction/abduction correlates with early cartilage wear."
+        if gait_type == "running" and camera_side == "back":
+            right_knee_text_info = "Moderate adduction/abduction correlates with early cartilage wear."
+
+    elif knee_bad[0] >= knee_right_rom_mean or knee_right_rom_mean >= knee_bad[1]:
+        st.write("Right knee range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_knee_text_info = "You have limited knee flexion, which may reduce running efficiency. Consider deep squats, hamstring stretches, and eccentric loading to improve flexibility."
+        if gait_type == "running" and camera_side == "side":
+            right_knee_text_info = "Stiff-knee gait raises ACL injury risk due to poor energy dissipation."
+        if gait_type == "walking" and camera_side == "back":
+            right_knee_text_info = "High knee adduction valgus/varus motion can result in patellofemoral knee pain."
+        if gait_type == "running" and camera_side == "back":
+            right_knee_text_info = "High knee adduction valgus/varus motion can result in patellofemoral knee pain."
+
+    if knee_good[0] <= knee_left_rom_mean <= knee_good[1]:
+        st.write("Left knee range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_knee_text_info = "50-70° knee flexion during stance phase optimizes shock absorption."
+        if gait_type == "running" and camera_side == "side":
+            left_knee_text_info = "Good knee flexion during stance phase optimizes shock absorption."
+        if gait_type == "walking" and camera_side == "back":
+            left_knee_text_info = "Minimal valgus/varus motion protects against patellofemoral knee pain."
+        if gait_type == "running" and camera_side == "back":
+            left_knee_text_info = "Minimal valgus/varus motion protects against patellofemoral knee pain."
+
+    elif knee_moderate[0] <= knee_left_rom_mean <= knee_moderate[1]:
+        st.write("Left knee range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_knee_text_info = "Moderately reduced flexion increases patellofemoral joint stress."
+        if gait_type == "running" and camera_side == "side":
+            left_knee_text_info = "Moderately reduced flexion increases patellofemoral joint stress."
+        if gait_type == "walking" and camera_side == "back":
+            left_knee_text_info = "Moderate adduction/abduction correlates with early cartilage wear."
+        if gait_type == "running" and camera_side == "back":
+            left_knee_text_info = "Moderate adduction/abduction correlates with early cartilage wear."
+
+    elif knee_bad[0] >= knee_left_rom_mean or knee_left_rom_mean >= knee_bad[1]:
+        st.write("Left knee range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_knee_text_info = "You have limited knee flexion, which may reduce running efficiency. Consider deep squats, hamstring stretches, and eccentric loading to improve flexibility."
+        if gait_type == "running" and camera_side == "side":
+            left_knee_text_info = "Stiff-knee gait raises ACL injury risk due to poor energy dissipation."
+        if gait_type == "walking" and camera_side == "back":
+            left_knee_text_info = "High knee adduction valgus/varus motion can result in patellofemoral knee pain."
+        if gait_type == "running" and camera_side == "back":
+            left_knee_text_info = "High knee adduction valgus/varus motion can result in patellofemoral knee pain."
+
+    # ANKLE FEEDBACK ---
+    if ankle_good[0] <= ankle_right_rom_mean <= ankle_good[1]:
+        st.write("Right ankle range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
+        if gait_type == "running" and camera_side == "side":
+            right_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
+        if gait_type == "walking" and camera_side == "back":
+            right_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability
+                            Recommended Shoe: Motion Control
+                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
+                            Gait Identifiers:
+                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
+            '''
+
+        if gait_type == "running" and camera_side == "back":
+            right_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability
+                            Recommended Shoe: Motion Control
+                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
+                            Gait Identifiers:
+                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
+            '''
+    elif ankle_moderate[0] <= ankle_right_rom_mean <= ankle_moderate[1]:
+        st.write("Right ankle range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_ankle_text_info = "Slightly reduced ankle range of motion increases forefoot loading and compensatory knee motion."
+        if gait_type == "running" and camera_side == "side":
+            right_ankle_text_info = "Slightly reduced ankle range of motion increases forefoot loading and compensatory knee motion."
+        if gait_type == "walking" and camera_side == "back":
+            right_ankle_text_info = "Moderately limits lateral balance control, reducing walking stablity in older adults."
+        if gait_type == "running" and camera_side == "back":
+            right_ankle_text_info = "Moderately limits lateral balance control, reducing walking stablity in older adults."
+
+    elif ankle_bad[0] <= ankle_right_rom_mean <= ankle_bad[1]:
+        st.write("Right ankle range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            right_ankle_text_info = "Severe dorsiflexion deficits (<5°) elevate risks of plantar fasciitis and Achilles tendinopathy."
+        if gait_type == "running" and camera_side == "side":
+            right_ankle_text_info = "Severe dorsiflexion deficits (<5°) elevate risks of plantar fasciitis and Achilles tendinopathy."
+        if gait_type == "walking" and camera_side == "back":
+            right_ankle_text_info = "Associated with instability, compensatory pelvic motion, and medial tibial stress syndrome."
+        if gait_type == "running" and camera_side == "back":
+            right_ankle_text_info = "Associated with instability, compensatory pelvic motion, and medial tibial stress syndrome."
+
+    if ankle_good[0] <= ankle_left_rom_mean <= ankle_good[1]:
+        st.write("Left ankle range of motion is in the GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
+        if gait_type == "running" and camera_side == "side":
+            left_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
+        if gait_type == "walking" and camera_side == "back":
+            left_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability"
+                            Recommended Shoe: Motion Control
+                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
+                            Gait Identifiers:
+                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
+            '''
+        if gait_type == "running" and camera_side == "back":
+            left_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability"
+                            Recommended Shoe: Motion Control
+                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
+                            Gait Identifiers:
+                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
+            '''
+
+    elif ankle_moderate[0] <= ankle_left_rom_mean <= ankle_moderate[1]:
+        st.write("Left ankle range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_ankle_text_info = "Reduced ankle range of motion increases forefoot loading and compensatory knee motion."
+        if gait_type == "running" and camera_side == "side":
+            left_ankle_text_info = "Reduced ankle range of motion increases forefoot loading and compensatory knee motion."
+        if gait_type == "walking" and camera_side == "back":
+            left_ankle_text_info = "Moderately limits lateral balance control, reducing walking stablity in older adults."
+        if gait_type == "running" and camera_side == "back":
+            left_ankle_text_info = "Moderately limits lateral balance control, reducing walking stablity in older adults."
+
+    elif ankle_bad[0] >= ankle_left_rom_mean or ankle_left_rom_mean >= ankle_bad[1]:
+        st.write("Left ankle range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            left_ankle_text_info = "Limited ankle range of motion elevates risks of plantar fasciitis and reduces lower-limb efficiency to push off during each stride."
+        if gait_type == "running" and camera_side == "side":
+            left_ankle_text_info = "Limited ankle range of motion elevates risks of plantar fasciitis and reduces lower-limb efficiency to push off during each stride."
+        if gait_type == "walking" and camera_side == "back":
+            left_ankle_text_info = "Associated with instability, compensatory pelvic motion, and medial tibial stress syndrome."
+        if gait_type == "running" and camera_side == "back":
+            left_ankle_text_info = "Associated with instability, compensatory pelvic motion, and medial tibial stress syndrome."
+
+    # SPINE FEEDBACK ---
+    if spine_good[0] <= spine_segment_rom_mean <= spine_good[1]:
+        st.write("Lateral bending motion of the spine is in a GOOD range.")
+        if gait_type == "walking" and camera_side == "side":
+            spine_text_info = "Neutral alignment (±2.5° from vertical) helps maintain natural lumbar lordosis/thoracic kyphosis for optimal shock absorption and energy transfer."    
+        if gait_type == "running" and camera_side == "side":
+            spine_text_info = "Neutral alignment (±7.5° from vertical) helps maintain natural lumbar lordosis/thoracic kyphosis for optimal shock absorption and energy transfer."    
+        if gait_type == "walking" and camera_side == "back":
+            spine_text_info = "Minimal lateral deviation (<2.5° per side) which correlates with hip abductor strength and balanced step width."
+        if gait_type == "running" and camera_side == "back":
+            spine_text_info = "Minimal lateral deviation (<5° per side) which correlates with hip abductor strength and balanced step width."
+
+    elif spine_moderate[0] <= spine_segment_rom_mean <= spine_moderate[1]:
+        st.write("Spine range of motion is in the MODERATE range.")
+        if gait_type == "walking" and camera_side == "side":
+            spine_text_info = "Moderate forward lean (5–7°) or backward lean (3–5°) is associated with reduced hip extension or ankle mobility deficits, increasing lumbar spine compensatory flexion."
+        if gait_type == "running" and camera_side == "side":
+            spine_text_info = "Moderate forward lean or backward lean is associated with reduced hip extension or ankle mobility deficits, increasing lumbar spine compensatory flexion."
+        if gait_type == "walking" and camera_side == "back":
+            spine_text_info = "Moderate lateral lean (5–7° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
+        if gait_type == "running" and camera_side == "back":
+            spine_text_info = "Moderate lateral lean (5–10° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
+
+    elif spine_bad[0] <= spine_segment_rom_mean <= spine_bad[1]:
+        st.write("Spine range of motion is in the BAD range.")
+        if gait_type == "walking" and camera_side == "side":
+            spine_text_info = '''Not enough trunk lean: Lack of forward lean (walking too upright) reduces forward propulsion, which limits ankle propulsion and increases risk of calf strain. " \
+                           Too much trunk lean: Severe anterior/posterior tilt, altering pelvic orientation, is linked to hamstring strain (excessive forward lean) or facet joint compression (excessive backward lean).'''
+        if gait_type == "running" and camera_side == "side":
+            spine_text_info = '''Not enough trunk lean: Lack of forward lean (running too upright) reduces forward propulsion, which limits ankle propulsion and increases risk of calf strain."
+                         Too much trunk lean: Severe anterior/posterior tilt, altering pelvic orientation, is linked to hamstring strain (excessive forward lean) or facet joint compression (excessive backward lean).'''
+        if gait_type == "walking" and camera_side == "back":
+            spine_text_info = "Pronounced lateral bending (>10° per side), increases spinal disc shear forces and is associated with unilateral hip weakness or ankle instability."
+        if gait_type == "running" and camera_side == "back":
+            spine_text_info = "Pronounced lateral bending (>10° per side), increases spinal disc shear forces and is associated with unilateral hip weakness or ankle instability."
+
+    text_info = {
+        "left ankle": left_ankle_text_info if 'left_ankle_text_info' in locals() else "",
+        "left knee": left_knee_text_info if 'left_knee_text_info' in locals() else "",
+        "left hip": left_hip_text_info if 'left_hip_text_info' in locals() else "",
+        "right ankle": right_ankle_text_info if 'right_ankle_text_info' in locals() else "",
+        "right knee": right_knee_text_info if 'right_knee_text_info' in locals() else "",
+        "right hip": right_hip_text_info if 'right_hip_text_info' in locals() else "",
+        "spine": spine_text_info if 'spine_text_info' in locals() else ""
+    }
 
     with st.expander("Click here to see your spine segment angle data"):
         fig = go.Figure()
@@ -1438,9 +1757,9 @@ def process_video(camera_side, video_path, output_txt_path, frame_time, video_in
     #     perform_pca(joint_angle_df, video_index)
 
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
-    text_info =  "To improve your range of motion, consider stretching, strength training, & mobility drills.\
-        \n   1. Knees: Increase range of motion by doing exercises that target the quads, hamstrings, & calves.\
-        \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
+    # text_info =  "To improve your range of motion, consider stretching, strength training, & mobility drills.\
+    #     \n   1. Knees: Increase range of motion by doing exercises that target the quads, hamstrings, & calves.\
+    #     \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
     pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side)
     with open(pdf_path, "rb") as file:
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
@@ -1489,11 +1808,12 @@ def main():
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
-                
-                process_video(camera_side, video_file, output_txt_path, frame_time, video_index=idx)
+                gait_type = "running"
+                process_video(gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
         if example_video == "Pickup pen video":
             camera_side = "side"
+            gait_type = None
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
             # st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
             st.video(video_url)
@@ -1501,39 +1821,40 @@ def main():
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
-                process_video(camera_side, video_file, output_txt_path, frame_time, video_index=idx)   
+                process_video(gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)   
         
     # File uploader for user to upload their own video
-    # video_files_side_walking = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
-    # if video_files_side_walking:
-    #     camera_side = "side"
-    #     gait_type = "walking"
-    #     for idx, video_file in enumerate(video_files_side_walking):
-    #         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
-    #             temp_video_file.write(video_file.read())
-    #             temp_video_path = temp_video_file.name
-    #             temp_video_file.close()
-    #             output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-    #             frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-    #             process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+    video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    if video_files:
+        camera_side = "side"
+        gait_type = "walking"
+        for idx, video_file in enumerate(video_files):
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+                temp_video_file.write(video_file.read())
+                temp_video_path = temp_video_file.name
+                temp_video_file.close()
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+                frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
-    # # File uploader for user to upload their own video
-    # video_files_back_walking = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
-    # if video_files_back_walking:
-    #     camera_side = "back"
-    #     gait_type = "walking"
-    #     for idx, video_file in enumerate(video_files_back_walking):
-    #         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
-    #             temp_video_file.write(video_file.read())
-    #             temp_video_path = temp_video_file.name
-    #             temp_video_file.close()
-    #             output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
-    #             frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-    #             process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+    # File uploader for user to upload their own video
+    video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    if video_files:
+        camera_side = "back"
+        gait_type = "walking"
+        for idx, video_file in enumerate(video_files):
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+                temp_video_file.write(video_file.read())
+                temp_video_path = temp_video_file.name
+                temp_video_file.close()
+                output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+                frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         camera_side = "side"
+        gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file_back.read())
@@ -1541,12 +1862,13 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
     video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         camera_side = "back"
+        gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file_back.read())
@@ -1554,7 +1876,7 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
     main()
