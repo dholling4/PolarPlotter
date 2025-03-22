@@ -1502,12 +1502,39 @@ def main():
                 process_video(video_file, output_txt_path, frame_time, video_index=idx)   
         
     # File uploader for user to upload their own video
-    video_files = st.file_uploader("Upload side video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    # video_files_side_walking = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    # if video_files_side_walking:
+    #     camera_side = "side"
+    #     gait_type = "walking"
+    #     for idx, video_file in enumerate(video_files_side_walking):
+    #         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+    #             temp_video_file.write(video_file.read())
+    #             temp_video_path = temp_video_file.name
+    #             temp_video_file.close()
+    #             output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+    #             frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+    #             process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+
+    # # File uploader for user to upload their own video
+    # video_files_back_walking = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    # if video_files_back_walking:
+    #     camera_side = "back"
+    #     gait_type = "walking"
+    #     for idx, video_file in enumerate(video_files_back_walking):
+    #         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+    #             temp_video_file.write(video_file.read())
+    #             temp_video_path = temp_video_file.name
+    #             temp_video_file.close()
+    #             output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+    #             frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
+    #             process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+
+    video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if video_files:
         camera_side = "side"
-        for idx, video_file in enumerate(video_files):
+        for idx, video_file_back in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
-                temp_video_file.write(video_file.read())
+                temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
@@ -1515,10 +1542,10 @@ def main():
                 process_video(camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
-    video_files_back = st.file_uploader("Upload back video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
-    if video_files_back:
+    video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    if video_files:
         camera_side = "back"
-        for idx, video_file_back in enumerate(video_files_back):
+        for idx, video_file_back in enumerate(video_files):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
