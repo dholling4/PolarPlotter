@@ -57,6 +57,16 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_font("Arial", style='BU', size=20)
     pdf.cell(190, 10, "Your Stride Sync Report", ln=True, align='C')
 
+    # add logo in the top right corner
+    github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
+    logo_path = github_url + "logo/stride sync logo.png"
+    logo = requests.get(logo_path)
+    logo_img = Image.open(BytesIO(logo.content))
+    logo_img_path = tempfile.mktemp(suffix=".png")
+    logo_img.save(logo_img_path)
+    pdf.image(logo_img_path, x=165, y=10, w=30)  # Adjusted placement
+
+
     pdf.ln(10)  # Spacing before the next section
 
     # Add padding to the image
@@ -76,7 +86,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     spider_plot_path = tempfile.mktemp(suffix=".png")
     spider_plot.update_layout(paper_bgcolor="black", font_color="white") 
     spider_plot.write_image(spider_plot_path)
-    pdf.image(spider_plot_path, x=75, y=30, w=125)  # Adjusted placement
+    pdf.image(spider_plot_path, x=75, y=31, w=125)  # Adjusted placement
 
     pdf.ln(40)  # Increase spacing before middle section
 
