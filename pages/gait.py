@@ -1798,7 +1798,6 @@ from dotenv import load_dotenv
 import os
 
 def send_email(to_email, attachment_path):
-    st.write(st.secrets)
 
     if "EMAIL_ADDRESS" in st.secrets:
         sender_email = st.secrets["EMAIL_ADDRESS"]
