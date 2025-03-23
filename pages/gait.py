@@ -94,8 +94,14 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     ax.axis('tight')
     ax.axis('off')
     table = ax.table(cellText=df_rom.values, colLabels=df_rom.columns, cellLoc='center', loc='center')
-    table.auto_set_font_size(True)
+    # table.auto_set_font_size(True)
+    # table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
+    # increase size of the table
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1.25, 1.25)  # Increase size by 1.5
     table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
+
 
     # Define ranges for color classification
     if camera_side == "side": 
