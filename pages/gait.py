@@ -1799,14 +1799,20 @@ import os
 
 def send_email(to_email, attachment_path):
 
-    load_dotenv()
-
-    sender_email = os.getenv("EMAIL_ADDRESS")
-    app_password = os.getenv("EMAIL_APP_PASSWORD")
+    if "EMAIL_ADDRESS" in st.secrets:
+        sender_email = st.secrets["EMAIL_ADDRESS"]
+        app_password = st.secrets["EMAIL_APP_PASSWORD"]
+        st.write("✅ Email secrets found!!!")
+    else:
+        load_dotenv()
+        sender_email = os.getenv("EMAIL_ADDRESS")
+        app_password = os.getenv("EMAIL_APP_PASSWORD")
+        st.write("✅ Email non-secrets found!!!")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender_email, app_password)
         st.write("✅ Email sent!!!")
+
     
     msg = EmailMessage()
     msg['Subject'] = "Your Stride Sync Report"
@@ -1818,7 +1824,8 @@ def send_email(to_email, attachment_path):
     with open(attachment_path, 'rb') as f:
         file_data = f.read()
         file_name = os.path.basename(attachment_path)
-        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
+        file_name = "Stride Sync Report_" + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
+        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename="Stride_Sync_Report.pdf")
 
     # Send Email
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
