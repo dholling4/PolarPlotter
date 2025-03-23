@@ -1807,11 +1807,9 @@ def send_email(to_email, attachment_path):
         load_dotenv()
         sender_email = os.getenv("EMAIL_ADDRESS")
         app_password = os.getenv("EMAIL_APP_PASSWORD")
-        st.write("✅ Email non-secrets found!!!")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender_email, app_password)
-        st.write("✅ Email sent!!!")
     
     msg = EmailMessage()
     msg['Subject'] = "Your Stride Sync Report"
