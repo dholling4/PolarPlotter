@@ -1805,7 +1805,6 @@ def send_email(to_email, attachment_path):
     # app_password = EMAIL_APP_PASSWORD
     sender_email = os.getenv("EMAIL_ADDRESS")
     app_password = os.getenv("EMAIL_APP_PASSWORD")
-    st.write(app_password)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender_email, app_password)
