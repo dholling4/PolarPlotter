@@ -14,6 +14,9 @@ from io import BytesIO
 from PIL import Image
 import base64
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def display_github_image(image_url):
     raw_url = image_url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")

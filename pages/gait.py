@@ -1799,30 +1799,33 @@ import os
 
 def send_email(to_email, attachment_path):
 
-    load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+    load_dotenv()
+
+    # sender_email = EMAIL_ADDRESS
+    # app_password = EMAIL_APP_PASSWORD
     sender_email = os.getenv("EMAIL_ADDRESS")
     app_password = os.getenv("EMAIL_APP_PASSWORD")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender_email, app_password)
-        print("✅ Login success!")
+        st.write("✅ Login success!")
     
-    # msg = EmailMessage()
-    # msg['Subject'] = "Your Stride Sync Report"
-    # msg['From'] = sender_email
-    # msg['To'] = to_email
-    # msg.set_content("Hi! Attached is your personalized gait report from Stride Sync.")
+    msg = EmailMessage()
+    msg['Subject'] = "Your Stride Sync Report"
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg.set_content("Hi! Attached is your personalized gait report from Stride Sync. Feel free to reach out if you have any questions or would like to setup an appointment to discuss your results.")
 
-    # # Attach PDF
-    # with open(attachment_path, 'rb') as f:
-    #     file_data = f.read()
-    #     file_name = os.path.basename(attachment_path)
-    #     msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
+    # Attach PDF
+    with open(attachment_path, 'rb') as f:
+        file_data = f.read()
+        file_name = os.path.basename(attachment_path)
+        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
 
-    # # Send Email
-    # with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-    #     smtp.login(sender_email, app_password)
-    #     smtp.send_message(msg)
+    # Send Email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(sender_email, app_password)
+        smtp.send_message(msg)
 
 
 # TO DO:
