@@ -293,12 +293,8 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     pdf.ln(5)
 
-    pdf.cell(0, 10, "Contact: Dr. David Hollinger", ln=True)
+    pdf.cell(0, 10, "Contact: digitalathlete80@gmail.com", ln=True)
 
-    pdf.set_text_color(255, 255, 255)  # Bright red for the email
-    pdf.set_font("Arial", style='B', size=13)
-    pdf.cell(0, 10, "Email: dh25587@essex.ac.uk", ln=True)
-    
     pdf.set_text_color(255, 255, 255)  # Bright red for the email
     pdf.set_font("Arial", style='B', size=13)
     pdf.cell(0, 10, "Website: stride-sync.streamlit.app", ln=True)
