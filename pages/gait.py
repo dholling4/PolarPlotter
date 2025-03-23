@@ -1784,7 +1784,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
 
     # email me my Stride Sync Report
     email = st.text_input("Enter your email address to receive your Stride Sync Report", "")
-    if st.button("Email me my Stride Sync Report"):
+    if st.button("Email Stride Sync Report"):
         send_email(email, pdf_path)
 
 import smtplib
