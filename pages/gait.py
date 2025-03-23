@@ -1810,7 +1810,8 @@ def send_email(to_email, attachment_path):
         app_password = os.getenv("EMAIL_APP_PASSWORD")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(sender_email, app_password)        
+        smtp.login(sender_email, app_password)     
+        st.write("✅ Email sent!") 
     
     msg = EmailMessage()
     msg['Subject'] = "Your Stride Sync Report"
