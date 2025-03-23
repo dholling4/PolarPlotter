@@ -1804,14 +1804,13 @@ def send_email(to_email, attachment_path):
     if "EMAIL_ADDRESS" in st.secrets:
         sender_email = st.secrets["EMAIL_ADDRESS"]
         app_password = st.secrets["EMAIL_APP_PASSWORD"]
-        st.write("✅ Email secrets found!!!")
     else:
         load_dotenv()
         sender_email = os.getenv("EMAIL_ADDRESS")
         app_password = os.getenv("EMAIL_APP_PASSWORD")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(sender_email, app_password)
+        smtp.login(sender_email, app_password)        
     
     msg = EmailMessage()
     msg['Subject'] = "Your Stride Sync Report"
