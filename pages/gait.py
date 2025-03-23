@@ -275,7 +275,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     coaching_invite = "Want to Take Your Running to the Next Level? Consider scheduling an advanced gait analysis or personalized coaching session. Our expert team can help fine-tune your stride, optimize efficiency, and reduce injury risk."
     pdf.set_text_color(255, 215, 0)  # Gold color for the title
     pdf.set_font("Arial", style='B', size=14)  # Bold and slightly larger
-    pdf.cell(0, 10, "Optional Coaching & Gait Review", ln=True)
+    pdf.cell(0, 10, "Coaching & Gait Review", ln=True)
 
     pdf.set_text_color(255, 255, 255)  # White text for readability
     pdf.set_font("Arial", size=font_size)
@@ -1781,6 +1781,49 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side)
     with open(pdf_path, "rb") as file:
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
+
+    # email me my Stride Sync Report
+    email = st.text_input("Enter your email address to receive your Stride Sync Report", "")
+    if st.button("Email me my Stride Sync Report"):
+        send_email(email, pdf_path)
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+import smtplib
+from email.message import EmailMessage
+from dotenv import load_dotenv
+import os
+
+def send_email(to_email, attachment_path):
+
+    load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+    sender_email = os.getenv("EMAIL_ADDRESS")
+    app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(sender_email, app_password)
+        print("✅ Login success!")
+    
+    # msg = EmailMessage()
+    # msg['Subject'] = "Your Stride Sync Report"
+    # msg['From'] = sender_email
+    # msg['To'] = to_email
+    # msg.set_content("Hi! Attached is your personalized gait report from Stride Sync.")
+
+    # # Attach PDF
+    # with open(attachment_path, 'rb') as f:
+    #     file_data = f.read()
+    #     file_name = os.path.basename(attachment_path)
+    #     msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
+
+    # # Send Email
+    # with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    #     smtp.login(sender_email, app_password)
+    #     smtp.send_message(msg)
+
 
 # TO DO:
 # - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
