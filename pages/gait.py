@@ -1812,7 +1812,6 @@ def send_email(to_email, attachment_path):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender_email, app_password)
         st.write("✅ Email sent!!!")
-
     
     msg = EmailMessage()
     msg['Subject'] = "Your Stride Sync Report"
@@ -1823,9 +1822,8 @@ def send_email(to_email, attachment_path):
     # Attach PDF
     with open(attachment_path, 'rb') as f:
         file_data = f.read()
-        file_name = os.path.basename(attachment_path)
-        file_name = "Stride Sync Report_" + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
-        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename="Stride_Sync_Report.pdf")
+        file_name = "Stride Sync Report " + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
+        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
 
     # Send Email
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
