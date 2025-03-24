@@ -375,6 +375,16 @@ def process_first_frame_report(video_path, video_index):
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
+    # ➕ Check if video is rotated based on first frame
+    ret, test_frame = cap.read()
+    if not ret:
+        raise ValueError("Couldn't read from video.")
+    
+    rotated = False
+    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+        rotated = True
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
+
     # If the video is longer than 10 seconds, capture only the middle 5 seconds
     if duration > 10:
         start_frame = total_frames // 2 - (5 * fps)
@@ -393,6 +403,9 @@ def process_first_frame_report(video_path, video_index):
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
     ret, frame = cap.read()
+    if rotated:
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
     if not ret:
         st.error("Failed to read the selected frame.")
         cap.release()
@@ -433,6 +446,16 @@ def process_first_frame(video_path, video_index):
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
+    # ➕ Check if video is rotated based on first frame
+    ret, test_frame = cap.read()
+    if not ret:
+        raise ValueError("Couldn't read from video.")
+
+    rotated = False
+    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+        rotated = True
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
+
     # If the video is longer than 10 seconds, capture only the middle 5 seconds
     if duration > 10:
         start_frame = total_frames // 2 - (5 * fps)
@@ -451,6 +474,8 @@ def process_first_frame(video_path, video_index):
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
     ret, frame = cap.read()
+    if rotated:
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     if not ret:
         st.error("Failed to read the selected frame.")
         cap.release()
@@ -753,11 +778,23 @@ def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
     return lfilter(b, a, data)
 
 def process_video(gait_type, camera_side, video_path, output_txt_path, frame_time, video_index):
+    # add after uploading 
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration = total_frames / fps  
-    
+
+    # ➕ Check if video is rotated based on first frame
+    ret, test_frame = cap.read()
+    if not ret:
+        raise ValueError("Couldn't read from video.")
+
+    rotated = False
+    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+        rotated = True
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
+    ### done add after uploading
+  
     start_frame = 0
     end_frame = total_frames
     
@@ -767,7 +804,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     spine_segment_angles = []
     thorax_angles, lumbar_angles = [], []
 
-    # if the length is greater than 10 seconds, only capture the middle 5 seconds
+    # if the length is greater than 10 seconds, only capture the middle N seconds
     if duration > 10:
         start_frame = int(total_frames // 2 - (5 * fps))
         end_frame = int(total_frames // 2 + (5 * fps))
@@ -778,6 +815,8 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         for _ in range(start_frame, end_frame):
             ret, frame = cap.read()
+            if rotated:
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             if not ret:
                 break
 
@@ -827,7 +866,6 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
                 left_ankle_angles.append(calculate_angle(left_shank_vector, left_foot_vector))
                 right_ankle_angles.append(calculate_angle(right_shank_vector, right_foot_vector))
 
-    
     time = np.arange(0, len(left_hip_angles)) / fps # Time in seconds  
     cap.release()
 
@@ -1279,7 +1317,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     if knee_good[0] <= knee_right_rom_mean <= knee_good[1]:
         right_knee_text_summary = "GOOD"
         if gait_type == "walking" and camera_side == "side":
-            right_knee_text_info = "50–70° flexion during stance phase optimizes shock absorption."
+            right_knee_text_info = "50-70° flexion during stance phase optimizes shock absorption."
         if gait_type == "running" and camera_side == "side":
             right_knee_text_info = "Good knee flexion during stance phase optimizes shock absorption."
         if gait_type == "walking" and camera_side == "back":
@@ -1768,9 +1806,6 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     #     perform_pca(joint_angle_df, video_index)
 
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
-    # text_info =  "To improve your range of motion, consider stretching, strength training, & mobility drills.\
-    #     \n   1. Knees: Increase range of motion by doing exercises that target the quads, hamstrings, & calves.\
-    #     \n   2. Spine: Increase range of motion by doing exercises that target the lower back, core, & obliques."
     pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side)
     with open(pdf_path, "rb") as file:
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
