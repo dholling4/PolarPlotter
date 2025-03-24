@@ -19,6 +19,13 @@ import matplotlib.colors as mcolors
 from PIL import Image, ImageOps
 from datetime import datetime
 import qrcode
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from email.message import EmailMessage
+from dotenv import load_dotenv
 
 # TO DO
 
@@ -39,7 +46,7 @@ class CustomPDF(FPDF):
         self.set_fill_color(0, 0, 0)
         self.rect(0, 0, 210, 297, 'F')
         
-def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side):
+def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side, gait_type):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
     pdf = CustomPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -49,7 +56,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_text_color(255, 255, 255)  # White text
     pdf.set_font("Arial", size=10)  # Small font
     current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
-    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile"
+    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile\nGait Type: {gait_type.capitalize()}"
     pdf.multi_cell(0, 5, location_text)  # Multi-line cell to properly format text
 
     # ✅ Report Title (Centered)
@@ -381,7 +388,7 @@ def process_first_frame_report(video_path, video_index):
         raise ValueError("Couldn't read from video.")
     
     rotated = False
-    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
         rotated = True
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
 
@@ -452,9 +459,9 @@ def process_first_frame(video_path, video_index):
         raise ValueError("Couldn't read from video.")
 
     rotated = False
-    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+
+    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
         rotated = True
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
 
     # If the video is longer than 10 seconds, capture only the middle 5 seconds
     if duration > 10:
@@ -790,7 +797,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         raise ValueError("Couldn't read from video.")
 
     rotated = False
-    if test_frame.shape[0] > test_frame.shape[1]:  # height > width → probably rotated
+    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
         rotated = True
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
     ### done add after uploading
@@ -1048,11 +1055,11 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     if camera_side == "side" and gait_type == "walking": 
         ankle_good = (20, 45)
         ankle_moderate = (10, 20)
-        ankle_bad = (0, 10)
+        ankle_bad = (0, 55)#(0, 10)
 
         knee_good = (50, 70)
         knee_moderate = (40, 50)
-        knee_bad = (0, 40)
+        knee_bad = (0, 80) #(0, 40)
 
         hip_good = (25, 45)
         hip_moderate = (15, 25)
@@ -1139,24 +1146,32 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
       
     # Create polar scatter plot with color-coded points
     spider_plot = go.Figure()
-
+    # side walk --> moderate, poor, ideal, yours, poor inner
+   
+    # back walk --> poor 0.9, moderate 0.9, ideal 0.85, yours 0.75
+    # side run --> moderate, poor, ideal, yours, poor inner
+    # back run --> moderate, poor, ideal, yours, poor inner
     # Plot ideal target ROM values
-    spider_plot.add_trace(go.Scatterpolar(
-        r=moderate_rom_outer,
-        theta=joint_labels,
-        fill='toself',
-        name='Moderate',
-        marker=dict(color='yellow', size=0.1),
-        line=dict(color='yellow', width=2)  # Dashed green outline for ideal ROM
-    ))
+
 
     spider_plot.add_trace(go.Scatterpolar(
         r=bad_rom_outer,
         theta=joint_labels,
-        fill='tonext',
+        fill= 'toself', # 'toself' if side walking
+        fillcolor='rgba(255, 76, 76, 0.9)', # fillcolor='rgba(255, 0, 0, 0.6)'  # red with 60% opacity
         name='Poor',
-        marker=dict(color='red', size=0.1),
-        line=dict(color='red', width=2)  # Dashed green outline for ideal ROM
+        marker=dict(color='#FF4C4C', size=0.1),
+        line=dict(color='#FF4C4C', width=2)  # Dashed green outline for ideal ROM
+    ))
+
+    spider_plot.add_trace(go.Scatterpolar(
+        r=moderate_rom_outer,
+        theta=joint_labels,
+        fill = 'toself',
+        fillcolor='rgba(255, 215, 0, 0.9)',  # gold
+        name='Moderate',
+        marker=dict(color='#FFD700', size=0.1),
+        line=dict(color='#FFD700', width=2)  # Dashed green outline for ideal ROM
     ))
 
     # Plot ideal target ROM values
@@ -1164,32 +1179,35 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         r=ideal_rom_outer,
         theta=joint_labels,
         fill='toself',
+        fillcolor='rgba(0, 255, 171, 0.85)',  # mint green
         name='Ideal Target',
-        marker=dict(color='green', size=0.1),
-        line=dict(color='green', width=2)  # Dashed green outline for ideal ROM
+        marker=dict(color='#00FFAB', size=0.1),
+        line=dict(color='#00FFAB', width=2)  # Dashed green outline for ideal ROM
     ))
 
-    # Plot actual ROM values
+    # Plot actual values
     spider_plot.add_trace(go.Scatterpolar(
         r=rom_values,
         theta=joint_labels,
         fill='toself',
-        name='Yours',
-        marker=dict(color=colors, size=0.01),
-        line=dict(color='blue', width=2)
+        name = 'Yours',
+        fillcolor='rgba(30, 144, 255, 0.75)',  
+        marker=dict(color='#1E90FF', size=0.01),
+        line=dict(color='#1E90FF', width=2)
     ))
 
-    spider_plot.add_trace(go.Scatterpolar(
-        r=bad_rom_inner,
-        theta=joint_labels,
-        fill='toself',
-        name='',  # Empty name to hide from legend
-        marker=dict(color='red', size=0.1),
-        line=dict(color='red', width=0.1)  # Dashed green outline for ideal ROM
-    ))
+    # spider_plot.add_trace(go.Scatterpolar(
+    #     r=bad_rom_inner,
+    #     theta=joint_labels,
+    #     fill='toself',
+    #     fillcolor='rgba(255, 76, 76, 0.95)', # fillcolor='rgba(255, 0, 0, 0.6)'  # red with 60% opacity
+    #     name='Poor Inner',  # Empty name to hide from legend
+    #     marker=dict(color='#FF4C4C', size=0.1),
+    #     line=dict(color='#FF4C4C', width=0.1)  # Dashed green outline for ideal ROM
+    # ))
 
     # Get max range of motion value
-    max_all_joint_angles = max(max(rom_values), max(bad_rom_outer)) + 10
+    max_all_joint_angles = max(max(rom_values), max(bad_rom_outer), max(bad_rom_inner), max(ideal_rom_outer)) + 10
 
     # Update layout
     spider_plot.update_layout(
@@ -1806,7 +1824,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     #     perform_pca(joint_angle_df, video_index)
 
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
-    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side)
+    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side, gait_type)
     with open(pdf_path, "rb") as file:
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
 
@@ -1814,16 +1832,6 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}")
     if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}"):
         send_email(email, pdf_path)
-
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-import smtplib
-from email.message import EmailMessage
-from dotenv import load_dotenv
-import os
 
 def send_email(to_email, attachment_path):
 
