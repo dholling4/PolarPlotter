@@ -1350,20 +1350,10 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         if gait_type == "running" and camera_side == "side":
             right_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
         if gait_type == "walking" and camera_side == "back":
-            right_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability
-                            Recommended Shoe: Motion Control
-                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
-                            Gait Identifiers:
-                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
-            '''
-
+            right_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
         if gait_type == "running" and camera_side == "back":
-            right_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability
-                            Recommended Shoe: Motion Control
-                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
-                            Gait Identifiers:
-                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
-            '''
+                        right_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
+
     elif ankle_moderate[0] <= ankle_right_rom_mean <= ankle_moderate[1]:
         right_ankle_text_summary = "MODERATE"
         if gait_type == "walking" and camera_side == "side":
@@ -1393,19 +1383,11 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         if gait_type == "running" and camera_side == "side":
             left_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
         if gait_type == "walking" and camera_side == "back":
-            left_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability"
-                            Recommended Shoe: Motion Control
-                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
-                            Gait Identifiers:
-                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
-            '''
+            left_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
+
         if gait_type == "running" and camera_side == "back":
-            left_ankle_text_info = '''Linked to stable foot placement and reduced step-width variability"
-                            Recommended Shoe: Motion Control
-                            Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators
-                            Gait Identifiers:
-                            Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks.
-            '''
+            left_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
+
 
     elif ankle_moderate[0] <= ankle_left_rom_mean <= ankle_moderate[1]:
         left_ankle_text_summary = "Moderate"
@@ -1458,8 +1440,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
             spine_text_info = '''Not enough trunk lean: Lack of forward lean (walking too upright) reduces forward propulsion, which limits ankle propulsion and increases risk of calf strain. " \
                            Too much trunk lean: Severe anterior/posterior tilt, altering pelvic orientation, is linked to hamstring strain (excessive forward lean) or facet joint compression (excessive backward lean).'''
         if gait_type == "running" and camera_side == "side":
-            spine_text_info = '''Not enough trunk lean: Lack of forward lean (running too upright) reduces forward propulsion, which limits ankle propulsion and increases risk of calf strain."
-                         Too much trunk lean: Severe anterior/posterior tilt, altering pelvic orientation, is linked to hamstring strain (excessive forward lean) or facet joint compression (excessive backward lean).'''
+            spine_text_info = "Not enough trunk lean: Lack of forward lean (running too upright) reduces forward propulsion, which limits ankle propulsion and increases risk of calf strain. Too much trunk lean: Severe anterior/posterior tilt, altering pelvic orientation, is linked to hamstring strain (excessive forward lean) or facet joint compression (excessive backward lean)."
         if gait_type == "walking" and camera_side == "back":
             spine_text_info = "Pronounced lateral bending (>10° per side), increases spinal disc shear forces and is associated with unilateral hip weakness or ankle instability."
         if gait_type == "running" and camera_side == "back":
@@ -1901,7 +1882,7 @@ def main():
                 process_video(gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)   
         
     # File uploader for user to upload their own video
-    video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_walking")
     if video_files:
         camera_side = "side"
         gait_type = "walking"
@@ -1915,7 +1896,7 @@ def main():
                 process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for user to upload their own video
-    video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_walking")
     if video_files:
         camera_side = "back"
         gait_type = "walking"
@@ -1928,7 +1909,7 @@ def main():
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
                 process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
-    video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_running")
     if video_files:
         camera_side = "side"
         gait_type = "running"
@@ -1942,7 +1923,7 @@ def main():
                 process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
-    video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_running")
     if video_files:
         camera_side = "back"
         gait_type = "running"
