@@ -1444,13 +1444,13 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     elif spine_moderate[0] <= spine_segment_rom_mean <= spine_moderate[1]:
         spine_text_summary = "Moderate"
         if gait_type == "walking" and camera_side == "side":
-            spine_text_info = "Moderate forward lean (5–7°) or backward lean (3–5°) is associated with reduced hip extension or ankle mobility deficits, increasing lumbar spine compensatory flexion."
+            spine_text_info = "Moderate forward lean (5-7°) or backward lean (3-5°) is associated with reduced hip extension or ankle mobility deficits, increasing lumbar spine compensatory flexion."
         if gait_type == "running" and camera_side == "side":
             spine_text_info = "Moderate forward lean or backward lean is associated with reduced hip extension or ankle mobility deficits, increasing lumbar spine compensatory flexion."
         if gait_type == "walking" and camera_side == "back":
-            spine_text_info = "Moderate lateral lean (5–7° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
+            spine_text_info = "Moderate lateral lean (5-7° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
         if gait_type == "running" and camera_side == "back":
-            spine_text_info = "Moderate lateral lean (5–10° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
+            spine_text_info = "Moderate lateral lean (5-10° per side), often compensating for hip adduction or ankle inversion/eversion asymmetry"
 
     elif spine_bad[0] <= spine_segment_rom_mean <= spine_bad[1]:
         spine_text_summary = "BAD"
@@ -1795,8 +1795,8 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
 
     # email me my Stride Sync Report
-    email = st.text_input("Enter your email address to receive your Stride Sync Report", "")
-    if st.button("Email Stride Sync Report"):
+    email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"email_pdf_{video_index}_{camera_side}")
+    if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}"):
         send_email(email, pdf_path)
 
 import smtplib
