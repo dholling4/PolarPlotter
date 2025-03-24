@@ -1795,7 +1795,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
 
     # email me my Stride Sync Report
-    email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"email_pdf_{video_index}_{camera_side}")
+    email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}")
     if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}"):
         send_email(email, pdf_path)
 
