@@ -119,26 +119,60 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     table.scale(1.25, 1.25)  # Increase size by 1.5
     table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
 
-
     # Define ranges for color classification
-    if camera_side == "side": 
+    # Define ranges for color classification
+    if camera_side == "side" and gait_type == "walking": 
+        ankle_good = (20, 45)
+        ankle_moderate = (15, 20)
+        ankle_bad = (0, 55)#(0, 10)
+
+        knee_good = (50, 70)
+        knee_moderate = (40, 50)
+        knee_bad = (0, 80) #(0, 40)
+
+        hip_good = (25, 45)
+        hip_moderate = (15, 25)
+        hip_bad = (0, 15)
+
+        spine_good = (0, 5)
+        spine_moderate = (5, 10)
+        spine_bad = (10, 30)
+
+    if camera_side == "back" and gait_type == "walking": 
+        ankle_good = (20, 50)
+        ankle_moderate = (15, 20)
+        ankle_bad = (0, 15)
+
+        knee_good = (0, 5)
+        knee_moderate = (5, 10)
+        knee_bad = (10, 30)
+
+        hip_good = (0, 10)
+        hip_moderate = (10, 15)
+        hip_bad = (15, 50)
+
+        spine_good = (0, 5)
+        spine_moderate = (5, 10)
+        spine_bad = (10, 30)
+
+    if camera_side == "side" and gait_type == "running": 
         ankle_good = (65, 75)
         ankle_moderate = (55, 85)
-        ankle_bad = (40, 95)
+        ankle_bad = (55, 95)
 
         knee_good = (120, 130)
-        knee_moderate = (110, 165)
+        knee_moderate = (90, 175)
         knee_bad = (90, 175)
 
         hip_good = (60, 70)
-        hip_moderate = (50, 80)
+        hip_moderate = (40, 90)
         hip_bad = (40, 90)
 
         spine_good = (5, 15)
         spine_moderate = (2, 20)
         spine_bad = (0, 30)
 
-    elif camera_side == "back":
+    if camera_side == "back" and gait_type == "running":
         ankle_good = (20, 60)
         ankle_moderate = (15, 20)
         ankle_bad = (0, 15)
@@ -154,7 +188,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         spine_good = (1, 10)
         spine_moderate = (10, 20)
         spine_bad = (20, 30)
-
+        
     def get_color(value, good_range, moderate_range):
         """Assigns a color based on the ROM classification."""
         if good_range[0] <= value <= good_range[1]:
@@ -1054,7 +1088,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     # Define ranges for color classification
     if camera_side == "side" and gait_type == "walking": 
         ankle_good = (20, 45)
-        ankle_moderate = (10, 20)
+        ankle_moderate = (15, 20)
         ankle_bad = (0, 55)#(0, 10)
 
         knee_good = (50, 70)
@@ -1070,13 +1104,13 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         spine_bad = (10, 30)
 
     if camera_side == "back" and gait_type == "walking": 
-        ankle_good = (20, 49)
+        ankle_good = (20, 50)
         ankle_moderate = (15, 20)
         ankle_bad = (0, 15)
 
         knee_good = (0, 5)
-        knee_moderate = (5, 15)
-        knee_bad = (15, 50)
+        knee_moderate = (5, 10)
+        knee_bad = (10, 30)
 
         hip_good = (0, 10)
         hip_moderate = (10, 15)
