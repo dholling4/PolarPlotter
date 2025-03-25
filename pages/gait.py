@@ -1143,8 +1143,8 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         ankle_bad = (0, 15)
 
         knee_good = (0, 5)
-        knee_moderate = (5, 12)
-        knee_bad = (12, 30)
+        knee_moderate = (5, 10)
+        knee_bad = (10, 30)
 
         hip_good = (0, 10)
         hip_moderate = (10, 20)
@@ -1391,7 +1391,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         if gait_type == "running" and camera_side == "back":
             right_knee_text_info = "Moderate adduction/abduction correlates with early cartilage wear."
 
-    elif knee_bad[0] >= knee_right_rom_mean or knee_right_rom_mean >= knee_bad[1]:
+    elif knee_bad[0] < knee_right_rom_mean:
         right_knee_text_summary = "BAD"
         if gait_type == "walking" and camera_side == "side":
             right_knee_text_info = "You have limited knee flexion, which may reduce running efficiency. Consider deep squats, hamstring stretches, and eccentric loading to improve flexibility."
@@ -1402,7 +1402,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         if gait_type == "running" and camera_side == "back":
             right_knee_text_info = "High knee adduction valgus/varus motion can result in patellofemoral knee pain."
 
-    if knee_good[0] <= knee_left_rom_mean <= knee_good[1]:
+    if knee_good[0] < knee_left_rom_mean:
         left_knee_text_summary = "GOOD"
         if gait_type == "walking" and camera_side == "side":
             left_knee_text_info = "50-70° knee flexion during stance phase optimizes shock absorption."
