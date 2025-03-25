@@ -46,7 +46,7 @@ class CustomPDF(FPDF):
         self.set_fill_color(0, 0, 0)
         self.rect(0, 0, 210, 297, 'F')
         
-def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side, gait_type):
+def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side, gait_type, user_footwear):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
     pdf = CustomPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -54,9 +54,9 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     # ✅ Add Date and Location (Top Left)
     pdf.set_text_color(255, 255, 255)  # White text
-    pdf.set_font("Arial", size=10)  # Small font
+    pdf.set_font("Arial", size=9)  # Small font
     current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
-    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile\nGait Type: {gait_type.capitalize()}"
+    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile\nGait Type: {gait_type.capitalize()}\nFootwear: {user_footwear}"
     pdf.multi_cell(0, 5, location_text)  # Multi-line cell to properly format text
 
     # ✅ Report Title (Centered)
@@ -819,7 +819,7 @@ def butter_lowpass_filter(data, cutoff=6, fs=30, order=4):
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     return lfilter(b, a, data)
 
-def process_video(gait_type, camera_side, video_path, output_txt_path, frame_time, video_index):
+def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_path, frame_time, video_index):
     # add after uploading 
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -1862,7 +1862,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     #     perform_pca(joint_angle_df, video_index)
 
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
-    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side, gait_type)
+    pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side, gait_type, user_footwear)
     with open(pdf_path, "rb") as file:
         st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
 
@@ -1937,22 +1937,23 @@ def main():
     if example_video_checkbox:
         example_video = st.radio("Select an example video", 
                 ["Running video", "Pickup pen video"],
-                index=0)
+                index=0)  
         
         if example_video == "Running video":
+            user_footwear = "Barefoot"
             camera_side = "side"
             video_url = github_url + "photos/barefoot running side trimmed 30-34.mov"
-            # st.image(github_url + "photos/side run 30-34.png", caption="Example Running Video", width=125)
             st.video(video_url)
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
                 gait_type = "running"
-                process_video(gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
         if example_video == "Pickup pen video":
+            user_footwear  = "Nike"
             camera_side = "side"
-            gait_type = None
+            gait_type = "pickup pen"
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
             # st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
             st.video(video_url)
@@ -1960,8 +1961,10 @@ def main():
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
-                process_video(gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)   
-        
+                process_video(user_footwear, gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
+
+    user_footwear = st.text_input("Enter your footwear", key="user_footwear")
+
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_walking")
     if video_files:
@@ -1974,7 +1977,7 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_walking")
@@ -1988,7 +1991,7 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_running")
     if video_files:
@@ -2001,7 +2004,7 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
     video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_running")
@@ -2015,7 +2018,7 @@ def main():
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
-                process_video(gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
     main()
