@@ -1963,7 +1963,7 @@ def main():
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
                 process_video(user_footwear, gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
-    user_footwear = st.text_input("Enter your footwear", key="user_footwear")
+    user_footwear = st.text_input("Enter your footwear", key="user_footwear") # maybe checkbox neutral, support, stability --> Opens up a catalogue at their stores...
 
     # File uploader for user to upload their own video
     video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_walking")
