@@ -188,7 +188,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         spine_good = (1, 10)
         spine_moderate = (10, 20)
         spine_bad = (20, 30)
-        
+
     def get_color(value, good_range, moderate_range):
         """Assigns a color based on the ROM classification."""
         if good_range[0] <= value <= good_range[1]:
@@ -1458,7 +1458,7 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
         if gait_type == "running" and camera_side == "back":
             right_ankle_text_info = "Moderately limits lateral balance control, reducing walking stablity in older adults."
 
-    elif ankle_bad[0] <= ankle_right_rom_mean <= ankle_bad[1]:
+    elif ankle_bad[0] >= ankle_right_rom_mean or ankle_right_rom_mean >= ankle_bad[1]:
         right_ankle_text_summary = "BAD"
         if gait_type == "walking" and camera_side == "side":
             right_ankle_text_info = "Severe dorsiflexion deficits (<5°) elevate risks of plantar fasciitis and Achilles tendinopathy."
