@@ -783,6 +783,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
         ),
         name="Left vs Right Asymmetry",
         text=[f"{value:.1f}°" for value in asymmetry_data.values()],  # Add text labels
+        textfont=dict(size=16),  # Increase font size for text labels
         textposition='outside'  # Position text labels outside the bars
     ))
 
