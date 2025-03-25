@@ -54,10 +54,10 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     # ✅ Add Date and Location (Top Left)
     pdf.set_text_color(255, 255, 255)  # White text
-    pdf.set_font("Arial", size=7)  # Small font
+    pdf.set_font("Arial", size=9)  # Small font
     current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
     location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile\nGait Type: {gait_type.capitalize()}\nFootwear: {user_footwear}"
-    pdf.multi_cell(0, 3, location_text)  # Multi-line cell to properly format text
+    pdf.multi_cell(0, 2, location_text)  # Multi-line cell to properly format text
 
     # ✅ Report Title (Centered)
     pdf.set_xy(10, 10)  # Reset cursor
