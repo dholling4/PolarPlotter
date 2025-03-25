@@ -779,7 +779,7 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             cmin=0,  # Minimum value for color scale
             cmax=40,  # Maximum value for color scale
             reversescale=True,  # Reverse the color scale
-            colorbar_tickfont=dict(size=16)
+            colorbar_tickfont=dict(size=18)
         ),
         name="Left vs Right Asymmetry",
         text=[f"{value:.1f}°" for value in asymmetry_data.values()],  # Add text labels
