@@ -745,10 +745,11 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             cmin=0,  # Minimum value for color scale
             cmax=40,  # Maximum value for color scale
             reversescale=True,  # Reverse the color scale
-            # increase font size
             colorbar_tickfont=dict(size=16)
         ),
-        name="Left vs Right Asymmetry"
+        name="Left vs Right Asymmetry",
+        text=[f"{value:.1f}°" for value in asymmetry_data.values()],  # Add text labels
+        textposition='outside'  # Position text labels outside the bars
     ))
 
     fig.update_layout(
@@ -767,7 +768,6 @@ def plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_an
             tickvals=[-30, -20, -10, 0, 10, 20, 30],  # Tick labels for the fixed range
             ticktext=["-30", "-20", "-10", "0", "10", "20", "30"],  # Custom tick labels
             tickfont=dict(size=22)  # Increase tick font size
-
 
         ),
         yaxis=dict(tickvals=[0, 1, 2], ticktext=["Ankle", "Knee", "Hip"], tickfont=dict(size=22)),
@@ -1149,8 +1149,11 @@ def process_video(gait_type, camera_side, video_path, output_txt_path, frame_tim
     # side walk --> moderate, poor, ideal, yours, poor inner
    
     # back walk --> poor 0.9, moderate 0.9, ideal 0.85, yours 0.75
+
     # side run --> moderate, poor, ideal, yours, poor inner
-    # back run --> moderate, poor, ideal, yours, poor inner
+
+    # back run --> poor, moderate, ideal, yours
+
     # Plot ideal target ROM values
 
 
