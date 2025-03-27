@@ -26,6 +26,42 @@ from email.mime.base import MIMEBase
 from email import encoders
 from email.message import EmailMessage
 from dotenv import load_dotenv
+import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Sample data: replace with your actual model scores
+# categories = ['Code', 'Factuality', 'Reasoning', 'Science', 'Multilingual', 'Vision']
+# N = len(categories)
+
+# # Example model scores
+# data_gemma2 = [40, 65, 50, 55, 30, 20]
+# data_gemma3 = [95, 90, 85, 85, 85, 90]
+
+# # Repeat the first value to close the radar chart
+# data_gemma2 += data_gemma2[:1]
+# data_gemma3 += data_gemma3[:1]
+# angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
+# angles += angles[:1]
+
+# # Plotting
+# fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+
+# ax.plot(angles, data_gemma2, color='red', linewidth=2, label='Gemma 2')
+# ax.fill(angles, data_gemma2, color='red', alpha=0.25)
+
+# ax.plot(angles, data_gemma3, color='blue', linewidth=2, label='Gemma 3')
+# ax.fill(angles, data_gemma3, color='blue', alpha=0.25)
+
+# ax.set_yticks([20, 40, 60, 80, 100])
+# ax.set_yticklabels(["20", "40", "60", "80", "100"])
+# ax.set_xticks(angles[:-1])
+# ax.set_xticklabels(categories, fontsize=12)
+# ax.set_title('Model Performance Comparison', fontsize=16, pad=20)
+# ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
+
+# st.pyplot(fig)
+
 
 # TO DO
 
