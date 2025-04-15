@@ -367,7 +367,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     # ✅ Invitation to Optional Coaching Session
     coaching_invite = "Want to Take Your Running to the Next Level? Consider scheduling an advanced gait analysis or personalized coaching session. Our expert team can help fine-tune your stride, optimize efficiency, and reduce injury risk."
     pdf.set_text_color(255, 215, 0)  # Gold color for the title
-    pdf.set_font("Arial", style='B', size=14)  # Bold and slightly larger
+    pdf.set_font("Arial", style='B', size=13)  # Bold and slightly larger
     pdf.cell(0, 10, "Coaching & Gait Review", ln=True)
 
     pdf.set_text_color(255, 255, 255)  # White text for readability
@@ -376,17 +376,17 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
 
     # Highlight Contact Info with Bigger, Bold White Text
     pdf.set_text_color(255, 255, 255)  # Bright green for attention
-    pdf.set_font("Arial", style='B', size=13)  # Bigger and bold
+    pdf.set_font("Arial", style='B', size=11)  # Bigger and bold
 
     pdf.ln(5)
 
     pdf.cell(0, 10, "Contact: digitalathlete80@gmail.com", ln=True)
 
     pdf.set_text_color(255, 255, 255)  # Bright red for the email
-    pdf.set_font("Arial", style='B', size=13)
+    pdf.set_font("Arial", style='B', size=11)
     pdf.cell(0, 10, "Website: stride-sync.streamlit.app", ln=True)
     pdf.set_text_color(255, 255, 255)  # Bright red for the email
-    pdf.set_font("Arial", style='B', size=13)
+    pdf.set_font("Arial", style='B', size=11)
     pdf.cell(0, 10, "Scan the QR Code for recommended training videos", ln=True)
     pdf.ln(10)
 
