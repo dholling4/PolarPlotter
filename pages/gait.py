@@ -209,7 +209,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         spine_bad = (0, 30)
 
     if camera_side == "back" and gait_type == "running":
-        ankle_good = (20, 60)
+        ankle_good = (20, 50)
         ankle_moderate = (15, 20)
         ankle_bad = (0, 15)
 
