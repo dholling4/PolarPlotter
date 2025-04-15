@@ -1511,7 +1511,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         if gait_type == "walking" and camera_side == "back":
             right_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
         if gait_type == "running" and camera_side == "back":
-                        right_ankle_text_info = "Linked to stable foot placement and reduced step-width variability. Recommended Shoe: Motion Control. Features:  Rigid heel counters 4/5 stiffness score) and reinforced arches.  High torsional rigidity 4/5 score) to restrict transverse plane tibial rotation. Extended medial posts for severe overpronators. Best for: Runners with chronic overpronation, posterior tibial tendon dysfunction, or ACL injury  risks."
+            right_ankle_text_info = "Healthy ankle range of motion in the frontal plane allows the foot to move inward (inversion) and outward (eversion) smoothly, with a total range of about 35 degrees-typically up to 23 degrees of inversion and 12 degrees of eversion. This range supports stable, adaptable movement during running, helping the foot absorb shock and adjust to uneven surfaces."
 
     elif ankle_moderate[0] <= ankle_right_rom_mean <= ankle_moderate[1]:
         right_ankle_text_summary = "MODERATE"
@@ -1542,10 +1542,9 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         if gait_type == "running" and camera_side == "side":
             left_ankle_text_info = "Good ankle motion facilitates smooth heel-to-toe transition and shock absorption."
         if gait_type == "walking" and camera_side == "back":
-            left_ankle_text_info = "A healthy ankle range of motion in the frontal plane allows the foot to move inward (inversion) and outward (eversion) smoothly, with a total range of about 35 degrees—typically up to 23 degrees of inversion and 12 degrees of eversion. This range supports stable, adaptable movement during activities like walking and running, helping the foot absorb shock and adjust to uneven surfaces"
-
+            left_ankle_text_info = "Healthy ankle range of motion in the frontal plane allows the foot to move inward (inversion) and outward (eversion) smoothly. This range supports stable, adaptable movement during activities like walking, helping the foot absorb shock and adjust to uneven surfaces."
         if gait_type == "running" and camera_side == "back":
-            left_ankle_text_info = "A healthy ankle range of motion in the frontal plane allows the foot to move inward (inversion) and outward (eversion) smoothly, with a total range of about 35 degrees—typically up to 23 degrees of inversion and 12 degrees of eversion. This range supports stable, adaptable movement during activities like walking and running, helping the foot absorb shock and adjust to uneven surfaces"
+            left_ankle_text_info = "Healthy ankle range of motion in the frontal plane allows the foot to move inward (inversion) and outward (eversion) smoothly, with a total range of about 35 degrees-typically up to 23 degrees of inversion and 12 degrees of eversion. This range supports stable, adaptable movement during running, helping the foot absorb shock and adjust to uneven surfaces."
 
 
     elif ankle_moderate[0] <= ankle_left_rom_mean <= ankle_moderate[1]:
