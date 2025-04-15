@@ -362,10 +362,10 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         pdf.write(font_size / 2, data["text"] + "\n")
         pdf.ln(1)
 
-    pdf.ln(10)
+    pdf.ln(1)
 
     # ✅ Invitation to Optional Coaching Session
-    coaching_invite = "Want to Take Your Running to the Next Level? Consider scheduling an advanced gait analysis or personalized coaching session. Our expert team can help fine-tune your stride, optimize efficiency, and reduce injury risk."
+    coaching_invite = "Want to Take Your Running to the Next Level? Consider scheduling an advanced gait analysis or personalized coaching session to fine-tune your stride, optimize efficiency, and reduce injury risk."
     pdf.set_text_color(255, 215, 0)  # Gold color for the title
     pdf.set_font("Arial", style='B', size=13)  # Bold and slightly larger
     pdf.cell(0, 10, "Coaching & Gait Review", ln=True)
@@ -378,7 +378,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_text_color(255, 255, 255)  # Bright green for attention
     pdf.set_font("Arial", style='B', size=11)  # Bigger and bold
 
-    pdf.ln(5)
+    pdf.ln(2)
 
     pdf.cell(0, 10, "Contact: digitalathlete80@gmail.com", ln=True)
 
