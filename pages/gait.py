@@ -92,7 +92,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_text_color(255, 255, 255)  # White text
     pdf.set_font("Arial", size=9)  # Small font
     current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
-    location_text = f"Date: {current_date}\nLocation: Tri N Run Mobile\nGait Type: {gait_type.capitalize()}\nFootwear: {user_footwear}"
+    location_text = f"Date: {current_date}\nLocation: Auburn, AL\nGait Type: {gait_type.capitalize()}\nFootwear: {user_footwear}"
     pdf.multi_cell(0, 3.5, location_text)  # Multi-line cell to properly format text
 
     # ✅ Report Title (Centered)
@@ -534,21 +534,25 @@ def process_first_frame(video_path, video_index):
         rotated = True
 
     # If the video is longer than 10 seconds, capture only the middle 5 seconds
-    if duration > 10:
-        start_frame = total_frames // 2 - (5 * fps)
-        end_frame = total_frames // 2 + (5 * fps)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        total_frames = int(end_frame - start_frame)
-        duration = total_frames / fps
+    # if duration > 10:
+    duration = total_frames / fps
+    start_frame_cropped = total_frames // 2 - (5 * fps)
+    end_frame_cropped = total_frames // 2 + (5 * fps)
+
+    start_frame_cropped = 0
+    end_frame_cropped = total_frames
+
+    total_frames = int(end_frame_cropped - start_frame_cropped)
+    duration = total_frames / fps
 
     st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
+    default_frame = min(5, total_frames - 1)  # Ensure default frame is within range
+    # frame_number_selected = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, 5, key=f"frame_{video_index}_{video_path}_{hash(video_path)}")
+    frame_number_selected = st.slider("Select video frame", 0, total_frames - 1, default_frame, key=f"frame_{video_index}_{video_path}_{hash(video_path)}")
+    time = frame_number_selected / fps
 
-    frame_number = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, key=f"frame_{video_index}_{video_path}")
-
-    time = frame_number / fps
-
-    st.write(f'Frame Number: {frame_number} | Time: {time:.2f} sec')
-    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    st.write(f'Frame Number: {frame_number_selected} | Time: {time:.2f} sec')
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number_selected)
     
     ret, frame = cap.read()
     if rotated:
@@ -572,15 +576,13 @@ def process_first_frame(video_path, video_index):
             
             # Save the processed frame as an image
             image_path = tempfile.mktemp(suffix=".png")
-            cv2.imwrite(image_path, annotated_frame)
-            
-            st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number}")
-            
+            cv2.imwrite(image_path, annotated_frame)            
+            st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number_selected}")
             cap.release()
-            return frame_number, time, image_path  # Return image path
+    return frame_number_selected, time, image_path  # Return image path
 
-    cap.release()
-    return None, None, None
+    # cap.release()
+    # return None, None, None
 
 
 def calculate_angle(v1, v2):
@@ -873,8 +875,8 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
     ### done add after uploading
   
-    start_frame = 0
-    end_frame = total_frames
+    # start_frame = 0
+    # end_frame = total_frames
     
     left_knee_angles, right_knee_angles = [], []
     left_hip_angles, right_hip_angles = [], []
@@ -882,16 +884,30 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     spine_segment_angles = []
     thorax_angles, lumbar_angles = [], []
 
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    end_frame_crop = total_frames
+    start_frame_crop = 0
     # if the length is greater than 10 seconds, only capture the middle N seconds
-    if duration > 10:
-        start_frame = int(total_frames // 2 - (5 * fps))
-        end_frame = int(total_frames // 2 + (5 * fps))
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        total_frames = int(end_frame - start_frame)
-        duration = total_frames / fps
+    # start_frame_crop = int(total_frames // 2 - (5 * fps))
+    # end_frame_crop = int(total_frames // 2 + (5 * fps))
+    # else capture the whole video
+    # if duration > 10:
+    # start_frame_crop = int(total_frames // 2 - (5 * fps))
+    # end_frame_crop = int(total_frames // 2 + (5 * fps))
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame_crop)
+  
+    total_frames = int(end_frame_crop - start_frame_crop)
+    duration = total_frames / fps
+    # else:
+    start_frame_crop = 0
+    end_frame_crop = total_frames
+ 
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame_crop)
+    total_frames = int(end_frame_crop - start_frame_crop)
+    duration = total_frames / fps
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        for _ in range(start_frame, end_frame):
+        for _ in range(start_frame_crop, end_frame_crop):
             ret, frame = cap.read()
             if rotated:
                 frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
@@ -958,10 +974,19 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     spine_segment_angles = butter_lowpass_filter(spine_segment_angles, cutoff_frequency, fps) 
 
     ### CROP HERE ###
-    start_time, end_time = st.slider("Select time range", min_value=float(0), max_value=float(time[-1]), value=(float(0), float(time[-1])), key=f"side_time_range_{video_index}_{camera_side}")
-    st.write(f"Selected frame range: {start_frame} to {end_frame}")
-    st.write(f"Selected time range: {start_time:.2f}s to {end_time:.2f}s")
-    mask = (time >= start_time) & (time <= end_time)
+    start_time, end_time = st.slider(
+    "Select time range",
+    min_value=float(0),
+    max_value=float(total_frames/fps - 1),
+    value=(float(0), float(total_frames/fps - 1)),
+    key=f"side_time_range_{video_index}_{camera_side}_{hash(video_path)}")
+    
+    start_frame_crop = int(start_time * fps)
+    end_frame_crop = int(end_time * fps)
+    st.write(f"Selected frame range: {start_frame_crop} to {end_frame_crop}")
+    st.write(f"Selected time range: {start_frame_crop/fps:.2f}s to {end_frame_crop/fps:.2f}s")
+
+    mask = (time >= start_frame_crop) & (time <= end_frame_crop)
     filtered_time = time[mask]
 
     filtered_spine_segment_angles = np.array(spine_segment_angles)[mask]
@@ -1308,7 +1333,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             ))
     )
 
-    st.plotly_chart(spider_plot)
+    st.plotly_chart(spider_plot, key=f"spider_plot_{video_index}_{camera_side}_{hash(video_path)}")
 
     # st.markdown('### title')
     
@@ -1328,7 +1353,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     right_ankle = ankle_right_peaks_mean - ankle_right_mins_mean
 
     asymmetry_bar_plot = plot_asymmetry_bar_chart(left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle)
-    st.plotly_chart(asymmetry_bar_plot)
+    st.plotly_chart(asymmetry_bar_plot, key=f"asymmetry_bar_plot_{video_index}_{camera_side}_{hash(video_path)}")
 
     # update with decision trees (if elif, for each category)
     st.title('💡 How to improve your range of motion:')
@@ -1600,7 +1625,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         fig.add_trace(go.Scatter(x=filtered_time, y=filtered_spine_segment_angles, mode='lines', name="Spine Segment Angles"))
         fig.add_trace(go.Scatter(x=[frame_time, frame_time], y=[min(filtered_spine_segment_angles), max(filtered_spine_segment_angles)], mode='lines', line=dict(color='red', dash='dash'), name='Selected Frame'))
         fig.update_layout(title=f"Spine Segment Angles", xaxis_title="Time (s)", yaxis_title="Angle (degrees)")
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"spine_segment_expander_{video_index}_{camera_side}_{hash(video_path)}")
 
         # Assuming filtered_time and filtered_spine_segment_angles are lists or numpy arrays
         spine_data = {
@@ -1620,7 +1645,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         data=spine_csv,
         file_name="spine_segment_angles_{camera_side}.csv",
         mime="text/csv",
-        key=f"spine_segment_angles_{video_index}_{camera_side}"
+        key=f"spine_segment_angles_{video_index}_{camera_side}_{hash(video_path)}"
     )
         github_url = "https://raw.githubusercontent.com/dholling4/PolarPlotter/main/"
         st.image(github_url + "photos/spine segmanet angle description.png", use_container_width =True)
@@ -1645,7 +1670,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             data=hip_csv,
             file_name="hip_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"hip_angles_{video_index}_{camera_side}"
+            key=f"hip_angles_{video_index}_{camera_side}_{hash(video_path)}"
         )
         st.image(github_url + "photos/hip flexion angle.png", use_container_width =True)
         
@@ -1678,7 +1703,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             data=knee_csv,
             file_name="knee_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"knee_angles_{video_index}_{camera_side}"
+            key=f"knee_angles_{video_index}_{camera_side}_{hash(video_path)}"
         )
 
         st.image(github_url + "photos/knee flexion angle.png", use_container_width =True)
@@ -1712,7 +1737,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             data=ankle_csv,
             file_name="ankle_angles_{camera_side}.csv",
             mime="text/csv",
-            key=f"ankle_angles_{video_index}_{camera_side}"
+            key=f"ankle_angles_{video_index}_{camera_side}_{hash(video_path)}"
         )     
         # show ankle plantarflexion angle figure
         st.image(github_url + "photos/ankle flexion angle.png", use_container_width =True)
@@ -1774,7 +1799,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
         )
         
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"hip_expander_{video_index}_{camera_side}_{hash(video_path)}")
 
         strides = [f"Stride {i+1}" for i in range(min(len(peaks_left), len(mins_left), len(peaks_right), len(mins_right)))]
 
@@ -1822,7 +1847,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
         )
 
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"knee_expander_{video_index}_{camera_side}_{hash(video_path)}")
 
         # ANKLE CYCLES
 
@@ -1872,7 +1897,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
             xaxis=dict(tickmode='array', tickvals=list(range(len(strides))), ticktext=strides)
         )
 
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"ankle_expander_{video_index}_{camera_side}_{hash(video_path)}")
 
     ### END CROP ###
   # show tables
@@ -1900,11 +1925,11 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     _, __, pose_image_path = process_first_frame_report(video_path, video_index)
     pdf_path = generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_bar_plot, text_info, camera_side, gait_type, user_footwear)
     with open(pdf_path, "rb") as file:
-        st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}")
+        st.download_button("Download Stride Sync Report", file, "Stride_Sync_Report.pdf", "application/pdf", key=f"pdf_report_{video_index}_{camera_side}_{hash(video_path)}")
 
     # email me my Stride Sync Report
-    email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}")
-    if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}"):
+    email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}_{hash(video_path)}")
+    if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}_{hash(video_path)}"):
         send_email(email, pdf_path)
 
 def send_email(to_email, attachment_path):
