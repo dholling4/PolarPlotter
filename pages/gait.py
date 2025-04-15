@@ -512,72 +512,80 @@ def process_first_frame_report(video_path, video_index):
     return None, None, None
 
 def process_first_frame(video_path, video_index):
-    """Processes a selected frame from a video and shows frame number and timestamp."""
+    """Processes a selected frame from a video and shows frame number and timestamp with pose overlay."""
+
     neon_green = (57, 255, 20)
     cool_blue = (0, 91, 255)
 
-    # Ensure video is open
+    # Open video file
     cap = cv2.VideoCapture(video_path)
-    # if not cap.isOpened():
-    #     st.error("Unable to open video file.")
-    #     return None, None, None
+    if not cap.isOpened():
+        st.error("Unable to open video file.")
+        return None, None, None
+
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
-    st.markdown(f"**Video Info:** Frames: `{total_frames}`, FPS: `{fps:.1f}`, Duration: `{duration:.2f}s`")
+    # Read first frame to check if rotated
+    ret, test_frame = cap.read()
+    if not ret:
+        st.error("Couldn't read video for orientation check.")
+        cap.release()
+        return None, None, None
+    rotated = test_frame.shape[0] < test_frame.shape[1]
+    cap.release()
 
+    st.markdown(f"**Video Info:**  \nFrames: `{total_frames}`  |  FPS: `{fps:.1f}`  |  Duration: `{duration:.2f}s`")
+
+    # ✅ Create a frame selector
+    frame_number_selected = st.slider(
+        "🎞️ Select video frame",
+        min_value=0,
+        max_value=total_frames - 1,
+        value=min(5, total_frames - 1),
+        key=f"frame_slider_{video_index}_{hash(video_path)}"
+    )
+
+    time = frame_number_selected / fps
+    st.markdown(f"**🕒 Frame:** `{frame_number_selected}` → `{time:.2f}s`")
+
+    # ✅ Re-open and set frame
+    cap = cv2.VideoCapture(video_path)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number_selected)
+    ret, frame = cap.read()
+    cap.release()
+
+    if not ret:
+        st.error("❌ Failed to read the selected frame.")
+        return frame_number_selected, time, None
+
+    if rotated:
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # ✅ Run pose detection
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        # update ==
-        
-        # Use a unique key for each video to prevent caching conflicts
-        slider_key = f"frame_slider_{video_index}_{hash(video_path)}"
-        frame_number_selected = st.slider(
-            "🎞️ Select video frame",
-            0,
-            total_frames - 1,
-            value=min(5, total_frames - 1),
-            key=slider_key
-        )
-
-        # Seek to the selected frame
-        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number_selected)
-        ret, frame = cap.read()
-        # cap.release()
-
-        if not ret:
-            st.error("❌ Failed to read the selected frame.")
-            return None, None, None
-
-        # Rotate frame if needed
-        rotated = frame.shape[0] < frame.shape[1]
-        if rotated:
-            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)        
-
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # end update ==
-
         results = pose.process(frame_rgb)
         if results.pose_landmarks:
             annotated_frame = frame.copy()
             mp_drawing.draw_landmarks(
-                annotated_frame,
-                results.pose_landmarks,
-                mp_pose.POSE_CONNECTIONS,
+                annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=10, circle_radius=7),
                 connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
             )
-
+            # Save and display
             image_path = tempfile.mktemp(suffix=".png")
             cv2.imwrite(image_path, annotated_frame)
 
-            time = frame_number_selected / fps
-            st.markdown(f"**🕒 Frame:** `{frame_number_selected}` → `{time:.2f}s`")
             st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"📸 Frame {frame_number_selected}")
 
-    cap.release()
-    return frame_number_selected, time, image_path
+            return frame_number_selected, time, image_path
+        else:
+            st.warning("Pose landmarks not detected.")
+            return frame_number_selected, time, None
+
 
 
 
