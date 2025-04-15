@@ -156,7 +156,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     table.auto_set_column_width([0, 1, 2, 3])  # Adjust column width
 
     # Define ranges for color classification
-    # Define ranges for color classification
     if camera_side == "side" and gait_type == "walking": 
         ankle_good = (20, 45)
         ankle_moderate = (15, 20)
@@ -229,8 +228,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         """Assigns a color based on the ROM classification."""
         if good_range[0] <= value <= good_range[1]:
             # return a light green color
-            return "lightgreen"
-        
+            return "lightgreen"        
         elif moderate_range[0] <= value <= moderate_range[1]:
             return 'yellow'
         else:
