@@ -1204,7 +1204,7 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         spine_bad = (0, 30)
 
     if camera_side == "back" and gait_type == "running":
-        ankle_good = (20, 60)
+        ankle_good = (20, 50)
         ankle_moderate = (15, 20)
         ankle_bad = (0, 15)
 
