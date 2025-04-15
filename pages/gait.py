@@ -463,20 +463,19 @@ def process_first_frame_report(video_path, video_index):
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
 
     # If the video is longer than 10 seconds, capture only the middle 5 seconds
-    if duration > 10:
-        start_frame = total_frames // 2 - (5 * fps)
-        end_frame = total_frames // 2 + (5 * fps)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        total_frames = int(end_frame - start_frame)
-        duration = total_frames / fps
-
-    else:
-        start_frame = total_frames // 2 
+    # if duration > 10:
+    #     start_frame = total_frames // 2 - (5 * fps)
+    #     end_frame = total_frames // 2 + (5 * fps)
+    #     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+    #     total_frames = int(end_frame - start_frame)
+    #     duration = total_frames / fps
+    # else:
+    #     start_frame = total_frames // 2 
+    start_frame = 0
+    end_frame = int(total_frames - start_frame)
 
     frame_number = start_frame
-
     time = frame_number / fps
-
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     
     ret, frame = cap.read()
@@ -513,76 +512,73 @@ def process_first_frame_report(video_path, video_index):
     return None, None, None
 
 def process_first_frame(video_path, video_index):
-    """Processes the first frame and returns the frame number, time, and saved image path."""
-
+    """Processes a selected frame from a video and shows frame number and timestamp."""
     neon_green = (57, 255, 20)
     cool_blue = (0, 91, 255)
 
+    # Ensure video is open
     cap = cv2.VideoCapture(video_path)
+    # if not cap.isOpened():
+    #     st.error("Unable to open video file.")
+    #     return None, None, None
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     duration = total_frames / fps
 
-    # ➕ Check if video is rotated based on first frame
-    ret, test_frame = cap.read()
-    if not ret:
-        raise ValueError("Couldn't read from video.")
-
-    rotated = False
-
-    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
-        rotated = True
-
-    # If the video is longer than 10 seconds, capture only the middle 5 seconds
-    # if duration > 10:
-    duration = total_frames / fps
-    start_frame_cropped = total_frames // 2 - (5 * fps)
-    end_frame_cropped = total_frames // 2 + (5 * fps)
-
-    start_frame_cropped = 0
-    end_frame_cropped = total_frames
-
-    total_frames = int(end_frame_cropped - start_frame_cropped)
-    duration = total_frames / fps
-
-    st.write(f"Total frames: {total_frames}, FPS: {fps:.1f}, Duration: {duration:.2f} seconds")
-    default_frame = min(5, total_frames - 1)  # Ensure default frame is within range
-    # frame_number_selected = st.slider(f"Select frame for video ({video_index+1})", 0, total_frames - 1, 5, key=f"frame_{video_index}_{video_path}_{hash(video_path)}")
-    frame_number_selected = st.slider("Select video frame", 0, total_frames - 1, default_frame, key=f"frame_{video_index}_{video_path}_{hash(video_path)}")
-    time = frame_number_selected / fps
-
-    st.write(f'Frame Number: {frame_number_selected} | Time: {time:.2f} sec')
-    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number_selected)
-    
-    ret, frame = cap.read()
-    if rotated:
-        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-    if not ret:
-        st.error("Failed to read the selected frame.")
-        cap.release()
-        return None, None, None  # Return None if no valid frame
-
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    st.markdown(f"**Video Info:** Frames: `{total_frames}`, FPS: `{fps:.1f}`, Duration: `{duration:.2f}s`")
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+        # update ==
+        
+        # Use a unique key for each video to prevent caching conflicts
+        slider_key = f"frame_slider_{video_index}_{hash(video_path)}"
+        frame_number_selected = st.slider(
+            "🎞️ Select video frame",
+            0,
+            total_frames - 1,
+            value=min(5, total_frames - 1),
+            key=slider_key
+        )
+
+        # Seek to the selected frame
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number_selected)
+        ret, frame = cap.read()
+        # cap.release()
+
+        if not ret:
+            st.error("❌ Failed to read the selected frame.")
+            return None, None, None
+
+        # Rotate frame if needed
+        rotated = frame.shape[0] < frame.shape[1]
+        if rotated:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)        
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # end update ==
+
         results = pose.process(frame_rgb)
         if results.pose_landmarks:
             annotated_frame = frame.copy()
             mp_drawing.draw_landmarks(
-                annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                annotated_frame,
+                results.pose_landmarks,
+                mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=solutions.drawing_styles.DrawingSpec(color=neon_green, thickness=10, circle_radius=7),
                 connection_drawing_spec=solutions.drawing_styles.DrawingSpec(color=cool_blue, thickness=10)
             )
-            
-            # Save the processed frame as an image
-            image_path = tempfile.mktemp(suffix=".png")
-            cv2.imwrite(image_path, annotated_frame)            
-            st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_number_selected}")
-            cap.release()
-    return frame_number_selected, time, image_path  # Return image path
 
-    # cap.release()
-    # return None, None, None
+            image_path = tempfile.mktemp(suffix=".png")
+            cv2.imwrite(image_path, annotated_frame)
+
+            time = frame_number_selected / fps
+            st.markdown(f"**🕒 Frame:** `{frame_number_selected}` → `{time:.2f}s`")
+            st.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB), caption=f"📸 Frame {frame_number_selected}")
+
+    cap.release()
+    return frame_number_selected, time, image_path
+
 
 
 def calculate_angle(v1, v2):
@@ -2078,8 +2074,13 @@ def main():
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
+                # process_first_frame(temp_video_path, video_index=idx)
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
                 process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
 if __name__ == "__main__":
     main()
+
+
+  
+

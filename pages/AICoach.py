@@ -1,6 +1,33 @@
 import streamlit as st
 st.write("coming soon...")
 
+import streamlit as st
+import cv2
+import tempfile
+import numpy as np
+
+def show_frame_from_video(video_path):
+    cap = cv2.VideoCapture(video_path)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    frame_idx = st.slider("Select frame", 0, total_frames - 1, 0)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+    ret, frame = cap.read()
+    cap.release()
+
+    if ret:
+        st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_idx}")
+    else:
+        st.error("Failed to read the frame.")
+
+video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
+if video_file:
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(video_file.read())
+        tmp_path = tmp.name
+    show_frame_from_video(tmp_path)
+
 # # from openai import OpenAI
 # import streamlit as st
 # # import os
