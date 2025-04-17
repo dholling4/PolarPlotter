@@ -2017,9 +2017,7 @@ def main():
             camera_side = "side"
             gait_type = "pickup pen"
             video_url = github_url + "photos/pickup pen 3 sec demo.mp4"
-            # st.image(github_url + "photos/pickup pen no skeleton sharp.jpg", caption="Example Pickup Pen Video", width=155)
             st.video(video_url)
-            # Video URL from GitHub
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
