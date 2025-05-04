@@ -2080,6 +2080,7 @@ def main():
         gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
             file_name = video_file_back.name
+            st.text(file_name)
             ext = os.path.splitext(file_name)[1].lower()
             allowed_exts = [".mp4", ".avi", ".mov", ".mpeg4"]
             if ext not in allowed_exts:
