@@ -2074,13 +2074,17 @@ def main():
 
     # File uploader for back video(s)
     video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_running")
+    
     if video_files:
         camera_side = "back"
         gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
             file_name = video_file_back.name
-            ext = os.path.splitext(file_name)[1]
-
+            ext = os.path.splitext(file_name)[1].lower()
+            allowed_exts = [".mp4", ".avi", ".mov", ".mpeg4"]
+            if ext not in allowed_exts:
+                st.warning(f"⚠️ Skipping file `{file_name}` due to unsupported extension.")
+                continue
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
