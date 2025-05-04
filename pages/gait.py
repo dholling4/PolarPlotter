@@ -2026,12 +2026,14 @@ def main():
     user_footwear = st.text_input("Enter your footwear", key="user_footwear") # maybe checkbox neutral, support, stability --> Opens up a catalogue at their stores...
 
     # File uploader for user to upload their own video
-    video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_walking")
+    video_files = st.file_uploader("Upload side walking video(s)", type=["mp4", "avi", "mov", "MOV"], accept_multiple_files=True, key="side_walking")
     if video_files:
         camera_side = "side"
         gait_type = "walking"
         for idx, video_file in enumerate(video_files):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+            file_name = video_file_back.name
+            ext = os.path.splitext(file_name)[1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
                 temp_video_file.write(video_file.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
@@ -2040,12 +2042,14 @@ def main():
                 process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for user to upload their own video
-    video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_walking")
+    video_files = st.file_uploader("Upload back walking video(s)", type=["mp4", "avi", "mov", "MOV"], accept_multiple_files=True, key="back_walking")
     if video_files:
         camera_side = "back"
         gait_type = "walking"
         for idx, video_file in enumerate(video_files):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+            file_name = video_file_back.name
+            ext = os.path.splitext(file_name)[1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
                 temp_video_file.write(video_file.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
@@ -2053,12 +2057,14 @@ def main():
                 frame_number, frame_time, image_path = process_first_frame(temp_video_path, video_index=idx)
                 process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
-    video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_running")
+    video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov", "MOV"], accept_multiple_files=True, key="side_running")
     if video_files:
         camera_side = "side"
         gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+            file_name = video_file_back.name
+            ext = os.path.splitext(file_name)[1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
@@ -2067,12 +2073,15 @@ def main():
                 process_video(user_footwear, gait_type, camera_side, temp_video_path, output_txt_path, frame_time, video_index=idx)
 
     # File uploader for back video(s)
-    video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="back_running")
+    video_files = st.file_uploader("Upload back running video(s)", type=["mp4", "avi", "mov", "MOV"], accept_multiple_files=True, key="back_running")
     if video_files:
         camera_side = "back"
         gait_type = "running"
         for idx, video_file_back in enumerate(video_files):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
+            file_name = video_file_back.name
+            ext = os.path.splitext(file_name)[1]
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
                 temp_video_file.write(video_file_back.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
