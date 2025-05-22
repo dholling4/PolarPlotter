@@ -478,6 +478,7 @@ def process_first_frame_report(video_path, video_index):
     
     ret, frame = cap.read()
     if rotated:
+        st.write("rotated!")
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
     if not ret:
