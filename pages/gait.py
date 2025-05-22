@@ -2021,7 +2021,7 @@ def main():
             for idx, video_file in enumerate([video_url]):
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
                 frame_number, frame_time, image_path = process_first_frame(video_file, video_index=idx)
-                process_video(user_footwear, gait_type, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
+                process_video(user_footwear, gait_type, camera_side, video_file, output_txt_path, frame_time, video_index=idx)
 
     user_footwear = st.text_input("Enter your footwear", key="user_footwear") # maybe checkbox neutral, support, stability --> Opens up a catalogue at their stores...
 
