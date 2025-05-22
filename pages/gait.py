@@ -869,10 +869,9 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         raise ValueError("Couldn't read from video.")
 
     rotated = False
-    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
+    if (test_frame.shape[0] < test_frame.shape[1]) and (gait_type != "pickup pen"):  # height < width → probably rotated
         rotated = True
-    if gait_type == "pickup pen":
-        rotated = False
+ 
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
     ### done add after uploading
   
