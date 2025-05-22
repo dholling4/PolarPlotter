@@ -1217,6 +1217,57 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
         spine_moderate = (10, 20)
         spine_bad = (20, 30)
 
+# Define ranges for color classification
+    if camera_side == "side" and gait_type == "pickup pen": 
+        # Spine (Trunk Flexion from neutral upright)
+        spine_good = (30, 60)
+        spine_moderate = (20, 30) # Too little flexion
+        spine_moderate_upper = (60, 75) # Too much flexion
+        spine_bad = (0, 20) # Very little flexion
+        spine_bad_upper = (75, 90) # Excessive flexion
+
+        # Hip Flexion
+        hip_good = (50, 90)
+        hip_moderate = (40, 50) # Not enough hip flexion
+        hip_moderate_upper = (90, 100) # Deeper than expected
+        hip_bad = (0, 40) # Primarily back bending
+        hip_bad_upper = (100, 120) # Very deep / potentially unstable
+
+        # Knee Flexion
+        knee_good = (20, 70)
+        knee_moderate = (10, 20) # Stiff legs
+        knee_moderate_upper = (70, 90) # Deeper squat
+        knee_bad = (0, 10) # Straight-legged
+        knee_bad_upper = (90, 120) # Uncontrolled deep squat
+
+        # Ankle Dorsiflexion (Positive angle means dorsiflexion from neutral)
+        ankle_good = (10, 25)
+        ankle_moderate = (5, 10) # Limited dorsiflexion
+        ankle_moderate_upper = (25, 35) # Excessive dorsiflexion / instability
+        ankle_bad = (0, 5) # Very limited mobility
+        ankle_bad_upper = (35, 45) # Significant instability
+
+    if camera_side == "back" and gait_type == "pickup pen": 
+        # Spine Lateral Flexion / Rotation (Deviation from central axis)
+        spine_good = (0, 5)
+        spine_moderate = (5, 10)
+        spine_bad = (10, 20)
+
+        # Hip Abduction/Adduction (Pelvic Tilt/Shift)
+        hip_good = (0, 5)
+        hip_moderate = (5, 10)
+        hip_bad = (10, 20)
+
+        # Knee Valgus/Varus (Deviation from straight alignment)
+        knee_good = (0, 5)
+        knee_moderate = (5, 10)
+        knee_bad = (10, 20)
+
+        # Ankle Inversion/Eversion (Foot Rolling)
+        ankle_good = (0, 5)
+        ankle_moderate = (5, 10)
+        ankle_bad = (10, 20)
+
     rom_values = [knee_right_rom_mean, hip_right_rom_mean, spine_segment_rom_mean, 
                 hip_left_rom_mean, knee_left_rom_mean, ankle_left_rom_mean, ankle_right_rom_mean]
 
