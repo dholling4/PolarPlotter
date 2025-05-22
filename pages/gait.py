@@ -584,9 +584,6 @@ def process_first_frame(video_path, video_index):
             st.warning("Pose landmarks not detected.")
             return frame_number_selected, time, None
 
-
-
-
 def calculate_angle(v1, v2):
     """
     Calculate the angle between two vectors using the dot product.
@@ -874,6 +871,8 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     rotated = False
     if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
         rotated = True
+    if gait_type == "pickup pen":
+        rotated = False
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
     ### done add after uploading
   
