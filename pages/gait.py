@@ -456,7 +456,7 @@ def process_first_frame_report(video_path, video_index):
         raise ValueError("Couldn't read from video.")
     
     rotated = False
-    if test_frame.shape[0] < test_frame.shape[1]:  # height < width → probably rotated
+    if (test_frame.shape[0] < test_frame.shape[1]) and ("pickup" not in video_path):  # height < width → probably rotated
         rotated = True
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset back to start
 
@@ -478,7 +478,7 @@ def process_first_frame_report(video_path, video_index):
     
     ret, frame = cap.read()
     if rotated:
-        st.write("rotated!")
+        st.text("rotated!")
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
     if not ret:
