@@ -451,37 +451,6 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     
     return pdf_file_path
 
-def send_email(to_email, attachment_path):
-
-    if "EMAIL_ADDRESS" in st.secrets:
-        sender_email = st.secrets["EMAIL_ADDRESS"]
-        app_password = st.secrets["EMAIL_APP_PASSWORD"]
-    else:
-        load_dotenv()
-        sender_email = os.getenv("EMAIL_ADDRESS")
-        app_password = os.getenv("EMAIL_APP_PASSWORD")
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(sender_email, app_password)     
-        st.write("✅ Email sent!") 
-    
-    msg = EmailMessage()
-    msg['Subject'] = "Your Stride Sync Report"
-    msg['From'] = sender_email
-    msg['To'] = to_email
-    msg.set_content("Hi! Attached is your personalized gait report from Stride Sync. Feel free to reach out if you have any questions or would like to setup an appointment to discuss your results.")
-
-    # Attach PDF
-    with open(attachment_path, 'rb') as f:
-        file_data = f.read()
-        file_name = "Stride Sync Report " + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
-        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
-
-    # Send Email
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(sender_email, app_password)
-        smtp.send_message(msg)
-
 
 def detect_peaks(data, column, prominence, distance):
     peaks, _ = find_peaks(data[column], prominence=prominence, distance=distance)
@@ -1222,11 +1191,11 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     hip_ext_good = 10
     hip_rom_good = 65 # <60 deg total flexion-extension ROM is bad
 
-    # def get_color(value, good_range, moderate_range):
-    #     """Assigns a gradient color based on the ROM classification."""
-    #     norm = mcolors.Normalize(vmin=good_range[0] - 20, vmax=good_range[1] + 20)  # Normalize scale
-    #     cmap = plt.cm.RdYlGn  # Red-Yellow-Green colormap
-    #     return mcolors.to_hex(cmap(norm(value)))
+    def get_color(value, good_range, moderate_range):
+        """Assigns a gradient color based on the ROM classification."""
+        norm = mcolors.Normalize(vmin=good_range[0] - 20, vmax=good_range[1] + 20)  # Normalize scale
+        cmap = plt.cm.RdYlGn  # Red-Yellow-Green colormap
+        return mcolors.to_hex(cmap(norm(value)))
 
     # Define ranges for color classification
     if camera_side == "side" and gait_type == "walking": 
@@ -2064,6 +2033,37 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}_{hash(video_path)}")
     if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}_{hash(video_path)}"):
         send_email(email, pdf_path)
+
+def send_email(to_email, attachment_path):
+
+    if "EMAIL_ADDRESS" in st.secrets:
+        sender_email = st.secrets["EMAIL_ADDRESS"]
+        app_password = st.secrets["EMAIL_APP_PASSWORD"]
+    else:
+        load_dotenv()
+        sender_email = os.getenv("EMAIL_ADDRESS")
+        app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(sender_email, app_password)     
+        st.write("✅ Email sent!") 
+    
+    msg = EmailMessage()
+    msg['Subject'] = "Your Stride Sync Report"
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg.set_content("Hi! Attached is your personalized gait report from Stride Sync. Feel free to reach out if you have any questions or would like to setup an appointment to discuss your results.")
+
+    # Attach PDF
+    with open(attachment_path, 'rb') as f:
+        file_data = f.read()
+        file_name = "Stride Sync Report " + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
+        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
+
+    # Send Email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(sender_email, app_password)
+        smtp.send_message(msg)
 
 
 # TO DO:
