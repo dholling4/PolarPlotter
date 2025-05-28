@@ -451,6 +451,37 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     
     return pdf_file_path
 
+def send_email(to_email, attachment_path):
+
+    if "EMAIL_ADDRESS" in st.secrets:
+        sender_email = st.secrets["EMAIL_ADDRESS"]
+        app_password = st.secrets["EMAIL_APP_PASSWORD"]
+    else:
+        load_dotenv()
+        sender_email = os.getenv("EMAIL_ADDRESS")
+        app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(sender_email, app_password)     
+        st.write("✅ Email sent!") 
+    
+    msg = EmailMessage()
+    msg['Subject'] = "Your Stride Sync Report"
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg.set_content("Hi! Attached is your personalized gait report from Stride Sync. Feel free to reach out if you have any questions or would like to setup an appointment to discuss your results.")
+
+    # Attach PDF
+    with open(attachment_path, 'rb') as f:
+        file_data = f.read()
+        file_name = "Stride Sync Report " + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
+        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
+
+    # Send Email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(sender_email, app_password)
+        smtp.send_message(msg)
+
 
 def detect_peaks(data, column, prominence, distance):
     peaks, _ = find_peaks(data[column], prominence=prominence, distance=distance)
@@ -2014,8 +2045,10 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     'Max Angle (°)' : [np.max(filtered_spine_segment_angles), hip_left_peaks_mean, hip_right_peaks_mean, knee_left_peaks_mean, knee_right_peaks_mean, ankle_left_peaks_mean, ankle_right_peaks_mean],
     'Range of Motion (°)': [np.ptp(filtered_spine_segment_angles), hip_left_peaks_mean - hip_left_mins_mean, hip_right_peaks_mean - hip_right_mins_mean, knee_left_peaks_mean - knee_left_mins_mean, knee_right_peaks_mean - knee_right_mins_mean, ankle_left_peaks_mean - ankle_left_mins_mean, ankle_right_peaks_mean - ankle_right_mins_mean]})
     
-    # round df_rom to 1 decimal place
-    df_rom = df_rom.round(1)
+    # always show 1 decimal place
+    df_rom['Min Angle (°)'] = df_rom['Min Angle (°)'].apply(lambda x: f"{x:.1f}")
+    df_rom['Max Angle (°)'] = df_rom['Max Angle (°)'].apply(lambda x: f"{x:.1f}")
+    df_rom['Range of Motion (°)'] = df_rom['Range of Motion (°)'].apply(lambda x: f"{x:.1f}")
     st.dataframe(df_rom)
 
     # pca_checkbox = st.checkbox("Perform Principle Component Analysis", value=False, key=f"pca_{video_index}_{camera_side}")
@@ -2031,37 +2064,6 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     email = st.text_input("Enter your email address to receive your Stride Sync Report",  key=f"text_input_email_{video_index}_{camera_side}_{hash(video_path)}")
     if st.button("Email Stride Sync Report", key=f"email_pdf_{video_index}_{camera_side}_{hash(video_path)}"):
         send_email(email, pdf_path)
-
-def send_email(to_email, attachment_path):
-
-    if "EMAIL_ADDRESS" in st.secrets:
-        sender_email = st.secrets["EMAIL_ADDRESS"]
-        app_password = st.secrets["EMAIL_APP_PASSWORD"]
-    else:
-        load_dotenv()
-        sender_email = os.getenv("EMAIL_ADDRESS")
-        app_password = os.getenv("EMAIL_APP_PASSWORD")
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(sender_email, app_password)     
-        st.write("✅ Email sent!") 
-    
-    msg = EmailMessage()
-    msg['Subject'] = "Your Stride Sync Report"
-    msg['From'] = sender_email
-    msg['To'] = to_email
-    msg.set_content("Hi! Attached is your personalized gait report from Stride Sync. Feel free to reach out if you have any questions or would like to setup an appointment to discuss your results.")
-
-    # Attach PDF
-    with open(attachment_path, 'rb') as f:
-        file_data = f.read()
-        file_name = "Stride Sync Report " + str(datetime.now().strftime("%Y-%m-%d")) + ".pdf"
-        msg.add_attachment(file_data, maintype='application', subtype='pdf', filename=file_name)
-
-    # Send Email
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(sender_email, app_password)
-        smtp.send_message(msg)
 
 
 # TO DO:
