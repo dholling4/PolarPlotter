@@ -1222,11 +1222,11 @@ def process_video(user_footwear, gait_type, camera_side, video_path, output_txt_
     hip_ext_good = 10
     hip_rom_good = 65 # <60 deg total flexion-extension ROM is bad
 
-    def get_color(value, good_range, moderate_range):
-        """Assigns a gradient color based on the ROM classification."""
-        norm = mcolors.Normalize(vmin=good_range[0] - 20, vmax=good_range[1] + 20)  # Normalize scale
-        cmap = plt.cm.RdYlGn  # Red-Yellow-Green colormap
-        return mcolors.to_hex(cmap(norm(value)))
+    # def get_color(value, good_range, moderate_range):
+    #     """Assigns a gradient color based on the ROM classification."""
+    #     norm = mcolors.Normalize(vmin=good_range[0] - 20, vmax=good_range[1] + 20)  # Normalize scale
+    #     cmap = plt.cm.RdYlGn  # Red-Yellow-Green colormap
+    #     return mcolors.to_hex(cmap(norm(value)))
 
     # Define ranges for color classification
     if camera_side == "side" and gait_type == "walking": 
