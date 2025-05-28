@@ -2129,11 +2129,11 @@ def main():
     if video_files:
         camera_side = "side"
         gait_type = "walking"
-        for idx, video_file in enumerate(video_files):
-            file_name = video_file_back.name
+        for idx, video_file_side_walk in enumerate(video_files):
+            file_name = video_file_side_walk.name
             ext = os.path.splitext(file_name)[1]
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
-                temp_video_file.write(video_file.read())
+                temp_video_file.write(video_file_side_walk.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
@@ -2145,11 +2145,11 @@ def main():
     if video_files:
         camera_side = "back"
         gait_type = "walking"
-        for idx, video_file in enumerate(video_files):
-            file_name = video_file_back.name
+        for idx, video_file_back_walk in enumerate(video_files):
+            file_name = video_file_back_walk.name
             ext = os.path.splitext(file_name)[1]
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
-                temp_video_file.write(video_file.read())
+                temp_video_file.write(video_file_back_walk.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
@@ -2160,11 +2160,11 @@ def main():
     if video_files:
         camera_side = "side"
         gait_type = "running"
-        for idx, video_file_back in enumerate(video_files):
-            file_name = video_file_back.name
+        for idx, video_file_side_run in enumerate(video_files):
+            file_name = video_file_side_run.name
             ext = os.path.splitext(file_name)[1]
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
-                temp_video_file.write(video_file_back.read())
+                temp_video_file.write(video_file_side_run.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
@@ -2177,8 +2177,8 @@ def main():
     if video_files:
         camera_side = "back"
         gait_type = "running"
-        for idx, video_file_back in enumerate(video_files):
-            file_name = video_file_back.name
+        for idx, video_file_back_run in enumerate(video_files):
+            file_name = video_file_back_run.name
             st.text(file_name)
             ext = os.path.splitext(file_name)[1].lower()
             allowed_exts = [".mp4", ".avi", ".mov", ".mpeg4"]
@@ -2186,7 +2186,7 @@ def main():
                 st.warning(f"⚠️ Skipping file `{file_name}` due to unsupported extension.")
                 continue
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_video_file:
-                temp_video_file.write(video_file_back.read())
+                temp_video_file.write(video_file_back_run.read())
                 temp_video_path = temp_video_file.name
                 temp_video_file.close()
                 output_txt_path = '/workspaces/PolarPlotter/results/joint_angles.txt'
