@@ -92,7 +92,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     pdf.set_text_color(255, 255, 255)  # White text
     pdf.set_font("Arial", size=9)  # Small font
     current_date = datetime.today().strftime("%m/%d/%Y")  # Automatically fetch today's date
-    location_text = f"Date: {current_date}\nLocation: Auburn, AL\nGait Type: {gait_type.capitalize()}\nFootwear: {user_footwear}"
+    location_text = f"Date: {current_date}\nLocation: Auburn, AL\nGait Type: {gait_type.capitalize(), camera_side.capitalize()}\nFootwear: {user_footwear}"
     pdf.multi_cell(0, 3.5, location_text)  # Multi-line cell to properly format text
 
     # ✅ Report Title (Centered)
@@ -159,7 +159,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
     if camera_side == "side" and gait_type == "walking": 
         ankle_good = (20, 45)
         ankle_moderate = (15, 20)
-        ankle_bad = (0, 55)#(0, 10)
+        ankle_bad = (0, 55) #(0, 10)
 
         knee_good = (50, 70)
         knee_moderate = (40, 50)
