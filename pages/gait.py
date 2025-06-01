@@ -84,6 +84,7 @@ class CustomPDF(FPDF):
         
 def get_color(value, good_range, moderate_range):
     """Assigns a color based on the ROM classification."""
+
     if good_range[0] <= value <= good_range[1]:
         # return a light green color
         return "lightgreen"        
@@ -297,7 +298,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         elif 'Ankle' in joint:
             good_range, moderate_range = ankle_good, ankle_moderate
 
-        rom_value = df_rom['Range of Motion (°)'].iloc[i]
+        rom_value = float(df_rom['Range of Motion (°)'].iloc[i])
         color = get_color(rom_value, good_range, moderate_range)
 
         # Change color of the first column (Joint names)
