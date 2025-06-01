@@ -82,6 +82,16 @@ class CustomPDF(FPDF):
         self.set_fill_color(0, 0, 0)
         self.rect(0, 0, 210, 297, 'F')
         
+def get_color(value, good_range, moderate_range):
+    """Assigns a color based on the ROM classification."""
+    if good_range[0] <= value <= good_range[1]:
+        # return a light green color
+        return "lightgreen"        
+    elif moderate_range[0] <= value <= moderate_range[1]:
+        return 'yellow'
+    else:
+        return "lightcoral"
+        
 def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side, gait_type, user_footwear):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
     pdf = CustomPDF()
@@ -274,15 +284,7 @@ def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info
         ankle_moderate = (5, 10)
         ankle_bad = (10, 20)        
 
-    def get_color(value, good_range, moderate_range):
-        """Assigns a color based on the ROM classification."""
-        if good_range[0] <= value <= good_range[1]:
-            # return a light green color
-            return "lightgreen"        
-        elif moderate_range[0] <= value <= moderate_range[1]:
-            return 'yellow'
-        else:
-            return "lightcoral"
+
 
     # Apply colors to the first and last columns
     for i, joint in enumerate(df_rom['Joint']):
@@ -2065,7 +2067,6 @@ def send_email(to_email, attachment_path):
         smtp.login(sender_email, app_password)
         smtp.send_message(msg)
 
-
 # TO DO:
 # - Try to add article links like this: https://pmc.ncbi.nlm.nih.gov/articles/PMC3286897/
 # - Neural Network to predict gait
@@ -2083,8 +2084,6 @@ def send_email(to_email, attachment_path):
 # - Add more synthetic data
 # - Add animations / rendering
 # - Add step by step variation analysis
-
-   
 
 def main():
     st.title("Biomechanics Analysis from Video")
