@@ -81,16 +81,16 @@ class CustomPDF(FPDF):
         # Set black background on every page automatically
         self.set_fill_color(0, 0, 0)
         self.rect(0, 0, 210, 297, 'F')
-        
-def get_color(value, good_range, moderate_range):
-    """Assigns a color based on the ROM classification."""
-    if good_range[0] <= value <= good_range[1]:
-        # return a light green color
-        return "lightgreen"        
-    elif moderate_range[0] <= value <= moderate_range[1]:
-        return 'yellow'
-    else:
-        return "lightcoral"
+
+# def get_color(value, good_range, moderate_range):
+#     """Assigns a color based on the ROM classification."""
+#     if good_range[0] <= value <= good_range[1]:
+#         # return a light green color
+#         return "lightgreen"        
+#     elif moderate_range[0] <= value <= moderate_range[1]:
+#         return 'yellow'
+#     else:
+#         return "lightcoral"
         
 def generate_pdf(pose_image_path, df_rom, spider_plot, asymmetry_plot, text_info, camera_side, gait_type, user_footwear):
     """Generates a PDF with the pose estimation, given plots, and text. FPDF document (A4 size, 210mm width x 297mm height)"""
