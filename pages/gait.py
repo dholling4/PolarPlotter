@@ -2121,7 +2121,6 @@ def main():
                 if st.button("Clear Uploaded Video"):
                     st.session_state.uploaded_file = None # Clear the file from session state
                     st.session_state.video_uploader = None # Clear the widget's internal state
-                    st.experimental_rerun() # Rerun the app to reflect the cleared state
 
     video_files = st.file_uploader("Upload side running video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True, key="side_running")
     if video_files:
