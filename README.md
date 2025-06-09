@@ -1,6 +1,6 @@
-# The Digital Athlete
+# Stride Sync
 Created by David Hollinger, dzh0063@auburn.edu
-This streamlit app is for The Digital Athlete 
+This streamlit app is for Stride Sync
 
 # Project Description
 This is a streamlit app using codespaces that allows athletes to understand their training to help them achieve their goals. This app is intended for athletes, coaches, therepists, and patients.
